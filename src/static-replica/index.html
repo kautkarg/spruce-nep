@@ -49,23 +49,26 @@
         <section class="placements" id="placements">
              <div class="container text-center">
                 <p class="section-tag">OUR STUDENTS ARE PLACED AT</p>
-                <div class="scrolling-logos">
-                    <img src="/images/recruiters/access.png" alt="Access">
-                    <img src="/images/recruiters/tcs.png" alt="TCS">
-                    <img src="/images/recruiters/gebbs.png" alt="Gebbs">
-                    <img src="/images/recruiters/advantmed.png" alt="Advantmed">
-                    <img src="/images/recruiters/gmc.jpg" alt="GMC">
-                    <img src="/images/recruiters/cognizant.png" alt="Cognizant">
-                    <img src="/images/recruiters/iqvia.png" alt="Iqvia">
-                    <img src="/images/recruiters/corro.png" alt="Corro">
-                     <img src="/images/recruiters/access.png" alt="Access">
-                    <img src="/images-recruiters/tcs.png" alt="TCS">
-                    <img src="/images-recruiters/gebbs.png" alt="Gebbs">
-                    <img src="/images-recruiters/advantmed.png" alt="Advantmed">
-                    <img src="/images-recruiters/gmc.jpg" alt="GMC">
-                    <img src="/images-recruiters/cognizant.png" alt="Cognizant">
-                    <img src="/images-recruiters/iqvia.png" alt="Iqvia">
-                    <img src="/images-recruiters/corro.png" alt="Corro">
+                <div class="scrolling-logos-container">
+                    <div class="scrolling-logos">
+                        <img src="/images/recruiters/access.png" alt="Access">
+                        <img src="/images/recruiters/tcs.png" alt="TCS">
+                        <img src="/images/recruiters/gebbs.png" alt="Gebbs">
+                        <img src="/images/recruiters/advantmed.png" alt="Advantmed">
+                        <img src="/images/recruiters/gmc.jpg" alt="GMC">
+                        <img src="/images/recruiters/cognizant.png" alt="Cognizant">
+                        <img src="/images/recruiters/iqvia.png" alt="Iqvia">
+                        <img src="/images/recruiters/corro.png" alt="Corro">
+                        
+                        <img src="/images/recruiters/access.png" alt="Access">
+                        <img src="/images/recruiters/tcs.png" alt="TCS">
+                        <img src="/images/recruiters/gebbs.png" alt="Gebbs">
+                        <img src="/images/recruiters/advantmed.png" alt="Advantmed">
+                        <img src="/images/recruiters/gmc.jpg" alt="GMC">
+                        <img src="/images/recruiters/cognizant.png" alt="Cognizant">
+                        <img src="/images/recruiters/iqvia.png" alt="Iqvia">
+                        <img src="/images/recruiters/corro.png" alt="Corro">
+                    </div>
                 </div>
             </div>
         </section>
@@ -221,14 +224,20 @@
             const nav = document.querySelector('.mobile-nav');
 
             if (trigger && nav) {
-                // Initially hide the nav
                 nav.style.display = 'none';
 
-                trigger.addEventListener('click', function() {
+                trigger.addEventListener('click', function(event) {
+                    event.stopPropagation();
                     if (nav.style.display === 'flex') {
                         nav.style.display = 'none';
                     } else {
                         nav.style.display = 'flex';
+                    }
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!nav.contains(event.target) && !trigger.contains(event.target)) {
+                        nav.style.display = 'none';
                     }
                 });
             }
@@ -236,5 +245,3 @@
     </script>
 </body>
 </html>
-
-    
