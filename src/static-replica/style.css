@@ -30,7 +30,7 @@ body {
     text-align: center;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     font-family: 'Georgia', serif;
     font-weight: 700;
     margin-top: 0;
@@ -52,6 +52,12 @@ h3 {
     font-size: 1.5rem;
     line-height: 1.4;
     margin-bottom: 0.75rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
 }
 
 p {
@@ -245,8 +251,11 @@ a {
     padding: 5rem 0;
     border-bottom: 1px solid var(--border);
 }
-#courses-home, #reviews-home {
+#courses-home, #reviews-home, #enroll {
     background-color: var(--muted);
+}
+#faq {
+    background-color: var(--background);
 }
 .section-subheading {
     font-size: 1.125rem;
@@ -296,6 +305,32 @@ a {
     padding: 0;
     border: none;
 }
+
+/* FAQ Section */
+.faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.faq-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.faq-item:first-child {
+    padding-top: 0;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item p {
+    color: var(--muted-foreground);
+    margin-bottom: 0;
+}
+
 
 /* Enrollment Section */
 #enroll {
@@ -392,3 +427,5 @@ a {
         column-count: 2;
     }
 }
+
+    

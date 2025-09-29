@@ -137,6 +137,31 @@
             </div>
         </section>
 
+        <section class="section" id="faq">
+            <div class="container text-center">
+                <h2>Frequently Asked Questions</h2>
+                <p class="section-subheading">Find answers to common questions about our courses, NEP 2020 compliance, and career opportunities.</p>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <h4>Is my degree still valuable with the new NEP 2020 policy?</h4>
+                        <p>Yes, but it needs to be supplemented. The National Education Policy (NEP 2020) now requires students to earn credits from skill-based courses. A traditional degree is no longer enough. Our programs provide these mandatory skills and official university credits to make your degree fully compliant and much more valuable to employers.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Are these credits official and will my university accept them?</h4>
+                        <p>Absolutely. All our programs are approved by RTMNU, a UGC-recognized public state university. The credits you earn are academically valid and designed to be part of your degree under the NEP framework. They are not just 'extra' courses; they are a formal part of your education.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>How does the 'Campus to Corporate' program help me get a job?</h4>
+                        <p>Our 'Campus to Corporate' program is a complete career launchpad. We don't just teach you; we prepare you for the real world with interview training, resume building, and soft skill workshops. Then, we connect you with companies for internships and job placements, giving you a direct path from your classroom to a corporate career.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>My friend did an online course and it didn't help. How is this different?</h4>
+                        <p>This is not just another online course; it's a university-approved academic program. The certificate you receive is from RTMNU, a public state university, and it carries official academic weight. This is a real credential that employers and other universities will recognize.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="section" id="enroll">
             <div class="container enroll-container">
                 <div class="enroll-text">
@@ -191,14 +216,25 @@
     </div>
 
     <script>
-        document.querySelector('.nav-mobile-trigger').addEventListener('click', function() {
-            var nav = document.querySelector('.mobile-nav');
-            if (nav.style.display === 'flex') {
+        document.addEventListener('DOMContentLoaded', function() {
+            const trigger = document.querySelector('.nav-mobile-trigger');
+            const nav = document.querySelector('.mobile-nav');
+
+            if (trigger && nav) {
+                // Initially hide the nav
                 nav.style.display = 'none';
-            } else {
-                nav.style.display = 'flex';
+
+                trigger.addEventListener('click', function() {
+                    if (nav.style.display === 'flex') {
+                        nav.style.display = 'none';
+                    } else {
+                        nav.style.display = 'flex';
+                    }
+                });
             }
         });
     </script>
 </body>
 </html>
+
+    
