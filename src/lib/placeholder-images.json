@@ -1,0 +1,28 @@
+{
+  "placeholderImages": [
+    {
+      "id": "credits-visual",
+      "description": "A visual representation of earning academic credits, perhaps showing a document with a plus sign.",
+      "imageUrl": "https://images.unsplash.com/photo-1579642984417-0c00620f8e94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkb2N1bWVudCUyMGNyZWRpdHN8ZW58MHx8fHwxNzU5MDU4MDQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "document credits"
+    },
+    {
+      "id": "placement-visual",
+      "description": "A visual mock-up of a student profile being placed or selected for a job.",
+      "imageUrl": "https://images.unsplash.com/photo-1585972949687-48eff8b879a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwcm9maWxlJTIwbGlzdHxlbnwwfHx8fDE3NTkwNTgwNDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "profile list"
+    },
+    {
+      "id": "certification-visual",
+      "description": "A mock-up of an official university certificate.",
+      "imageUrl": "https://images.unsplash.com/photo-1641748182997-f9745e9a0348?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxvZmZpY2lhbCUyMGNlcnRpZmljYXRlfGVufDB8fHx8MTc1OTA1ODA0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "official certificate"
+    },
+    {
+      "id": "learning-visual",
+      "description": "A visual representing flexible learning, like a calendar or timeline with learning modules.",
+      "imageUrl": "https://images.unsplash.com/photo-1642489069222-3b8f36c0e89e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYWxlbmRhciUyMHNjaGVkdWxlfGVufDB8fHx8MTc1ODk4MzA5OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "calendar schedule"
+    }
+  ]
+}
