@@ -37,42 +37,42 @@
                     <div class="card">
                         <h3>Medical Coding with AI</h3>
                         <p>Translate medical records into standardized codes for healthcare billing and insurance.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                     <div class="card">
                         <h3>Medical Billing</h3>
                         <p>Learn the full medical billing cycle, from claims submission to denial management.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                      <div class="card">
                         <h3>Account Receivable</h3>
                         <p>Master the Accounts Receivable (AR) process in medical billing and revenue cycle management.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                     <div class="card">
                         <h3>Clinical Research & Pharmacovigilance</h3>
                         <p>Gain expertise in clinical trial processes, drug safety monitoring, and regulatory compliance.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                     <div class="card">
                         <h3>Debt Recovery Agent (DRA)</h3>
                         <p>Develop skills in ethical debt collection, negotiation, and communication for finance careers.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                      <div class="card">
                         <h3>Certified Credit Professional (CCP)</h3>
                         <p>Learn credit analysis, risk assessment, and lending practices for the banking sector.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                     <div class="card">
                         <h3>UX/UI Design</h3>
                         <p>Master design thinking, wireframing, and prototyping to create intuitive digital experiences.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                     <div class="card">
                         <h3>3D Animation</h3>
                         <p>Learn 3D modeling, texturing, animation, and rendering for careers in gaming, VFX, and multimedia.</p>
-                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                        <a href="index.html#enroll" class="learn-more">Enroll Now</a>
                     </div>
                 </div>
             </div>
@@ -127,8 +127,15 @@
 
     <script>
         document.querySelector('.nav-mobile-trigger').addEventListener('click', function() {
-            document.querySelector('.mobile-nav').classList.toggle('active');
+            var nav = document.querySelector('.mobile-.nav');
+            if (nav.style.display === 'flex') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+            }
         });
     </script>
 </body>
 </html>
+
+    
