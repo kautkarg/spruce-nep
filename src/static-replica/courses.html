@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses | Spruce Lifeskills</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Georgia&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html"><img src="/images/sprucelogo.webp" alt="Spruce Lifeskills Logo" style="height: 60px;"></a>
+            </div>
+            <nav class="nav-desktop">
+                <a href="courses.html">Courses</a>
+                <a href="reviews.html">Reviews</a>
+            </nav>
+            <div class="header-actions">
+                <a href="index.html#enroll" class="button">Enroll Now</a>
+            </div>
+             <div class="nav-mobile-trigger">
+                <span>&#9776;</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="section" id="courses">
+            <div class="container text-center">
+                <h2>Our Course Catalog</h2>
+                <p class="section-subheading">Each course is a university-approved, credit-based program designed to make you job-ready.</p>
+                <div class="course-grid">
+                    <div class="card">
+                        <h3>Medical Coding with AI</h3>
+                        <p>Translate medical records into standardized codes for healthcare billing and insurance.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                    <div class="card">
+                        <h3>Medical Billing</h3>
+                        <p>Learn the full medical billing cycle, from claims submission to denial management.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                     <div class="card">
+                        <h3>Account Receivable</h3>
+                        <p>Master the Accounts Receivable (AR) process in medical billing and revenue cycle management.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                    <div class="card">
+                        <h3>Clinical Research & Pharmacovigilance</h3>
+                        <p>Gain expertise in clinical trial processes, drug safety monitoring, and regulatory compliance.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                    <div class="card">
+                        <h3>Debt Recovery Agent (DRA)</h3>
+                        <p>Develop skills in ethical debt collection, negotiation, and communication for finance careers.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                     <div class="card">
+                        <h3>Certified Credit Professional (CCP)</h3>
+                        <p>Learn credit analysis, risk assessment, and lending practices for the banking sector.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                    <div class="card">
+                        <h3>UX/UI Design</h3>
+                        <p>Master design thinking, wireframing, and prototyping to create intuitive digital experiences.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                    <div class="card">
+                        <h3>3D Animation</h3>
+                        <p>Learn 3D modeling, texturing, animation, and rendering for careers in gaming, VFX, and multimedia.</p>
+                        <a href="#enroll" class="learn-more">Enroll Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="enroll">
+            <div class="container enroll-container">
+                <div class="enroll-text">
+                    <p class="section-tag">TAKE THE NEXT STEP</p>
+                    <h2>Align Your Career with NEP 2020</h2>
+                    <p>Submit your details to receive the official course prospectus and speak with a counselor about securing your NEP-aligned credits.</p>
+                </div>
+                <div class="card enroll-card">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="Your Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="Your 10-digit Phone Number">
+                        </div>
+                         <div class="form-group">
+                            <label for="course">Course of Interest</label>
+                            <select id="course" name="course">
+                                <option>Choose course of interest</option>
+                                <option>Medical Coding with AI</option>
+                                <option>Medical Billing</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="button button-xl">Request a Callback</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+             <div class="logo">
+                <img src="/images/sprucelogo.webp" alt="Spruce Lifeskills Logo" style="height: 60px;">
+            </div>
+            <p>&copy; 2024 Spruce Lifeskills. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a href="reviews.html">Reviews</a>
+    </div>
+
+    <script>
+        document.querySelector('.nav-mobile-trigger').addEventListener('click', function() {
+            document.querySelector('.mobile-nav').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

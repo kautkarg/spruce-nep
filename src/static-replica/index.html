@@ -13,14 +13,17 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="/images/sprucelogo.webp" alt="Spruce Lifeskills Logo" style="height: 60px;">
+                <a href="index.html"><img src="/images/sprucelogo.webp" alt="Spruce Lifeskills Logo" style="height: 60px;"></a>
             </div>
             <nav class="nav-desktop">
-                <a href="#courses">Courses</a>
-                <a href="#reviews">Reviews</a>
+                <a href="courses.html">Courses</a>
+                <a href="reviews.html">Reviews</a>
             </nav>
             <div class="header-actions">
-                <a href="#enroll" class="button">Enroll Now</a>
+                <a href="index.html#enroll" class="button">Enroll Now</a>
+            </div>
+             <div class="nav-mobile-trigger">
+                <span>&#9776;</span>
             </div>
         </div>
     </header>
@@ -38,7 +41,7 @@
                     </div>
                 </div>
                 <div class="hero-actions">
-                    <a href="#courses" class="button button-xl">View All Courses</a>
+                    <a href="courses.html" class="button button-xl">View All Courses</a>
                 </div>
             </div>
         </section>
@@ -75,7 +78,7 @@
             </div>
         </section>
 
-        <section class="section" id="courses">
+        <section class="section" id="courses-home">
             <div class="container text-center">
                 <h2>Our Course Catalog</h2>
                 <p class="section-subheading">Each course is a university-approved, credit-based program designed to make you job-ready.</p>
@@ -83,18 +86,21 @@
                     <div class="card">
                         <h3>Medical Coding with AI</h3>
                         <p>Translate medical records into standardized codes for healthcare billing and insurance.</p>
-                        <a href="#" class="learn-more">Learn More</a>
+                        <a href="courses.html" class="learn-more">Learn More</a>
                     </div>
                     <div class="card">
                         <h3>Medical Billing</h3>
                         <p>Learn the full medical billing cycle, from claims submission to denial management.</p>
-                        <a href="#" class="learn-more">Learn More</a>
+                        <a href="courses.html" class="learn-more">Learn More</a>
                     </div>
                     <div class="card">
                         <h3>Debt Recovery Agent (DRA)</h3>
                         <p>Develop skills in ethical debt collection, negotiation, and communication.</p>
-                        <a href="#" class="learn-more">Learn More</a>
+                        <a href="courses.html" class="learn-more">Learn More</a>
                     </div>
+                </div>
+                 <div class="text-center" style="margin-top: 2rem;">
+                    <a href="courses.html" class="button">View All Courses</a>
                 </div>
             </div>
         </section>
@@ -107,7 +113,7 @@
             </div>
         </section>
 
-         <section class="section" id="reviews">
+         <section class="section" id="reviews-home">
             <div class="container text-center">
                 <h2>Proof from Students Who Got Ahead</h2>
                  <p class="section-subheading">Hear from students who transformed their career prospects with our university-approved programs.</p>
@@ -120,6 +126,13 @@
                         <h3>Aditi Sarda</h3>
                         <blockquote>“I was completed my certificate courses in PV And Medical coding from spruce... My experience was very nice... The faculty and staff is very friendly and helpful.”</blockquote>
                     </div>
+                     <div class="card review-card">
+                        <h3>Nikita Shastrakar</h3>
+                        <blockquote>“I have taken clinical research and medical coding course from spruce institute my experience was great in Spruce institute my teacher staff also nice and nice course is going to nice thank you.”</blockquote>
+                    </div>
+                </div>
+                <div class="text-center" style="margin-top: 2rem;">
+                    <a href="reviews.html" class="button button-outline">Read All Reviews</a>
                 </div>
             </div>
         </section>
@@ -158,11 +171,23 @@
 
     <footer class="footer">
         <div class="container">
+            <div class="logo">
+                <img src="/images/sprucelogo.webp" alt="Spruce Lifeskills Logo" style="height: 60px;">
+            </div>
             <p>&copy; 2024 Spruce Lifeskills. All rights reserved.</p>
         </div>
     </footer>
+    
+    <div class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a href="reviews.html">Reviews</a>
+    </div>
 
+    <script>
+        document.querySelector('.nav-mobile-trigger').addEventListener('click', function() {
+            document.querySelector('.mobile-nav').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
-
-    
