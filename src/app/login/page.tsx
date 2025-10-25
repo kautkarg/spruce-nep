@@ -50,9 +50,9 @@ export default function LoginPage() {
     defaultValues: { email: '', password: '' },
   });
 
+  // This is the reliable way to handle redirection after login.
+  // It waits until Firebase has confirmed the user is authenticated.
   useEffect(() => {
-    // This effect now primarily handles redirection for users who are ALREADY logged in
-    // when they land on the page, or for redirect-based sign-ins like Google.
     if (!isUserLoading && user) {
       router.push(redirectUrl);
     }
@@ -62,6 +62,7 @@ export default function LoginPage() {
     if (!auth) return;
     const provider = new GoogleAuthProvider();
     try {
+      // Use redirect which is more robust against popup blockers.
       await signInWithRedirect(auth, provider);
     } catch (error: any) {
       toast({
@@ -76,12 +77,11 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Explicitly redirect on success, don't rely on useEffect
+      // We no longer need to redirect here. The useEffect will handle it.
       toast({
         title: 'Just like magic!',
         description: "You're signed in and ready to go.",
       });
-      router.push(redirectUrl);
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -103,12 +103,11 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      // Explicitly redirect on success
+       // We no longer need to redirect here. The useEffect will handle it.
       toast({
         title: 'Welcome to the club!',
         description: "Your account has been created. Let's get started!",
       });
-      router.push(redirectUrl);
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -157,7 +156,8 @@ export default function LoginPage() {
     }
   };
 
-  if (isUserLoading || user) { // Show loader if user is already logged in and redirecting
+  // Show a loader while Firebase is checking auth state, or if a logged-in user is being redirected.
+  if (isUserLoading || user) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <Leaf className="h-32 w-32 animate-pulse text-primary" />
