@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { useEffect } from 'react';
@@ -65,7 +65,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [user, router]);
 
@@ -78,7 +78,7 @@ export default function LoginPage() {
         title: 'Welcome Back!',
         description: "You've been successfully signed in with Google.",
       });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -95,7 +95,7 @@ export default function LoginPage() {
         title: 'Welcome Back!',
         description: "You've been successfully signed in.",
       });
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
         toast({
@@ -127,7 +127,7 @@ export default function LoginPage() {
             title: 'Account Created!',
             description: "Welcome to Spruce Lifeskills! You're now signed in.",
         });
-        router.push('/');
+        router.push('/dashboard');
     } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
             toast({
@@ -153,6 +153,19 @@ export default function LoginPage() {
     }
 
     try {
+      // Check if the user exists before sending the email
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+
+      if (signInMethods.length === 0) {
+        // User does not exist
+        toast({
+          variant: 'destructive',
+          title: 'Account Not Found',
+          description: 'No account was found with this email address. Please check your email and try again.',
+        });
+        return;
+      }
+
       await sendPasswordResetEmail(auth, email);
       toast({
         title: 'Password Reset Email Sent',
@@ -171,7 +184,7 @@ export default function LoginPage() {
   if (isUserLoading || user) {
     return (
         <div className="flex items-center justify-center h-screen">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
         </div>
     );
   }
