@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, ArrowRight, Loader2, LogOut, UserCircle } from 'lucide-react';
+import { Menu, X, ArrowRight, Loader2, LogOut, UserCircle, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname, useRouter } from 'next/navigation';
@@ -75,6 +75,13 @@ export function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
@@ -143,6 +150,9 @@ export function Header() {
                             <ul className='space-y-4'>
                                 <li><SheetClose asChild><Link href="/courses" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Courses</Link></SheetClose></li>
                                 <li><SheetClose asChild><Link href="/reviews" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Reviews</Link></SheetClose></li>
+                                 {user && (
+                                  <li><SheetClose asChild><Link href="/dashboard" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Dashboard</Link></SheetClose></li>
+                                )}
                             </ul>
                             </nav>
                             <div className="mt-auto p-6 border-t bg-muted/50">
