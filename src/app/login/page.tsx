@@ -151,31 +151,18 @@ export default function LoginPage() {
       form.setError('email', { type: 'manual', message: 'Please pop in your email address first!' });
       return;
     }
-
+    
     try {
-      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-
-      if (signInMethods.length > 0) {
-        // User exists, send reset email
-        await sendPasswordResetEmail(auth, email);
-        toast({
-          title: 'Check your inbox!',
-          description: 'A password reset link is on its way. If you don\'t see it, be sure to check your spam folder!',
-        });
-      } else {
-        // User does not exist
-        toast({
-          variant: 'destructive',
-          title: 'No account found!',
-          description: "We couldn't find an account with that email address. Please double-check it or create a new account.",
-        });
-      }
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: 'Check your inbox!',
+        description: 'If an account exists for that email, a password reset link is on its way. Be sure to check your spam folder!',
+      });
     } catch (error) {
-      // General error
       toast({
         variant: 'destructive',
         title: 'Oh no, a sending error!',
-        description: "We couldn't process your request right now. Please ensure the email is correct and try again.",
+        description: "We couldn't process your request right now. Please try again in a bit.",
       });
     }
   };
@@ -259,5 +246,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
