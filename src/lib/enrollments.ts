@@ -1,0 +1,46 @@
+
+'use client';
+
+import { 
+  addDoc,
+  collection,
+  serverTimestamp,
+  type Firestore,
+} from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+
+export type EnrollmentData = {
+  userId: string;
+  courseId: string;
+};
+
+/**
+ * Enrolls a user in a course by creating an enrollment document in Firestore.
+ * This operation is non-blocking.
+ *
+ * @param firestore - The Firestore database instance.
+ * @param enrollmentData - An object containing the userId and courseId.
+ */
+export function enrollInCourse(firestore: Firestore, enrollmentData: EnrollmentData) {
+  const enrollmentsCollection = collection(firestore, 'enrollments');
+
+  const enrollmentRecord = {
+    ...enrollmentData,
+    enrolledAt: serverTimestamp(),
+  };
+
+  addDoc(enrollmentsCollection, enrollmentRecord)
+    .catch((serverError) => {
+      console.error("Error enrolling in course: ", serverError);
+      // Create a contextual error to be surfaced to the developer
+      const permissionError = new FirestorePermissionError({
+        path: enrollmentsCollection.path,
+        operation: 'create',
+        requestResourceData: enrollmentRecord,
+      });
+
+      // Emit the error globally so it can be caught by the development overlay
+      errorEmitter.emit('permission-error', permissionError);
+    });
+}

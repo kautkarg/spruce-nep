@@ -11,11 +11,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -26,17 +27,63 @@ import {
 } from "@/components/ui/select";
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useUser, useFirestore } from "@/firebase";
+import { enrollInCourse } from "@/lib/enrollments";
+import { useToast } from "@/hooks/use-toast";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
 
 export function CourseCatalog() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  
   const pathname = usePathname();
-  const showBenefits = pathname === '/courses';
+  const router = useRouter();
+  const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
 
+  const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
+
+  const handleEnrollment = async () => {
+    if (!user || !selectedCourse || !firestore) {
+      toast({
+        variant: "destructive",
+        title: "Login Required",
+        description: "You need to be logged in to enroll in a course.",
+      });
+      router.push('/login');
+      return;
+    }
+
+    setIsEnrolling(true);
+
+    try {
+      enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
+      
+      toast({
+        title: "Enrollment Successful!",
+        description: `You've been enrolled in ${selectedCourse.title}.`,
+      });
+      
+      setSelectedCourse(null);
+      // Optionally, redirect to the dashboard
+      // router.push('/dashboard');
+      
+    } catch (error) {
+      console.error("Enrollment failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Enrollment Failed",
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
 
   return (
     <>
@@ -149,7 +196,12 @@ export function CourseCatalog() {
 
         <Dialog
           open={!!selectedCourse}
-          onOpenChange={(isOpen) => !isOpen && setSelectedCourse(null)}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setSelectedCourse(null);
+              setIsEnrolling(false);
+            }
+          }}
         >
           <DialogContent className="sm:max-w-lg p-0">
             {selectedCourse && (
@@ -187,7 +239,7 @@ export function CourseCatalog() {
                   </div>
                 </DialogHeader>
                 <DialogDescription asChild>
-                  <ScrollArea className="h-[60vh] px-6">
+                  <ScrollArea className="max-h-[50vh] px-6">
                     <div className="text-body text-left text-foreground/90 space-y-8 pb-6">
                       <Table>
                         <TableBody>
@@ -261,6 +313,17 @@ export function CourseCatalog() {
                     </div>
                   </ScrollArea>
                 </DialogDescription>
+                <DialogFooter className="p-6 border-t bg-muted/50">
+                  {user ? (
+                    <Button onClick={handleEnrollment} disabled={isEnrolling} className="w-full" size="lg">
+                      {isEnrolling ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now"}
+                    </Button>
+                  ) : (
+                    <Button asChild className="w-full" size="lg">
+                      <Link href="/login">Login to Enroll</Link>
+                    </Button>
+                  )}
+                </DialogFooter>
               </>
             )}
           </DialogContent>
