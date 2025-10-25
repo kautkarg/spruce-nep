@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 import {
   getAuth,
@@ -24,7 +23,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -66,15 +64,23 @@ export default function LoginPage() {
         description: "You're signed in and ready to learn.",
       });
       router.push('/dashboard');
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oops! Google sign-in hiccup.',
-        description: 'Something went wrong on our end. Could you try that again?',
-      });
+    } catch (error: any) {
+        if (error.code === 'auth/popup-closed-by-user') {
+            toast({
+                variant: 'destructive',
+                title: 'Looks like the window was closed!',
+                description: 'The Google sign-in window was closed before finishing. Want to give it another go?',
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Oops! Google sign-in hiccup.',
+                description: 'Something went wrong on our end. Could you try that again?',
+            });
+        }
     }
   };
-
+  
   const handleEmailSignIn = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -230,3 +236,6 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+    
