@@ -54,25 +54,33 @@ export function CourseCatalog() {
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
-  const handleEnrollment = async () => {
+  /**
+   * This function simulates a payment process.
+   * A developer should replace this with a real payment gateway integration.
+   * For example, using Stripe, Razorpay, or another provider.
+   */
+  const handlePayment = async () => {
     if (!user || !selectedCourse || !firestore) return;
 
     setIsProcessing(true);
-    // Simulate payment processing delay
+    // DEVELOPER NOTE: Replace this setTimeout with your payment gateway's API call.
+    // The payment gateway's success callback should then trigger the enrollment and next step.
     setTimeout(async () => {
       try {
+        // On successful payment, enroll the user in the course.
         await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
         setEnrollmentStep('success');
       } catch (error) {
          toast({
           variant: "destructive",
           title: "Enrollment Failed",
-          description: "Something went wrong. Please try again.",
+          description: "Something went wrong while saving your enrollment. Please try again.",
         });
+        setEnrollmentStep('payment'); // Go back to payment step on failure
       } finally {
         setIsProcessing(false);
       }
-    }, 1500);
+    }, 2000); // Simulating a 2-second payment processing delay.
   };
 
   const openDialog = (course: Course) => {
@@ -152,8 +160,7 @@ export function CourseCatalog() {
               </div>
               <div className="flex gap-4">
                 <div className="w-1/2">
-                  <Label htmlFor="expiry-date">Expiry Date</Label>
-                  <Input id="expiry-date" placeholder="MM/YY" className="mt-1" />
+                  <Label htmlFor="expiry-date">Expiry Date</Label>                  <Input id="expiry-date" placeholder="MM/YY" className="mt-1" />
                 </div>
                 <div className="w-1/2">
                   <Label htmlFor="cvc">CVC</Label>
@@ -164,7 +171,7 @@ export function CourseCatalog() {
 
           </div>
           <DialogFooter className="p-6 border-t bg-muted/50">
-            <Button onClick={handleEnrollment} disabled={isProcessing} className="w-full" size="lg">
+            <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
               {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
               {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()}`}
             </Button>
@@ -287,7 +294,7 @@ export function CourseCatalog() {
         <DialogFooter className="p-6 border-t bg-muted/50">
           {user ? (
             <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
-              {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now for ₹2,000"}
+               Enroll Now for ₹{selectedCourse.fees.toLocaleString()}
             </Button>
           ) : (
             <Button asChild className="w-full" size="lg">
