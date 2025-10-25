@@ -48,7 +48,7 @@ export function Header() {
 
   const UserMenu = () => {
     if (isUserLoading) {
-      return <Leaf className="h-6 w-6 animate-spin" />;
+      return <Leaf className="h-6 w-6 animate-pulse" />;
     }
 
     if (user) {
@@ -162,7 +162,7 @@ export function Header() {
                                 ) : (
                                   <Button asChild size="lg" className="w-full">
                                       <Link href="/login">
-                                          {isLoading && <Leaf className="mr-2 h-4 w-4 animate-spin" />}
+                                          {isLoading && <Leaf className="mr-2 h-4 w-4 animate-pulse" />}
                                           {isLoading ? 'Loading...' : 'Login / Sign Up'}
                                       </Link>
                                   </Button>

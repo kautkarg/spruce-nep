@@ -208,7 +208,7 @@ export function CourseCatalog() {
           </div>
           <DialogFooter className="p-6 border-t bg-muted/50">
             <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
-              {isProcessing ? <Leaf className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
+              {isProcessing ? <Leaf className="mr-2 h-4 w-4 animate-pulse" /> : <CreditCard className="mr-2 h-4 w-4" />}
               {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()} & Start Learning`}
             </Button>
           </DialogFooter>

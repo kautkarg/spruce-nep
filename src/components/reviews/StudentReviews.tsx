@@ -73,7 +73,7 @@ export function StudentReviews({ reviews }: StudentReviewsProps) {
                     <Button onClick={handleLoadMore} disabled={isLoading} size="xl">
                         {isLoading ? (
                             <>
-                                <Leaf className="mr-2 h-5 w-5 animate-spin" />
+                                <Leaf className="mr-2 h-5 w-5 animate-pulse" />
                                 Loading...
                             </>
                         ) : (

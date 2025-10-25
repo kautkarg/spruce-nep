@@ -160,7 +160,7 @@ export default function LoginPage() {
   if (isUserLoading || user) { // Show loader if user is already logged in and redirecting
     return (
       <div className="flex items-center justify-center h-screen bg-background">
-        <Leaf className="h-32 w-32 animate-spin text-primary" />
+        <Leaf className="h-32 w-32 animate-pulse text-primary" />
       </div>
     );
   }
@@ -222,7 +222,7 @@ export default function LoginPage() {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                   {form.formState.isSubmitting && <Leaf className="mr-2 h-4 w-4 animate-spin" />}
+                   {form.formState.isSubmitting && <Leaf className="mr-2 h-4 w-4 animate-pulse" />}
                   Sign In
                 </Button>
                 <Button type="button" variant="secondary" className="w-full" onClick={form.handleSubmit(handleEmailSignUp)} disabled={form.formState.isSubmitting}>

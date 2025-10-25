@@ -46,7 +46,7 @@ export function AppFooter() {
                     : 'text-muted-foreground hover:text-primary'
                 )}
               >
-                {isLoading ? <Leaf className="h-5 w-5 mb-1 animate-spin" /> : <link.icon className="h-5 w-5 mb-1" />}
+                {isLoading ? <Leaf className="h-5 w-5 mb-1 animate-pulse" /> : <link.icon className="h-5 w-5 mb-1" />}
                 <span className="text-caption font-medium">{isLoading ? 'Loading...' : link.label}</span>
               </Link>
             );
