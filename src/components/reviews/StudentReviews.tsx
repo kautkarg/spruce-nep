@@ -4,8 +4,7 @@
 import { useState } from "react";
 import type { GoogleReview } from "@/app/actions";
 import { Button } from "../ui/button";
-import { ArrowRight, MessageSquare, LoaderPinwheel } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, Leaf } from "lucide-react";
 
 interface StudentReviewsProps {
     reviews: GoogleReview[];
@@ -74,7 +73,7 @@ export function StudentReviews({ reviews }: StudentReviewsProps) {
                     <Button onClick={handleLoadMore} disabled={isLoading} size="xl">
                         {isLoading ? (
                             <>
-                                <LoaderPinwheel className="mr-2 h-5 w-5 animate-spin" />
+                                <Leaf className="mr-2 h-5 w-5 animate-spin" />
                                 Loading...
                             </>
                         ) : (

@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { submitInquiry as submitInquiryAction } from "@/app/actions";
-import { Lock, LoaderPinwheel, ChevronsUpDown, Check } from "lucide-react";
+import { Lock, Leaf, ChevronsUpDown, Check } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { courses } from "@/lib/courses";
@@ -219,7 +219,7 @@ export function EnrollmentForm() {
                   
                   <div className="text-center pt-4">
                       <Button type="submit" size="xl" className="w-full" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting && <LoaderPinwheel className="mr-2 h-4 w-4 animate-spin" />}
+                        {form.formState.isSubmitting && <Leaf className="mr-2 h-4 w-4 animate-spin" />}
                         {form.formState.isSubmitting ? "Submitting..." : "Request a Callback"}
                       </Button>
                       <p className='text-caption text-muted-foreground mt-4 flex items-center justify-center gap-2'>

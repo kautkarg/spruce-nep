@@ -22,7 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { LoaderPinwheel } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -160,7 +160,7 @@ export default function LoginPage() {
   if (isUserLoading || user) { // Show loader if user is already logged in and redirecting
     return (
       <div className="flex items-center justify-center h-screen bg-background">
-        <LoaderPinwheel className="h-32 w-32 animate-spin text-primary" />
+        <Leaf className="h-32 w-32 animate-spin text-primary" />
       </div>
     );
   }
@@ -222,7 +222,7 @@ export default function LoginPage() {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                   {form.formState.isSubmitting && <LoaderPinwheel className="mr-2 h-4 w-4 animate-spin" />}
+                   {form.formState.isSubmitting && <Leaf className="mr-2 h-4 w-4 animate-spin" />}
                   Sign In
                 </Button>
                 <Button type="button" variant="secondary" className="w-full" onClick={form.handleSubmit(handleEmailSignUp)} disabled={form.formState.isSubmitting}>
@@ -236,5 +236,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
