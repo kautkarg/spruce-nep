@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { useEffect } from 'react';
@@ -153,26 +153,25 @@ export default function LoginPage() {
     }
     
     try {
-      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-      if (signInMethods.length > 0) {
-        await sendPasswordResetEmail(auth, email);
-        toast({
-          title: 'Check your inbox!',
-          description: 'If an account exists for that email, a password reset link is on its way. Be sure to check your spam folder!',
-        });
-      } else {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: 'Check your inbox!',
+        description: 'If an account exists for that email, a password reset link is on its way. Be sure to check your spam folder!',
+      });
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
         toast({
           variant: 'destructive',
           title: 'No account found!',
           description: 'We couldn\'t find an account with that email. Maybe try a different one?',
         });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Oh no, a sending error!',
+          description: "We couldn't send the reset email right now. Please try again in a bit.",
+        });
       }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Oh no, a sending error!',
-        description: "We couldn't process your request right now. Please try again in a bit.",
-      });
     }
   };
 
@@ -255,5 +254,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
