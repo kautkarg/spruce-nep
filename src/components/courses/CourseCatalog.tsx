@@ -32,6 +32,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useUser, useFirestore } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { enrollInCourse } from "@/lib/enrollments";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
 
@@ -56,18 +58,21 @@ export function CourseCatalog() {
     if (!user || !selectedCourse || !firestore) return;
 
     setIsProcessing(true);
-    try {
-      await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
-      setEnrollmentStep('success');
-    } catch (error) {
-       toast({
-        variant: "destructive",
-        title: "Enrollment Failed",
-        description: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    // Simulate payment processing delay
+    setTimeout(async () => {
+      try {
+        await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
+        setEnrollmentStep('success');
+      } catch (error) {
+         toast({
+          variant: "destructive",
+          title: "Enrollment Failed",
+          description: "Something went wrong. Please try again.",
+        });
+      } finally {
+        setIsProcessing(false);
+      }
+    }, 1500);
   };
 
   const openDialog = (course: Course) => {
@@ -124,10 +129,10 @@ export function CourseCatalog() {
               </h4>
             </DialogTitle>
             <DialogDescription className="text-body text-left text-foreground/90">
-              Confirm your payment to get instant access to "{selectedCourse.title}".
+              Enter your payment details to get instant access to "{selectedCourse.title}".
             </DialogDescription>
           </DialogHeader>
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 space-y-6">
             <div className="border rounded-lg p-4 space-y-2 bg-muted/50">
                 <div className="flex justify-between items-center text-body font-semibold">
                     <span>{selectedCourse.title}</span>
@@ -135,11 +140,33 @@ export function CourseCatalog() {
                 </div>
                  <p className="text-sm text-muted-foreground">One-time payment for lifetime access.</p>
             </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="card-number">Card Number</Label>
+                <Input id="card-number" placeholder="1234 5678 9101 1121" className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="card-name">Name on Card</Label>
+                <Input id="card-name" placeholder="Your Name" className="mt-1" />
+              </div>
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <Label htmlFor="expiry-date">Expiry Date</Label>
+                  <Input id="expiry-date" placeholder="MM/YY" className="mt-1" />
+                </div>
+                <div className="w-1/2">
+                  <Label htmlFor="cvc">CVC</Label>
+                  <Input id="cvc" placeholder="123" className="mt-1" />
+                </div>
+              </div>
+            </div>
+
           </div>
           <DialogFooter className="p-6 border-t bg-muted/50">
             <Button onClick={handleEnrollment} disabled={isProcessing} className="w-full" size="lg">
               {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
-              {isProcessing ? "Processing..." : `Confirm Payment of ₹${selectedCourse.fees.toLocaleString()}`}
+              {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()}`}
             </Button>
           </DialogFooter>
         </>
@@ -260,7 +287,7 @@ export function CourseCatalog() {
         <DialogFooter className="p-6 border-t bg-muted/50">
           {user ? (
             <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
-              {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now"}
+              {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now for ₹2,000"}
             </Button>
           ) : (
             <Button asChild className="w-full" size="lg">
@@ -395,6 +422,5 @@ export function CourseCatalog() {
     </>
   );
 }
-
 
     
