@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X, Loader2, CreditCard, PartyPopper, BookUser } from "lucide-react";
+import { Check, X, Loader2, CreditCard, PartyPopper, BookUser, ArrowRight } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -86,8 +86,8 @@ export function CourseCatalog() {
          console.error("Enrollment failed:", error);
          toast({
           variant: "destructive",
-          title: "Enrollment Failed",
-          description: "Something went wrong while saving your enrollment. Please try again.",
+          title: "Oh no, a wild error appeared!",
+          description: "Something went wrong while saving your spot. Please try again.",
         });
         setEnrollmentStep('payment'); // Go back to payment step on failure
       } finally {
@@ -119,16 +119,16 @@ export function CourseCatalog() {
             <PartyPopper className="h-16 w-16 text-primary mb-4" />
             <DialogTitle asChild>
               <h4 className="text-primary mb-2 font-serif">
-                Enrollment Successful!
+                You're In! Welcome Aboard!
               </h4>
             </DialogTitle>
             <DialogDescription className="text-body text-foreground/90 max-w-sm mx-auto">
-              You have successfully enrolled in "{selectedCourse.title}". You can now access it from your dashboard.
+              You've successfully enrolled in "{selectedCourse.title}". Your learning adventure begins now in your dashboard.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="p-6 border-t bg-muted/50">
             <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg">
-              Go to Dashboard
+              Go to My Dashboard
             </Button>
           </DialogFooter>
         </>
@@ -145,11 +145,11 @@ export function CourseCatalog() {
               </Button>
             <DialogTitle asChild>
               <h4 className="text-primary mb-2 font-serif">
-                Complete Your Enrollment
+                Final Step: Secure Your Spot
               </h4>
             </DialogTitle>
             <DialogDescription className="text-body text-left text-foreground/90">
-              Enter your payment details to get instant access to "{selectedCourse.title}".
+             You're one step away from unlocking "{selectedCourse.title}".
             </DialogDescription>
           </DialogHeader>
           <div className="px-6 pb-6 space-y-6">
@@ -158,7 +158,7 @@ export function CourseCatalog() {
                     <span>{selectedCourse.title}</span>
                     <span>₹{selectedCourse.fees.toLocaleString()}</span>
                 </div>
-                 <p className="text-sm text-muted-foreground">One-time payment for lifetime access.</p>
+                 <p className="text-sm text-muted-foreground">One-time investment for a lifetime of skills.</p>
             </div>
             
             <div className="space-y-4">
@@ -185,7 +185,7 @@ export function CourseCatalog() {
           <DialogFooter className="p-6 border-t bg-muted/50">
             <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
               {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
-              {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()}`}
+              {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()} & Start Learning`}
             </Button>
           </DialogFooter>
         </>
@@ -249,7 +249,7 @@ export function CourseCatalog() {
                   </TableRow>
                   <TableRow className="hoverbg-transparent">
                     <TableCell className="font-semibold text-foreground">
-                      Eligibility
+                      Who Can Join
                     </TableCell>
                     <TableCell>
                       {selectedCourse.details.eligibility}
@@ -259,7 +259,7 @@ export function CourseCatalog() {
               </Table>
 
               <div>
-                <h4 className="mb-3">Course Objectives</h4>
+                <h4 className="mb-3">What You'll Achieve</h4>
                 <ul className="space-y-2">
                   {selectedCourse.details.objectives.map((obj, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -271,7 +271,7 @@ export function CourseCatalog() {
               </div>
 
               <div>
-                <h4 className="mb-3">Learning Outcomes</h4>
+                <h4 className="mb-3">Skills You'll Master</h4>
                 <ul className="space-y-2">
                   {selectedCourse.details.outcomes.map((out, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -283,7 +283,7 @@ export function CourseCatalog() {
               </div>
 
               <div>
-                <h4 className="mb-3">Add-Ons</h4>
+                <h4 className="mb-3">Bonus Perks</h4>
                 <ul className="space-y-2">
                   {selectedCourse.details.addOns.map((add, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -295,7 +295,7 @@ export function CourseCatalog() {
               </div>
 
               <div>
-                <h4 className="mb-3">Trainer Profile</h4>
+                <h4 className="mb-3">Meet Your Mentor</h4>
                 <p className="text-foreground/80 leading-relaxed">
                   {selectedCourse.trainerInfo}
                 </p>
@@ -308,16 +308,17 @@ export function CourseCatalog() {
             isAlreadyEnrolled ? (
               <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg" variant="outline">
                 <BookUser className="mr-2 h-4 w-4" />
-                Already Enrolled
+                You're Already Enrolled!
               </Button>
             ) : (
               <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
-                 Enroll Now for ₹{selectedCourse.fees.toLocaleString()}
+                 Enroll for ₹{selectedCourse.fees.toLocaleString()}
+                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             )
           ) : (
             <Button asChild className="w-full" size="lg">
-              <Link href="/login">Login to Enroll</Link>
+              <Link href="/login">Login to Start Your Journey</Link>
             </Button>
           )}
         </DialogFooter>
@@ -331,10 +332,10 @@ export function CourseCatalog() {
         <div className="container">
           <div className="text-center mb-12">
               <h2 className="text-h2 font-serif">
-                  Our Course Catalog
+                  Your Next Career Move Starts Here
               </h2>
               <p className="mt-6 text-body-lead text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Each course is a university-approved, credit-based program designed to make you job-ready.
+                  Explore our university-approved, credit-based programs. Each one is a launchpad designed to make you not just a graduate, but a job-ready professional.
               </p>
           </div>
           {showBenefits && <CourseBenefits />}
@@ -344,7 +345,7 @@ export function CourseCatalog() {
             <div className="md:hidden mb-8">
               <Select value={activeCategory} onValueChange={setActiveCategory}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder="Browse by Category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -359,7 +360,7 @@ export function CourseCatalog() {
             <div className="hidden md:grid md:grid-cols-[240px_1fr] md:gap-12">
               {/* Desktop Sidebar Filters */}
               <aside>
-                <h3 className="text-h4 font-semibold mb-6">Categories</h3>
+                <h3 className="text-h4 font-semibold mb-6">Course Categories</h3>
                 <div className="flex flex-col items-start gap-2">
                   {categories.map((category) => (
                     <Button
@@ -397,7 +398,7 @@ export function CourseCatalog() {
                           className="p-0 h-auto justify-start text-primary font-semibold"
                           onClick={() => openDialog(course)}
                         >
-                          Learn More
+                          See Course Details
                         </Button>
                       </div>
                     </div>
@@ -425,7 +426,7 @@ export function CourseCatalog() {
                       className="p-0 h-auto justify-start text-primary font-semibold"
                       onClick={() => openDialog(course)}
                     >
-                      Learn More
+                      See Course Details
                     </Button>
                   </div>
                 </div>
@@ -448,3 +449,5 @@ export function CourseCatalog() {
     </>
   );
 }
+
+    
