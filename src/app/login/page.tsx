@@ -142,7 +142,7 @@ export default function LoginPage() {
       await sendPasswordResetEmail(auth, email);
       toast({
         title: 'Password Reset Email Sent',
-        description: 'Check your inbox for a link to reset your password.',
+        description: 'Check your inbox for a reset link. If you dont see it, please check your spam folder.',
       });
     } catch (error: any) {
       toast({
