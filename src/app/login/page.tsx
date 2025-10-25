@@ -51,24 +51,18 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
+    // This effect now primarily handles redirection for users who are ALREADY logged in
+    // when they land on the page, or for redirect-based sign-ins like Google.
     if (!isUserLoading && user) {
-      toast({
-        title: 'Just like magic!',
-        description: "You're signed in and ready to go.",
-      });
       router.push(redirectUrl);
     }
-  }, [user, isUserLoading, router, redirectUrl, toast]);
+  }, [user, isUserLoading, router, redirectUrl]);
 
   const handleGoogleSignIn = async () => {
     if (!auth) return;
     const provider = new GoogleAuthProvider();
     try {
-      // Use signInWithRedirect instead of signInWithPopup
       await signInWithRedirect(auth, provider);
-      // The browser will redirect to Google's sign-in page.
-      // After sign-in, it will redirect back to this page,
-      // and the useEffect hook will handle redirection to the dashboard or original URL.
     } catch (error: any) {
       toast({
           variant: 'destructive',
@@ -82,7 +76,12 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // The useEffect will handle successful sign-in redirection
+      // Explicitly redirect on success, don't rely on useEffect
+      toast({
+        title: 'Just like magic!',
+        description: "You're signed in and ready to go.",
+      });
+      router.push(redirectUrl);
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -104,7 +103,12 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      // The useEffect will handle successful sign-up redirection
+      // Explicitly redirect on success
+      toast({
+        title: 'Welcome to the club!',
+        description: "Your account has been created. Let's get started!",
+      });
+      router.push(redirectUrl);
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -153,7 +157,7 @@ export default function LoginPage() {
     }
   };
 
-  if (isUserLoading) {
+  if (isUserLoading || user) { // Show loader if user is already logged in and redirecting
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <LoaderPinwheel className="h-32 w-32 animate-spin text-primary" />
@@ -232,3 +236,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
