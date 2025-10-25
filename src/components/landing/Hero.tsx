@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, Star } from 'lucide-react';
+import { ArrowRight, LoaderPinwheel, Star } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -65,7 +65,7 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Button asChild size="xl" className='w-full sm:w-auto'>
                     <Link href="/courses" onClick={(e) => handleNavigate(e, '/courses')}>
-                        {isLoading && <Loader2 className="h-5 w-5 mr-2 animate-spin" />}
+                        {isLoading && <LoaderPinwheel className="h-5 w-5 mr-2 animate-spin" />}
                         {isLoading ? "Loading..." : "View All Courses"}
                         {!isLoading && <ArrowRight className="h-5 w-5 ml-2" />}
                     </Link>

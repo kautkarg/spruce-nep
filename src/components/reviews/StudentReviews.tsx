@@ -4,7 +4,7 @@
 import { useState } from "react";
 import type { GoogleReview } from "@/app/actions";
 import { Button } from "../ui/button";
-import { ArrowRight, MessageSquare, Loader2 } from "lucide-react";
+import { ArrowRight, MessageSquare, LoaderPinwheel } from "lucide-react";
 import Link from "next/link";
 
 interface StudentReviewsProps {
@@ -74,7 +74,7 @@ export function StudentReviews({ reviews }: StudentReviewsProps) {
                     <Button onClick={handleLoadMore} disabled={isLoading} size="xl">
                         {isLoading ? (
                             <>
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                <LoaderPinwheel className="mr-2 h-5 w-5 animate-spin" />
                                 Loading...
                             </>
                         ) : (

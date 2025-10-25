@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, BookOpen, Star, Loader2 } from 'lucide-react';
+import { Home, BookOpen, Star, LoaderPinwheel } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -46,7 +46,7 @@ export function AppFooter() {
                     : 'text-muted-foreground hover:text-primary'
                 )}
               >
-                {isLoading ? <Loader2 className="h-5 w-5 mb-1 animate-spin" /> : <link.icon className="h-5 w-5 mb-1" />}
+                {isLoading ? <LoaderPinwheel className="h-5 w-5 mb-1 animate-spin" /> : <link.icon className="h-5 w-5 mb-1" />}
                 <span className="text-caption font-medium">{isLoading ? 'Loading...' : link.label}</span>
               </Link>
             );

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, ArrowRight, Loader2, LogOut, UserCircle, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ArrowRight, LoaderPinwheel, LogOut, UserCircle, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname, useRouter } from 'next/navigation';
@@ -49,7 +49,7 @@ export function Header() {
 
   const UserMenu = () => {
     if (isUserLoading) {
-      return <Loader2 className="h-6 w-6 animate-spin" />;
+      return <LoaderPinwheel className="h-6 w-6 animate-spin" />;
     }
 
     if (user) {
@@ -163,7 +163,7 @@ export function Header() {
                                 ) : (
                                   <Button asChild size="lg" className="w-full">
                                       <Link href="/login">
-                                          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                          {isLoading && <LoaderPinwheel className="mr-2 h-4 w-4 animate-spin" />}
                                           {isLoading ? 'Loading...' : 'Login / Sign Up'}
                                       </Link>
                                   </Button>

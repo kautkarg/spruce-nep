@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X, Loader2, CreditCard, PartyPopper, BookUser, ArrowRight } from "lucide-react";
+import { Check, X, LoaderPinwheel, CreditCard, PartyPopper, BookUser, ArrowRight } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -80,6 +80,10 @@ export function CourseCatalog() {
         await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
         
         console.log("Enrollment successful, setting step to 'success'");
+        toast({
+            title: "Let the learning commence!",
+            description: `You're officially enrolled in "${selectedCourse.title}". Your dashboard is now one click away.`,
+        });
         setEnrollmentStep('success');
 
       } catch (error) {
@@ -87,7 +91,7 @@ export function CourseCatalog() {
          toast({
           variant: "destructive",
           title: "Oh no, a wild error appeared!",
-          description: "Something went wrong while saving your spot. Please try again.",
+          description: "Something went wrong while saving your spot. Please give it another go.",
         });
         setEnrollmentStep('payment'); // Go back to payment step on failure
       } finally {
@@ -149,7 +153,7 @@ export function CourseCatalog() {
               </h4>
             </DialogTitle>
             <DialogDescription className="text-body text-left text-foreground/90">
-             You're one step away from unlocking "{selectedCourse.title}".
+             You're one step away from unlocking "{selectedCourse.title}". This is where the magic happens!
             </DialogDescription>
           </DialogHeader>
           <div className="px-6 pb-6 space-y-6">
@@ -180,11 +184,15 @@ export function CourseCatalog() {
                 </div>
               </div>
             </div>
-
+            {/* DEVELOPER NOTE: This section contains the simulated payment logic.
+                To implement a real payment gateway (e.g., Stripe, Razorpay),
+                replace the `handlePayment` function logic with your chosen provider's SDK.
+                The `enrollInCourse` function should only be called after a successful payment confirmation from your gateway.
+            */}
           </div>
           <DialogFooter className="p-6 border-t bg-muted/50">
             <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
-              {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
+              {isProcessing ? <LoaderPinwheel className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
               {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()} & Start Learning`}
             </Button>
           </DialogFooter>
@@ -308,7 +316,7 @@ export function CourseCatalog() {
             isAlreadyEnrolled ? (
               <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg" variant="outline">
                 <BookUser className="mr-2 h-4 w-4" />
-                You're Already Enrolled!
+                You're Already Enrolled! Go to Dashboard
               </Button>
             ) : (
               <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
@@ -318,7 +326,7 @@ export function CourseCatalog() {
             )
           ) : (
             <Button asChild className="w-full" size="lg">
-              <Link href="/login">Login to Start Your Journey</Link>
+              <Link href="/login?redirect=/courses">Login to Start Your Journey</Link>
             </Button>
           )}
         </DialogFooter>
@@ -335,7 +343,7 @@ export function CourseCatalog() {
                   Your Next Career Move Starts Here
               </h2>
               <p className="mt-6 text-body-lead text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Explore our university-approved, credit-based programs. Each one is a launchpad designed to make you not just a graduate, but a job-ready professional.
+                  Ready to launch your career? Explore our university-approved, credit-based programs. Each one is a launchpad designed to make you not just a graduate, but a job-ready pro.
               </p>
           </div>
           {showBenefits && <CourseBenefits />}
@@ -398,7 +406,7 @@ export function CourseCatalog() {
                           className="p-0 h-auto justify-start text-primary font-semibold"
                           onClick={() => openDialog(course)}
                         >
-                          See Course Details
+                          Dive into the Details
                         </Button>
                       </div>
                     </div>
@@ -426,7 +434,7 @@ export function CourseCatalog() {
                       className="p-0 h-auto justify-start text-primary font-semibold"
                       onClick={() => openDialog(course)}
                     >
-                      See Course Details
+                      Dive into the Details
                     </Button>
                   </div>
                 </div>
@@ -449,5 +457,3 @@ export function CourseCatalog() {
     </>
   );
 }
-
-    
