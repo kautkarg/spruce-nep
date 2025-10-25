@@ -121,8 +121,8 @@ export function Header() {
           })}
         </nav>
 
-        <div className="flex items-center justify-end flex-1">
-            <div className="flex items-center md:hidden">
+        <div className="flex items-center justify-end flex-1 gap-4">
+            <div className="md:hidden">
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -164,7 +164,7 @@ export function Header() {
                 </Sheet>
             </div>
 
-            <div className="hidden md:flex items-center justify-end">
+            <div className="flex items-center justify-end">
                 <UserMenu />
             </div>
         </div>
