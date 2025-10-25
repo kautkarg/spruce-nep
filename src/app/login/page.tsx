@@ -52,24 +52,29 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
+    // This effect redirects the user if they are already logged in and land on this page.
+    // It should NOT interfere with an active login attempt.
     if (!isUserLoading && user) {
       router.push(redirectUrl);
     }
   }, [user, isUserLoading, router, redirectUrl]);
 
-  const handleSuccessfulSignIn = () => {
+  const handleSuccessfulSignIn = (redirectPath: string) => {
     toast({
       title: 'Just like magic!',
       description: "You're signed in and ready to go.",
     });
-    router.push(redirectUrl);
+    router.push(redirectPath);
   }
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
+      // Await the sign-in process directly and then handle redirection.
       await signInWithPopup(auth, provider);
-      // The useEffect will handle redirection.
+      // On success, the `useEffect` will naturally catch the new user state and redirect.
+      // To be more explicit and avoid race conditions, we can also redirect here.
+      handleSuccessfulSignIn(redirectUrl);
     } catch (error: any) {
         if (error.code === 'auth/popup-closed-by-user') {
             toast({
@@ -90,7 +95,7 @@ export default function LoginPage() {
   const handleEmailSignIn = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // The useEffect will handle redirection.
+      handleSuccessfulSignIn(redirectUrl);
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -111,7 +116,7 @@ export default function LoginPage() {
   const handleEmailSignUp = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-       // The useEffect will handle redirection.
+      handleSuccessfulSignIn(redirectUrl);
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -237,3 +242,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
