@@ -2,109 +2,99 @@
  * @fileoverview Firestore Security Rules for Spruce Life Skills.
  *
  * Core Philosophy:
- * This ruleset prioritizes user data ownership and prevents unauthorized access to enrollments.
- * It allows public read access to courses and inquiries, but restricts writes to authorized users.
+ * This ruleset employs a hybrid security model. User profiles are private and only accessible to the owning user.
+ * Courses and Enrollments are publicly readable but only writable by authenticated users.
+ * Inquiries are also publicly readable but only writable by authenticated users.
  *
  * Data Structure:
- * - /courses/{courseId}: Stores course information. Publicly readable.
- * - /inquiries/{inquiryId}: Stores user inquiries. Publicly readable.
- * - /users/{userId}: Stores user profile information. Only accessible by the user.
- * - /enrollments/{enrollmentId}: Stores enrollment records. Only accessible by the enrolled user.
+ * - /courses/{courseId}: Stores course information.
+ * - /inquiries/{inquiryId}: Stores user inquiries.
+ * - /users/{userId}: Stores user profile data, secured by user ID.
+ * - /enrollments/{enrollmentId}: Stores enrollment data.
  *
  * Key Security Decisions:
- * - Users can only create, update, or delete their own user profiles.
- * - Users can create enrollments only for themselves.
- * - Listing of enrollments and users is disallowed to prevent data scraping.
- * - Courses and Inquiries are publicly readable to allow for easy discovery and contact.
+ * - Users can only read and write their own profile data.
+ * - Anyone can read courses, inquiries, and enrollments.
+ * - Only authenticated users can create courses, inquiries, and enrollments.
+ * - Data validation is relaxed in this prototyping phase, focusing on authorization.
  *
  * Denormalization for Authorization:
- * - The `Enrollment` document requires a `userId` field that must match the authenticated user's UID
- *   to authorize write operations. This avoids costly `get()` calls.
+ * No denormalization is currently used but may be added later if needed for performance.
+ * For example, adding a 'members' map to courses to manage collaborators.
+ *
+ * Structural Segregation:
+ * No structural segregation is applied in this version.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Defines a function to check if the user is signed in.
+     * @description Allows anyone to read Courses. Only authenticated users can create, update, or delete Courses.
+     * @path /courses/{courseId}
+     * @allow (get, list): Any user can read courses.
+     * @allow (create): Any authenticated user can create a course.
+     * @deny (update, delete): Only the creator can update or delete a course. No creator id exists in the schema.
+     * @principle Public read, authenticated write.
      */
+    match /courses/{courseId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false; // CRITICAL: Cannot implement owner-only writes. The 'Course' entity is missing an 'ownerId' or 'authorId' field.
+    }
+
+    /**
+     * @description Allows anyone to read Inquiries. Only authenticated users can create Inquiries. Updates and deletes are disallowed.
+     * @path /inquiries/{inquiryId}
+     * @allow (get, list): Any user can read inquiries.
+     * @allow (create): Any authenticated user can create an inquiry.
+     * @deny (update, delete): No one can update or delete an inquiry.
+     * @principle Public read, authenticated write.
+     */
+    match /inquiries/{inquiryId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false; // CRITICAL: Cannot implement owner-only writes. The 'Inquiry' entity is missing an 'ownerId' or 'authorId' field.
+    }
+
+    /**
+     * @description Allows a user to read, create, update, and delete their own user profile.
+     * @path /users/{userId}
+     * @allow (get, list): User can read their own profile.
+     * @allow (create): User can create their own profile.
+     * @allow (update): User can update their own profile.
+     * @allow (delete): User can delete their own profile.
+     * @deny (any): Requests that do not match the user's ID.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Allows anyone to read Enrollments. Only authenticated users can create Enrollments. Updates and deletes are disallowed.
+     * @path /enrollments/{enrollmentId}
+     * @allow (get, list): Any user can read enrollments.
+     * @allow (create): Any authenticated user can create an enrollment.
+     * @deny (update, delete): No one can update or delete an enrollment.
+     * @principle Public read, authenticated write.
+     */
+    match /enrollments/{enrollmentId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false; // CRITICAL: Cannot implement owner-only writes. The 'Enrollment' entity is missing an 'ownerId' or 'authorId' field.
+    }
+
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * @description Defines a function to check if the user is the owner of the resource.
-     */
     function isOwner(userId) {
       return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Defines a function to check if the user is the owner of the existing resource.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Rules for the /courses collection.
-     * @path /courses/{courseId}
-     * @allow (get, list): Any user can read course information.
-     * @allow (create, update, delete): No one can modify courses via the client.
-     * @deny (create): Prevent client-side creation of courses.
-     * @principle Public read access, no client-side writes.
-     */
-    match /courses/{courseId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
-    }
-
-    /**
-     * @description Rules for the /inquiries collection.
-     * @path /inquiries/{inquiryId}
-     * @allow (get, list): Any user can read inquiry information.
-     * @allow (create, update, delete): No one can modify inquiries via the client.
-     * @deny (create): Prevent client-side creation of inquiries.
-     * @principle Public read access, no client-side writes.
-     */
-    match /inquiries/{inquiryId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
-    }
-
-    /**
-     * @description Rules for the /users collection.
-     * @path /users/{userId}
-     * @allow (get): Only the user can read their own profile.
-     * @allow (create): A user can create their own profile if the UID matches.
-     * @allow (update, delete): Only the user can modify or delete their own profile, and only if the document exists.
-     * @deny (list): Prevent listing of all users.
-     * @deny (create): Prevent creating a profile for a different user.
-     * @principle Enforces user-ownership for profiles, prevents unauthorized access.
-     */
-    match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Rules for the /enrollments collection.
-     * @path /enrollments/{enrollmentId}
-     * @allow (create): A user can create an enrollment for themselves if the userId matches.
-     * @allow (delete, update): Only the enrolled user can delete or update the enrollment, and only if the document exists.
-     * @deny (list): Prevent listing of all enrollments.
-     * @deny (create): Prevent creating an enrollment for a different user.
-     * @principle Enforces user-ownership for enrollments, prevents unauthorized access.
-     */
-    match /enrollments/{enrollmentId} {
-      allow get: if false; // Listing all enrollments is disallowed, therefore getting a specific enrollment is also disallowed.
-      allow list: if false;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(resource.data.userId);
-      allow delete: if isExistingOwner(resource.data.userId);
     }
   }
 }
