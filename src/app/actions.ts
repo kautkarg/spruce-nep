@@ -24,7 +24,7 @@ export async function submitInquiry(prevState: any, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Please review the form for errors.',
+      message: 'Looks like some fields need a little polish. Please review the form!',
     };
   }
 
@@ -47,14 +47,14 @@ export async function submitInquiry(prevState: any, formData: FormData) {
     if (!response.ok) {
       const errorData = await response.json();
       return {
-        message: `Submission failed: ${errorData.message || 'Please try again.'}`,
+        message: `Oops! We hit a snag. ${errorData.message || 'Please try submitting again.'}`,
         errors: {},
       };
     }
 
     const result = await response.json();
     return {
-      message: result.message || "Thank you! Our team will call you back shortly.",
+      message: result.message || "All set! We'll be in touch soon to chat.",
       errors: {},
       reset: true,
     };
@@ -62,7 +62,7 @@ export async function submitInquiry(prevState: any, formData: FormData) {
   } catch (error) {
     console.error("Failed to submit inquiry:", error);
     return {
-      message: "An unexpected network error occurred. Please try again later.",
+      message: "Oh no! A network glitch happened. Please check your connection and try again.",
       errors: {},
     };
   }

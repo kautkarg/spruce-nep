@@ -62,14 +62,14 @@ export function EnrollmentForm() {
 
     if (result.errors && Object.keys(result.errors).length > 0) {
       toast({
-        title: "Incomplete Form",
-        description: "Please review the form and fill out all required fields before submitting.",
+        title: "Just a little touch-up!",
+        description: "Looks like some fields need a little polish. Please review the form.",
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Inquiry Received!",
-        description: "Thank you for your interest. Our student counselor will call you back shortly.",
+        title: "Got it!",
+        description: "Thanks for reaching out. We'll give you a call shortly to chat!",
       });
       if (result.reset) {
         form.reset();

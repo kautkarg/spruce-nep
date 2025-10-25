@@ -75,15 +75,15 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, provider);
       toast({
-        title: 'Welcome Back!',
-        description: "You've been successfully signed in with Google.",
+        title: 'Just like magic!',
+        description: "You're signed in and ready to learn.",
       });
       router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Google Sign-In Failed',
-        description: 'There was a problem signing in with Google. Please try again.',
+        title: 'Oops! Google sign-in hiccup.',
+        description: 'Something went wrong on our end. Could you try that again?',
       });
     }
   };
@@ -92,29 +92,29 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
-        title: 'Welcome Back!',
-        description: "You've been successfully signed in.",
+        title: 'Success!',
+        description: "You're in! Let the learning begin.",
       });
       router.push('/dashboard');
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
         toast({
             variant: 'destructive',
-            title: 'Account Not Found',
-            description: 'No account exists with this email. Would you like to create one?',
+            title: 'Hmm, no account found.',
+            description: 'That email isn\'t registered yet. Try creating an account instead!',
         });
       } else if (error.code === 'auth/wrong-password') {
          toast({
             variant: 'destructive',
-            title: 'Incorrect Password',
-            description: 'The password you entered is incorrect. Please try again or use "Forgot Password".',
+            title: 'Wrong Password!',
+            description: 'That password doesn\'t look right. Give it another go or reset it.',
         });
       }
       else {
         toast({
             variant: 'destructive',
             title: 'Sign-In Failed',
-            description: "An unexpected error occurred. Please check your details and try again.",
+            description: "Something went wrong. Please check your details and try again.",
         });
       }
     }
@@ -124,22 +124,22 @@ export default function LoginPage() {
     try {
         await createUserWithEmailAndPassword(auth, email, password);
         toast({
-            title: 'Account Created!',
-            description: "Welcome to Spruce Lifeskills! You're now signed in.",
+            title: 'Welcome to the club!',
+            description: "Your account is created and you're signed in. Happy learning!",
         });
         router.push('/dashboard');
     } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
             toast({
                 variant: 'destructive',
-                title: 'Email Already Registered',
-                description: 'An account with this email already exists. Please sign in instead.',
+                title: 'You\'re already one of us!',
+                description: 'An account with this email already exists. Please sign in.',
             });
         } else {
              toast({
                 variant: 'destructive',
-                title: 'Signup Failed',
-                description: 'We couldn\'t create your account at this time. Please try again later.',
+                title: 'Signup Glitch!',
+                description: 'We couldn\'t create your account right now. Please try again in a bit.',
             });
         }
     }
@@ -160,22 +160,22 @@ export default function LoginPage() {
         // User does not exist
         toast({
           variant: 'destructive',
-          title: 'Account Not Found',
-          description: 'No account was found with this email address. Please check your email and try again.',
+          title: 'Is that the right email?',
+          description: 'We couldn\'t find an account with that email. Please double-check it.',
         });
         return;
       }
 
       await sendPasswordResetEmail(auth, email);
       toast({
-        title: 'Password Reset Email Sent',
-        description: 'Check your inbox for a reset link. If you don\'t see it, please check your spam folder.',
+        title: 'Check your inbox!',
+        description: 'A password reset link is on its way. If you don\'t see it, be sure to check your spam folder!',
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error Sending Reset Email',
-        description: "We couldn't send a reset email. Please ensure the email address is correct and try again.",
+        title: 'Oh no, a sending error!',
+        description: "We couldn't send a reset email. Please ensure the email is correct and try again.",
       });
     }
   };
