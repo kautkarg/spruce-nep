@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { courses } from "@/lib/courses";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X, Loader2, CreditCard, PartyPopper } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -29,37 +29,248 @@ import {
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { useUser } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { enrollInCourse } from "@/lib/enrollments";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
+
+type EnrollmentStep = 'details' | 'payment' | 'success';
 
 export function CourseCatalog() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [enrollmentStep, setEnrollmentStep] = useState<EnrollmentStep>('details');
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useUser();
+  const firestore = useFirestore();
 
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
   const handleEnrollment = async () => {
-    if (!selectedCourse) return;
+    if (!user || !selectedCourse || !firestore) return;
 
-    // For both logged-in and logged-out users, redirect to the enrollment form
-    setIsEnrolling(true);
-    router.push('/#enroll');
-    
-    // Close the dialog after a short delay to allow navigation
-    setTimeout(() => {
-        setSelectedCourse(null);
-        setIsEnrolling(false);
-    }, 500);
+    setIsProcessing(true);
+    try {
+      await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
+      setEnrollmentStep('success');
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Enrollment Failed",
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  const openDialog = (course: Course) => {
+    setSelectedCourse(course);
+    setEnrollmentStep('details');
+  }
+
+  const closeDialog = () => {
+    setSelectedCourse(null);
+    setIsProcessing(false);
+    // Reset step after a short delay to allow for closing animation
+    setTimeout(() => setEnrollmentStep('details'), 300);
+  }
+  
+  const renderDialogContent = () => {
+    if (!selectedCourse) return null;
+
+    if (enrollmentStep === 'success') {
+      return (
+        <>
+          <DialogHeader className="p-6 text-center items-center">
+            <PartyPopper className="h-16 w-16 text-primary mb-4" />
+            <DialogTitle asChild>
+              <h4 className="text-primary mb-2 font-serif">
+                Enrollment Successful!
+              </h4>
+            </DialogTitle>
+            <DialogDescription className="text-body text-foreground/90 max-w-sm mx-auto">
+              You have successfully enrolled in "{selectedCourse.title}". You can now access it from your dashboard.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="p-6 border-t bg-muted/50">
+            <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg">
+              Go to Dashboard
+            </Button>
+          </DialogFooter>
+        </>
+      )
+    }
+
+    if (enrollmentStep === 'payment') {
+      return (
+         <>
+          <DialogHeader className="p-6">
+             <DialogClose asChild>
+              <Button variant="ghost" size="icon" className="absolute right-4 top-4 h-8 w-8" onClick={() => setEnrollmentStep('details')}>
+                <X className="h-4 w-4" />
+                <span className="sr-only">Back</span>
+              </Button>
+            </DialogClose>
+            <DialogTitle asChild>
+              <h4 className="text-primary mb-2 font-serif">
+                Complete Your Enrollment
+              </h4>
+            </DialogTitle>
+            <DialogDescription className="text-body text-left text-foreground/90">
+              Confirm your payment to get instant access to "{selectedCourse.title}".
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-6">
+            <div className="border rounded-lg p-4 space-y-2 bg-muted/50">
+                <div className="flex justify-between items-center text-body font-semibold">
+                    <span>{selectedCourse.title}</span>
+                    <span>₹{selectedCourse.fees.toLocaleString()}</span>
+                </div>
+                 <p className="text-sm text-muted-foreground">One-time payment for lifetime access.</p>
+            </div>
+          </div>
+          <DialogFooter className="p-6 border-t bg-muted/50">
+            <Button onClick={handleEnrollment} disabled={isProcessing} className="w-full" size="lg">
+              {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
+              {isProcessing ? "Processing..." : `Confirm Payment of ₹${selectedCourse.fees.toLocaleString()}`}
+            </Button>
+          </DialogFooter>
+        </>
+      )
+    }
+    
+    // Details step
+    return (
+      <>
+        <DialogHeader className="p-6 pb-4">
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 top-4 h-8 w-8"
+              onClick={closeDialog}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DialogClose>
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-14 h-14 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+              <selectedCourse.Icon className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <DialogTitle asChild>
+                <h4 className="text-primary mb-2 font-serif">
+                  {selectedCourse.title}
+                </h4>
+              </DialogTitle>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-meta">
+                  {selectedCourse.certification}
+                </Badge>
+                <Badge variant="outline" className="text-meta">
+                  NEP 2020 Aligned
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </DialogHeader>
+        <DialogDescription asChild>
+          <ScrollArea className="max-h-[50vh] px-6">
+            <div className="text-body text-left text-foreground/90 space-y-8 pb-6">
+              <Table>
+                <TableBody>
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell className="font-semibold text-foreground">
+                      Credits
+                    </TableCell>
+                    <TableCell>{selectedCourse.details.credits}</TableCell>
+                  </TableRow>
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell className="font-semibold text-foreground">
+                      Duration
+                    </TableCell>
+                    <TableCell>
+                      {selectedCourse.details.duration}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow className="hoverbg-transparent">
+                    <TableCell className="font-semibold text-foreground">
+                      Eligibility
+                    </TableCell>
+                    <TableCell>
+                      {selectedCourse.details.eligibility}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+
+              <div>
+                <h4 className="mb-3">Course Objectives</h4>
+                <ul className="space-y-2">
+                  {selectedCourse.details.objectives.map((obj, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <Check className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
+                      <span>{obj}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="mb-3">Learning Outcomes</h4>
+                <ul className="space-y-2">
+                  {selectedCourse.details.outcomes.map((out, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <Check className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
+                      <span>{out}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="mb-3">Add-Ons</h4>
+                <ul className="space-y-2">
+                  {selectedCourse.details.addOns.map((add, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <Check className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
+                      <span>{add}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="mb-3">Trainer Profile</h4>
+                <p className="text-foreground/80 leading-relaxed">
+                  {selectedCourse.trainerInfo}
+                </p>
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogDescription>
+        <DialogFooter className="p-6 border-t bg-muted/50">
+          {user ? (
+            <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
+              {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now"}
+            </Button>
+          ) : (
+            <Button asChild className="w-full" size="lg">
+              <Link href="/login">Login to Enroll</Link>
+            </Button>
+          )}
+        </DialogFooter>
+      </>
+    )
+  }
 
   return (
     <>
@@ -131,7 +342,7 @@ export function CourseCatalog() {
                         <Button
                           variant="link"
                           className="p-0 h-auto justify-start text-primary font-semibold"
-                          onClick={() => setSelectedCourse(course)}
+                          onClick={() => openDialog(course)}
                         >
                           Learn More
                         </Button>
@@ -159,7 +370,7 @@ export function CourseCatalog() {
                     <Button
                       variant="link"
                       className="p-0 h-auto justify-start text-primary font-semibold"
-                      onClick={() => setSelectedCourse(course)}
+                      onClick={() => openDialog(course)}
                     >
                       Learn More
                     </Button>
@@ -173,132 +384,17 @@ export function CourseCatalog() {
         <Dialog
           open={!!selectedCourse}
           onOpenChange={(isOpen) => {
-            if (!isOpen) {
-              setSelectedCourse(null);
-              setIsEnrolling(false);
-            }
+            if (!isOpen) closeDialog();
           }}
         >
           <DialogContent className="sm:max-w-lg p-0">
-            {selectedCourse && (
-              <>
-                <DialogHeader className="p-6 pb-4">
-                  <DialogClose asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-4 top-4 h-8 w-8"
-                    >
-                      <X className="h-4 w-4" />
-                      <span className="sr-only">Close</span>
-                    </Button>
-                  </DialogClose>
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                      <selectedCourse.Icon className="w-8 h-8 text-primary" />
-                    </div>
-                    <div>
-                      <DialogTitle asChild>
-                        <h4 className="text-primary mb-2 font-serif">
-                          {selectedCourse.title}
-                        </h4>
-                      </DialogTitle>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-meta">
-                          {selectedCourse.certification}
-                        </Badge>
-                        <Badge variant="outline" className="text-meta">
-                          NEP 2020 Aligned
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </DialogHeader>
-                <DialogDescription asChild>
-                  <ScrollArea className="max-h-[50vh] px-6">
-                    <div className="text-body text-left text-foreground/90 space-y-8 pb-6">
-                      <Table>
-                        <TableBody>
-                          <TableRow className="hover:bg-transparent">
-                            <TableCell className="font-semibold text-foreground">
-                              Credits
-                            </TableCell>
-                            <TableCell>{selectedCourse.details.credits}</TableCell>
-                          </TableRow>
-                          <TableRow className="hover:bg-transparent">
-                            <TableCell className="font-semibold text-foreground">
-                              Duration
-                            </TableCell>
-                            <TableCell>
-                              {selectedCourse.details.duration}
-                            </TableCell>
-                          </TableRow>
-                          <TableRow className="hoverbg-transparent">
-                            <TableCell className="font-semibold text-foreground">
-                              Eligibility
-                            </TableCell>
-                            <TableCell>
-                              {selectedCourse.details.eligibility}
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-
-                      <div>
-                        <h4 className="mb-3">Course Objectives</h4>
-                        <ul className="space-y-2">
-                          {selectedCourse.details.objectives.map((obj, i) => (
-                            <li key={i} className="flex items-start gap-3">
-                              <Check className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
-                              <span>{obj}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h4 className="mb-3">Learning Outcomes</h4>
-                        <ul className="space-y-2">
-                          {selectedCourse.details.outcomes.map((out, i) => (
-                            <li key={i} className="flex items-start gap-3">
-                              <Check className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
-                              <span>{out}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h4 className="mb-3">Add-Ons</h4>
-                        <ul className="space-y-2">
-                          {selectedCourse.details.addOns.map((add, i) => (
-                            <li key={i} className="flex items-start gap-3">
-                              <Check className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
-                              <span>{add}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h4 className="mb-3">Trainer Profile</h4>
-                        <p className="text-foreground/80 leading-relaxed">
-                          {selectedCourse.trainerInfo}
-                        </p>
-                      </div>
-                    </div>
-                  </ScrollArea>
-                </DialogDescription>
-                <DialogFooter className="p-6 border-t bg-muted/50">
-                    <Button onClick={handleEnrollment} disabled={isEnrolling} className="w-full" size="lg">
-                      {isEnrolling ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now"}
-                    </Button>
-                </DialogFooter>
-              </>
-            )}
+             {renderDialogContent()}
           </DialogContent>
         </Dialog>
       </section>
     </>
   );
 }
+
+
+    
