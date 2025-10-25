@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Course": {
@@ -81,12 +82,44 @@
         "message",
         "submissionDate"
       ]
+    },
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User Profile",
+      "type": "object",
+      "description": "Represents a user's profile in the system.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID from Firebase Authentication."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the user's profile picture."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the user profile was created."
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
@@ -98,13 +131,7 @@
           "schema": {
             "$ref": "#/backend/entities/Course"
           },
-          "description": "Stores course details, including title, description, category, duration, and image URL.",
-          "params": [
-            {
-              "name": "courseId",
-              "description": "The unique identifier for the course."
-            }
-          ]
+          "description": "Stores course details, including title, description, category, duration, and image URL."
         }
       },
       {
@@ -114,16 +141,19 @@
           "schema": {
             "$ref": "#/backend/entities/Inquiry"
           },
-          "description": "Stores user inquiries related to courses or general questions. Each document contains the user's name, email, message, associated course ID (if applicable), and submission date.",
-          "params": [
-            {
-              "name": "inquiryId",
-              "description": "The unique identifier for the inquiry."
-            }
-          ]
+          "description": "Stores user inquiries related to courses or general questions."
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+            "entityName": "UserProfile",
+            "schema": {
+                "$ref": "#/backend/entities/UserProfile"
+            },
+            "description": "Stores public-facing user profile information."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to securely manage course information and user inquiries for the SpruceConnect application. It leverages structural segregation to separate course data from inquiry data, ensuring that different security rules can be applied to each type of data. Authorization independence is not a primary concern as there are no complex relationships requiring denormalization in this scenario. The structure prioritizes simplicity and clarity for ease of maintenance and debugging. Specifically:\n\n*   `/courses`: Stores course details, including title, description, category, duration, and image URL. This collection is publicly accessible for reading, allowing any user to browse the course catalog.\n*   `/inquiries`: Stores user inquiries related to courses or general questions. Each document contains the user's name, email, message, associated course ID (if applicable), and submission date. This collection requires appropriate write validation to ensure data integrity.\n\nThis design facilitates straightforward security rules by isolating different data types into separate collections, adhering to the principle of Structural Segregation. The rules can be written to allow read access to the `/courses` collection for all users, while restricting write access to `/inquiries` based on validation criteria. This setup supports the required QAPs by enabling secure list operations on the courses collection and controlled data entry in the inquiries collection."
+    ]
   }
 }

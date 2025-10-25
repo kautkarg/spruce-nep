@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Inter } from 'next/font/google';
 import { Chatbot } from "@/components/landing/Chatbot";
+import { FirebaseClientProvider } from "@/firebase";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,7 +27,9 @@ export default function RootLayout({
         <link rel="icon" href="/images/sprucelogo.webp" type="image/webp" />
       </head>
       <body className="antialiased pb-24 md:pb-0">
-        {children}
+        <FirebaseClientProvider>
+          {children}
+        </FirebaseClientProvider>
         <Chatbot />
         <Toaster />
       </body>

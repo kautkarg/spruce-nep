@@ -2,13 +2,25 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, ArrowRight, Loader2 } from 'lucide-react';
+import { Menu, X, ArrowRight, Loader2, LogOut, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useUser, useAuth } from '@/firebase';
+import { getAuth, signOut } from 'firebase/auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
 
 const navLinks = [
     { href: '/courses', label: 'Courses' },
@@ -19,12 +31,68 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
       e.preventDefault();
       setIsLoading(true);
       router.push(href);
   };
+
+  const handleSignOut = async () => {
+    if (auth) {
+      await signOut(auth);
+      router.push('/');
+    }
+  };
+
+  const UserMenu = () => {
+    if (isUserLoading) {
+      return <Loader2 className="h-6 w-6 animate-spin" />;
+    }
+
+    if (user) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+                <AvatarFallback>
+                  <UserCircle />
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user.displayName || 'Welcome'}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    return (
+      <Button asChild variant="outline">
+        <Link href="/login">
+          Login
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Link>
+      </Button>
+    )
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-lg">
@@ -78,12 +146,18 @@ export function Header() {
                             </ul>
                             </nav>
                             <div className="mt-auto p-6 border-t bg-muted/50">
-                                <Button asChild size="lg" className="w-full">
-                                    <Link href="/courses" onClick={(e) => handleNavigate(e, '/courses')}>
-                                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        {isLoading ? 'Loading...' : 'Enroll Now'}
-                                    </Link>
-                                </Button>
+                                {user ? (
+                                   <Button onClick={handleSignOut} size="lg" className="w-full">
+                                    Sign Out
+                                  </Button>
+                                ) : (
+                                  <Button asChild size="lg" className="w-full">
+                                      <Link href="/login">
+                                          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                          {isLoading ? 'Loading...' : 'Login / Sign Up'}
+                                      </Link>
+                                  </Button>
+                                )}
                             </div>
                         </div>
                     </SheetContent>
@@ -91,13 +165,7 @@ export function Header() {
             </div>
 
             <div className="hidden md:flex items-center justify-end">
-                <Button asChild>
-                    <Link href="/courses" onClick={(e) => handleNavigate(e, '/courses')}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isLoading ? "Loading..." : "Enroll Now"}
-                        {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
-                    </Link>
-                </Button>
+                <UserMenu />
             </div>
         </div>
       </div>
