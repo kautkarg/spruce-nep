@@ -13,6 +13,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  getRedirectResult,
 } from 'firebase/auth';
 
 import { useFirebase } from '@/firebase';
@@ -57,6 +58,31 @@ export default function LoginPage() {
       router.push(redirectUrl);
     }
   }, [user, isUserLoading, router, redirectUrl]);
+  
+   // This hook handles the result from signInWithRedirect
+  useEffect(() => {
+    if (!auth) return;
+    
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          // User is signed in. Let the other useEffect handle redirection.
+          // This ensures the user state is set before we try to redirect.
+          toast({
+            title: 'Welcome!',
+            description: "You're signed in and ready to go.",
+          });
+        }
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        toast({
+          variant: 'destructive',
+          title: 'Sign-in failed!',
+          description: error.message || 'Something went wrong during sign-in. Please try again.',
+        });
+      });
+  }, [auth, toast]);
 
   const handleGoogleSignIn = async () => {
     if (!auth) return;
@@ -236,3 +262,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
