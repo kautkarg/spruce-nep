@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { courses } from "@/lib/courses";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X, Loader2, CreditCard, PartyPopper } from "lucide-react";
+import { Check, X, Loader2, CreditCard, PartyPopper, BookUser } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -29,11 +29,12 @@ import {
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { useUser, useFirestore } from "@/firebase";
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { enrollInCourse } from "@/lib/enrollments";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { collection, query, where } from "firebase/firestore";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
 
@@ -54,11 +55,18 @@ export function CourseCatalog() {
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
-  /**
-   * This function simulates a payment process and enrolls the user.
-   * A developer should replace this with a real payment gateway integration.
-   * For example, using Stripe, Razorpay, or another provider.
-   */
+  const enrollmentsQuery = useMemoFirebase(() => {
+    if (!firestore || !user?.uid) return null;
+    return query(collection(firestore, 'enrollments'), where('userId', '==', user.uid));
+  }, [firestore, user?.uid]);
+
+  const { data: enrollments } = useCollection(enrollmentsQuery);
+
+  const isAlreadyEnrolled = useMemo(() => {
+    if (!enrollments || !selectedCourse) return false;
+    return enrollments.some(enrollment => enrollment.courseId === selectedCourse.id);
+  }, [enrollments, selectedCourse]);
+
   const handlePayment = async () => {
     if (!user || !selectedCourse || !firestore) return;
 
@@ -297,9 +305,16 @@ export function CourseCatalog() {
         </DialogDescription>
         <DialogFooter className="p-6 border-t bg-muted/50">
           {user ? (
-            <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
-               Enroll Now for ₹{selectedCourse.fees.toLocaleString()}
-            </Button>
+            isAlreadyEnrolled ? (
+              <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg" variant="outline">
+                <BookUser className="mr-2 h-4 w-4" />
+                Already Enrolled
+              </Button>
+            ) : (
+              <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
+                 Enroll Now for ₹{selectedCourse.fees.toLocaleString()}
+              </Button>
+            )
           ) : (
             <Button asChild className="w-full" size="lg">
               <Link href="/login">Login to Enroll</Link>
@@ -433,5 +448,3 @@ export function CourseCatalog() {
     </>
   );
 }
-
-    
