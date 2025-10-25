@@ -153,11 +153,20 @@ export default function LoginPage() {
     }
     
     try {
-      await sendPasswordResetEmail(auth, email);
-      toast({
-        title: 'Check your inbox!',
-        description: 'If an account exists for that email, a password reset link is on its way. Be sure to check your spam folder!',
-      });
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.length > 0) {
+        await sendPasswordResetEmail(auth, email);
+        toast({
+          title: 'Check your inbox!',
+          description: 'If an account exists for that email, a password reset link is on its way. Be sure to check your spam folder!',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'No account found!',
+          description: 'We couldn\'t find an account with that email. Maybe try a different one?',
+        });
+      }
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -246,3 +255,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
