@@ -29,8 +29,7 @@ import {
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { useUser, useFirestore } from "@/firebase";
-import { enrollInCourse } from "@/lib/enrollments";
+import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
@@ -43,47 +42,23 @@ export function CourseCatalog() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const { user, isUserLoading } = useUser();
-  const firestore = useFirestore();
+  const { user } = useUser();
 
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
   const handleEnrollment = async () => {
-    if (!user || !selectedCourse || !firestore) {
-      toast({
-        variant: "destructive",
-        title: "Login Required",
-        description: "You need to be logged in to enroll in a course.",
-      });
-      router.push('/login');
-      return;
-    }
+    if (!selectedCourse) return;
 
+    // For both logged-in and logged-out users, redirect to the enrollment form
     setIsEnrolling(true);
-
-    try {
-      enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
-      
-      toast({
-        title: "Enrollment Successful!",
-        description: `You've been enrolled in ${selectedCourse.title}.`,
-      });
-      
-      setSelectedCourse(null);
-      // Optionally, redirect to the dashboard
-      // router.push('/dashboard');
-      
-    } catch (error) {
-      console.error("Enrollment failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Enrollment Failed",
-        description: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsEnrolling(false);
-    }
+    router.push('/#enroll');
+    
+    // Close the dialog after a short delay to allow navigation
+    setTimeout(() => {
+        setSelectedCourse(null);
+        setIsEnrolling(false);
+    }, 500);
   };
 
   return (
@@ -315,15 +290,9 @@ export function CourseCatalog() {
                   </ScrollArea>
                 </DialogDescription>
                 <DialogFooter className="p-6 border-t bg-muted/50">
-                  {user ? (
                     <Button onClick={handleEnrollment} disabled={isEnrolling} className="w-full" size="lg">
                       {isEnrolling ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enroll Now"}
                     </Button>
-                  ) : (
-                    <Button asChild className="w-full" size="lg">
-                      <Link href="/login">Login to Enroll</Link>
-                    </Button>
-                  )}
                 </DialogFooter>
               </>
             )}
