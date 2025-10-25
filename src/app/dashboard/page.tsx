@@ -81,8 +81,8 @@ export default function DashboardPage() {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {enrolledCourses.map((course) => (
-          <Card key={course.id} className="flex flex-col overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+        {enrolledCourses.map((course, index) => (
+          <Card key={`${course.id}-${index}`} className="flex flex-col overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
              <CardHeader className="flex-grow">
               <div className="mb-4">
                   <course.Icon className="w-10 h-10 text-primary" />
@@ -135,5 +135,4 @@ export default function DashboardPage() {
     </div>
   );
 }
-
     
