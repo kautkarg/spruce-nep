@@ -25,7 +25,7 @@ import { courses } from "@/lib/courses";
 import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
-import { useUser } from "@/firebase";
+import { useFirebase } from "@/firebase";
 
 const inquirySchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -38,7 +38,7 @@ type InquiryFormValues = z.infer<typeof inquirySchema>;
 
 export function EnrollmentForm() {
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user } = useFirebase();
 
   const form = useForm<InquiryFormValues>({
     resolver: zodResolver(inquirySchema),

@@ -47,3 +47,9 @@ export * from './firestore/use-collection';
 export * from './firestore/use-doc';
 export * from './errors';
 export * from './error-emitter';
+
+// Legacy hook, replaced by useFirebase()
+export const useUser = () => {
+    const { user, isUserLoading, userError } = useFirebase();
+    return { user, isUserLoading, userError };
+};

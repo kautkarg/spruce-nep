@@ -29,7 +29,7 @@ import {
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useFirebase, useCollection, useMemoFirebase } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { enrollInCourse } from "@/lib/enrollments";
 import { Input } from "../ui/input";
@@ -50,8 +50,7 @@ export function CourseCatalog() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { user } = useUser();
-  const firestore = useFirestore();
+  const { user, firestore } = useFirebase();
 
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);

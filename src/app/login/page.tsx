@@ -16,7 +16,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 
-import { useUser } from '@/firebase';
+import { useFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,8 +43,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/dashboard';
-  const auth = getAuth();
-  const { user, isUserLoading } = useUser();
+  const { auth, user, isUserLoading } = useFirebase();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,8 +51,6 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    // This effect redirects the user if they are already logged in and land on this page.
-    // It should NOT interfere with an active login attempt.
     if (!isUserLoading && user) {
       router.push(redirectUrl);
     }
@@ -68,12 +65,10 @@ export default function LoginPage() {
   }
 
   const handleGoogleSignIn = async () => {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     try {
-      // Await the sign-in process directly and then handle redirection.
       await signInWithPopup(auth, provider);
-      // On success, the `useEffect` will naturally catch the new user state and redirect.
-      // To be more explicit and avoid race conditions, we can also redirect here.
       handleSuccessfulSignIn(redirectUrl);
     } catch (error: any) {
         if (error.code === 'auth/popup-closed-by-user') {
@@ -93,6 +88,7 @@ export default function LoginPage() {
   };
   
   const handleEmailSignIn = async ({ email, password }: z.infer<typeof formSchema>) => {
+    if (!auth) return;
     try {
       await signInWithEmailAndPassword(auth, email, password);
       handleSuccessfulSignIn(redirectUrl);
@@ -114,6 +110,7 @@ export default function LoginPage() {
   };
 
   const handleEmailSignUp = async ({ email, password }: z.infer<typeof formSchema>) => {
+    if (!auth) return;
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       handleSuccessfulSignIn(redirectUrl);
@@ -135,6 +132,7 @@ export default function LoginPage() {
   };
 
   const handlePasswordReset = async () => {
+    if (!auth) return;
     const email = form.getValues('email');
     if (!email) {
       form.setError('email', { type: 'manual', message: 'Please pop in your email address first!' });
@@ -242,5 +240,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

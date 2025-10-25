@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Header } from '@/components/common/Header';
 import { AppFooter } from '@/components/common/Footer';
@@ -17,9 +17,8 @@ import { BookOpen } from 'lucide-react';
 const courseMap = new Map(courses.map(course => [course.id, course]));
 
 export default function DashboardPage() {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading, firestore } = useFirebase();
   const router = useRouter();
-  const firestore = useFirestore();
 
   const enrollmentsQuery = useMemoFirebase(() => {
     if (!firestore || !user?.uid) return null;

@@ -9,8 +9,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useState } from 'react';
-import { useUser, useAuth } from '@/firebase';
-import { getAuth, signOut } from 'firebase/auth';
+import { useFirebase } from '@/firebase';
+import { signOut } from 'firebase/auth';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,8 +31,7 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { user, isUserLoading } = useUser();
-  const auth = useAuth();
+  const { user, isUserLoading, auth } = useFirebase();
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
       e.preventDefault();
