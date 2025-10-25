@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { courses } from "@/lib/courses";
 import { Button } from "@/components/ui/button";
 import {
