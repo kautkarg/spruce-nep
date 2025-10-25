@@ -55,7 +55,7 @@ export function CourseCatalog() {
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
   /**
-   * This function simulates a payment process.
+   * This function simulates a payment process and enrolls the user.
    * A developer should replace this with a real payment gateway integration.
    * For example, using Stripe, Razorpay, or another provider.
    */
@@ -65,12 +65,17 @@ export function CourseCatalog() {
     setIsProcessing(true);
     // DEVELOPER NOTE: Replace this setTimeout with your payment gateway's API call.
     // The payment gateway's success callback should then trigger the enrollment and next step.
+    console.log("Simulating payment for:", user.uid, selectedCourse.id);
     setTimeout(async () => {
       try {
         // On successful payment, enroll the user in the course.
         await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
+        
+        console.log("Enrollment successful, setting step to 'success'");
         setEnrollmentStep('success');
+
       } catch (error) {
+         console.error("Enrollment failed:", error);
          toast({
           variant: "destructive",
           title: "Enrollment Failed",
@@ -82,6 +87,7 @@ export function CourseCatalog() {
       }
     }, 2000); // Simulating a 2-second payment processing delay.
   };
+
 
   const openDialog = (course: Course) => {
     setSelectedCourse(course);
@@ -125,12 +131,10 @@ export function CourseCatalog() {
       return (
          <>
           <DialogHeader className="p-6">
-             <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute right-4 top-4 h-8 w-8" onClick={() => setEnrollmentStep('details')}>
+             <Button variant="ghost" size="icon" className="absolute right-4 top-4 h-8 w-8" onClick={() => setEnrollmentStep('details')}>
                 <X className="h-4 w-4" />
                 <span className="sr-only">Back</span>
               </Button>
-            </DialogClose>
             <DialogTitle asChild>
               <h4 className="text-primary mb-2 font-serif">
                 Complete Your Enrollment
