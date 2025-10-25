@@ -75,15 +75,15 @@ export default function LoginPage() {
     try {
       await signInWithPopup(auth, provider);
       toast({
-        title: 'Success!',
-        description: 'You have successfully signed in with Google.',
+        title: 'Welcome Back!',
+        description: "You've been successfully signed in with Google.",
       });
       router.push('/');
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: error.message,
+        title: 'Sign-In Failed',
+        description: 'There was a problem signing in with Google. Please try again.',
       });
     }
   };
@@ -92,19 +92,29 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
-        title: 'Success!',
-        description: 'You have successfully signed in.',
+        title: 'Welcome Back!',
+        description: "You've been successfully signed in.",
       });
       router.push('/');
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
-        // If user not found, try to create a new account
-        handleEmailSignUp({ email, password });
-      } else {
         toast({
             variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: error.message,
+            title: 'Account Not Found',
+            description: 'No account exists with this email. Please create an account first.',
+        });
+      } else if (error.code === 'auth/wrong-password') {
+         toast({
+            variant: 'destructive',
+            title: 'Incorrect Password',
+            description: 'The password you entered is incorrect. Please try again or use "Forgot Password".',
+        });
+      }
+      else {
+        toast({
+            variant: 'destructive',
+            title: 'Sign-In Failed',
+            description: "An unexpected error occurred. Please check your details and try again.",
         });
       }
     }
@@ -115,26 +125,30 @@ export default function LoginPage() {
         await createUserWithEmailAndPassword(auth, email, password);
         toast({
             title: 'Account Created!',
-            description: 'Your account has been created successfully.',
+            description: "Welcome! Your account has been created successfully.",
         });
         router.push('/');
     } catch (error: any) {
-        toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: error.message,
-        });
+        if (error.code === 'auth/email-already-in-use') {
+            toast({
+                variant: 'destructive',
+                title: 'Email Already in Use',
+                description: 'An account with this email already exists. Please sign in instead.',
+            });
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Signup Failed',
+                description: 'We couldn\'t create your account right now. Please try again later.',
+            });
+        }
     }
   }
 
   const handlePasswordReset = async () => {
     const email = form.getValues('email');
     if (!email) {
-      toast({
-        variant: 'destructive',
-        title: 'Email required',
-        description: 'Please enter your email address to reset your password.',
-      });
+      form.setError('email', { type: 'manual', message: 'Please enter your email to reset your password.' });
       return;
     }
 
@@ -147,8 +161,8 @@ export default function LoginPage() {
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error sending reset email',
-        description: error.message,
+        title: 'Error Sending Reset Email',
+        description: "We couldn't send a reset email. Please ensure the email address is correct.",
       });
     }
   };
@@ -166,7 +180,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl font-bold">Student Portal</CardTitle>
           <CardDescription>Sign in or create an account to continue</CardDescription>
         </CardHeader>
         <CardContent>

@@ -24,7 +24,7 @@ export async function submitInquiry(prevState: any, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Error: Please check the form fields.',
+      message: 'Please review the form for errors.',
     };
   }
 
@@ -45,18 +45,16 @@ export async function submitInquiry(prevState: any, formData: FormData) {
     });
 
     if (!response.ok) {
-      // You can handle different server error responses here
       const errorData = await response.json();
       return {
-        message: `An error occurred: ${errorData.message || 'Please try again.'}`,
+        message: `Submission failed: ${errorData.message || 'Please try again.'}`,
         errors: {},
       };
     }
 
-    // Assuming the backend returns a success message
     const result = await response.json();
     return {
-      message: result.message || "Thank you for your inquiry! Our team will call you back shortly.",
+      message: result.message || "Thank you! Our team will call you back shortly.",
       errors: {},
       reset: true,
     };
@@ -64,7 +62,7 @@ export async function submitInquiry(prevState: any, formData: FormData) {
   } catch (error) {
     console.error("Failed to submit inquiry:", error);
     return {
-      message: "An unexpected error occurred. Please try again later.",
+      message: "An unexpected network error occurred. Please try again later.",
       errors: {},
     };
   }
