@@ -32,7 +32,6 @@ export function enrollInCourse(firestore: Firestore, enrollmentData: EnrollmentD
 
   addDoc(enrollmentsCollection, enrollmentRecord)
     .catch((serverError) => {
-      console.error("Error enrolling in course: ", serverError);
       // Create a contextual error to be surfaced to the developer
       const permissionError = new FirestorePermissionError({
         path: enrollmentsCollection.path,
