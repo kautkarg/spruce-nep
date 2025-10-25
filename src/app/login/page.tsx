@@ -8,8 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
-  getAuth,
-  signInWithPopup,
+  signInWithRedirect,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -23,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { LoaderPinwheel } from 'lucide-react';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -52,38 +52,29 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
+      toast({
+        title: 'Just like magic!',
+        description: "You're signed in and ready to go.",
+      });
       router.push(redirectUrl);
     }
-  }, [user, isUserLoading, router, redirectUrl]);
-
-  const handleSuccessfulSignIn = (redirectPath: string) => {
-    toast({
-      title: 'Just like magic!',
-      description: "You're signed in and ready to go.",
-    });
-    router.push(redirectPath);
-  }
+  }, [user, isUserLoading, router, redirectUrl, toast]);
 
   const handleGoogleSignIn = async () => {
     if (!auth) return;
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      handleSuccessfulSignIn(redirectUrl);
+      // Use signInWithRedirect instead of signInWithPopup
+      await signInWithRedirect(auth, provider);
+      // The browser will redirect to Google's sign-in page.
+      // After sign-in, it will redirect back to this page,
+      // and the useEffect hook will handle redirection to the dashboard or original URL.
     } catch (error: any) {
-        if (error.code === 'auth/popup-closed-by-user') {
-            toast({
-                variant: 'destructive',
-                title: 'Looks like the window was closed!',
-                description: 'The Google sign-in window was closed before finishing. Want to give it another go?',
-            });
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Oops! Google sign-in hiccup.',
-                description: 'Something went wrong on our end. Could you try that again?',
-            });
-        }
+      toast({
+          variant: 'destructive',
+          title: 'Oops! Google sign-in hiccup.',
+          description: error.message || 'Something went wrong on our end. Could you try that again?',
+      });
     }
   };
   
@@ -91,7 +82,7 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      handleSuccessfulSignIn(redirectUrl);
+      // The useEffect will handle successful sign-in redirection
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -113,7 +104,7 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      handleSuccessfulSignIn(redirectUrl);
+      // The useEffect will handle successful sign-up redirection
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -162,10 +153,10 @@ export default function LoginPage() {
     }
   };
 
-  if (isUserLoading || user) {
+  if (isUserLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        <LoaderPinwheel className="h-32 w-32 animate-spin text-primary" />
       </div>
     );
   }
@@ -226,10 +217,11 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                   {form.formState.isSubmitting && <LoaderPinwheel className="mr-2 h-4 w-4 animate-spin" />}
                   Sign In
                 </Button>
-                <Button type="button" variant="secondary" className="w-full" onClick={form.handleSubmit(handleEmailSignUp)}>
+                <Button type="button" variant="secondary" className="w-full" onClick={form.handleSubmit(handleEmailSignUp)} disabled={form.formState.isSubmitting}>
                   Create Account
                 </Button>
               </form>
