@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { useEffect } from 'react';
@@ -153,16 +153,29 @@ export default function LoginPage() {
     }
 
     try {
-      await sendPasswordResetEmail(auth, email);
-      toast({
-        title: 'Check your inbox!',
-        description: 'A password reset link is on its way. If you don\'t see it, be sure to check your spam folder!',
-      });
-    } catch (error: any) {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+
+      if (signInMethods.length > 0) {
+        // User exists, send reset email
+        await sendPasswordResetEmail(auth, email);
+        toast({
+          title: 'Check your inbox!',
+          description: 'A password reset link is on its way. If you don\'t see it, be sure to check your spam folder!',
+        });
+      } else {
+        // User does not exist
+        toast({
+          variant: 'destructive',
+          title: 'No account found!',
+          description: "We couldn't find an account with that email address. Please double-check it or create a new account.",
+        });
+      }
+    } catch (error) {
+      // General error
       toast({
         variant: 'destructive',
         title: 'Oh no, a sending error!',
-        description: "We couldn't send a reset email. Please ensure the email is correct and try again.",
+        description: "We couldn't process your request right now. Please ensure the email is correct and try again.",
       });
     }
   };
