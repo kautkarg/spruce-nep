@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { enrollInCourse } from "@/lib/enrollments";
@@ -48,6 +48,7 @@ export function CourseCatalog() {
   
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -66,6 +67,17 @@ export function CourseCatalog() {
     if (!enrollments || !selectedCourse) return false;
     return enrollments.some(enrollment => enrollment.courseId === selectedCourse.id);
   }, [enrollments, selectedCourse]);
+
+  // Effect to handle opening course dialog from URL
+  useEffect(() => {
+    const courseIdToOpen = searchParams.get('enroll');
+    if (courseIdToOpen) {
+      const courseToOpen = courses.find(c => c.id === courseIdToOpen);
+      if (courseToOpen) {
+        openDialog(courseToOpen);
+      }
+    }
+  }, [searchParams]);
 
   const handlePayment = async () => {
     if (!user || !selectedCourse || !firestore) return;
@@ -111,6 +123,11 @@ export function CourseCatalog() {
     setIsProcessing(false);
     // Reset step after a short delay to allow for closing animation
     setTimeout(() => setEnrollmentStep('details'), 300);
+    
+    // Clean up URL
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.delete('enroll');
+    router.replace(`${pathname}?${newParams.toString()}`);
   }
   
   const renderDialogContent = () => {
@@ -326,7 +343,7 @@ export function CourseCatalog() {
             )
           ) : (
             <Button asChild className="w-full" size="lg">
-              <Link href="/login?redirect=/courses">Login to Start Your Journey</Link>
+              <Link href={`/login?redirect=/courses?enroll=${selectedCourse.id}`}>Login to Start Your Journey</Link>
             </Button>
           )}
         </DialogFooter>

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   getAuth,
@@ -41,6 +41,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/dashboard';
   const auth = getAuth();
   const { user, isUserLoading } = useUser();
 
@@ -51,19 +53,23 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-      router.push('/dashboard');
+      router.push(redirectUrl);
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, redirectUrl]);
+
+  const handleSuccessfulSignIn = () => {
+    toast({
+      title: 'Just like magic!',
+      description: "You're signed in and ready to go.",
+    });
+    router.push(redirectUrl);
+  }
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      toast({
-        title: 'Just like magic!',
-        description: "You're signed in and ready to learn.",
-      });
-      router.push('/dashboard');
+      // The useEffect will handle redirection.
     } catch (error: any) {
         if (error.code === 'auth/popup-closed-by-user') {
             toast({
@@ -84,8 +90,7 @@ export default function LoginPage() {
   const handleEmailSignIn = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Welcome back!', description: "You're in! Let the learning begin." });
-      router.push('/dashboard');
+      // The useEffect will handle redirection.
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -106,11 +111,7 @@ export default function LoginPage() {
   const handleEmailSignUp = async ({ email, password }: z.infer<typeof formSchema>) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Welcome to the club!',
-        description: "Your account is created and you're signed in. Happy learning!",
-      });
-      router.push('/dashboard');
+       // The useEffect will handle redirection.
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -236,6 +237,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-
-    
