@@ -1,0 +1,129 @@
+{
+  "entities": {
+    "Course": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Course",
+      "type": "object",
+      "description": "Represents an educational course offered by Spruce Life Skills.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Course entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the course."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the course content and objectives."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category or subject area the course belongs to (e.g., 'Leadership', 'Communication')."
+        },
+        "duration": {
+          "type": "string",
+          "description": "The duration of the course (e.g., '4 weeks', 'Self-paced')."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL to the image representing the course.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "category",
+        "duration",
+        "imageUrl"
+      ]
+    },
+    "Inquiry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Inquiry",
+      "type": "object",
+      "description": "Represents an inquiry submitted by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Inquiry entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the person submitting the inquiry."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the person submitting the inquiry.",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message or question submitted by the person."
+        },
+        "courseId": {
+          "type": "string",
+          "description": "Reference to Course. (Relationship: Course 1:N Inquiry). The course the inquiry is regarding, if applicable."
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time when the inquiry was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "submissionDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/courses/{courseId}",
+        "definition": {
+          "entityName": "Course",
+          "schema": {
+            "$ref": "#/backend/entities/Course"
+          },
+          "description": "Stores course details, including title, description, category, duration, and image URL.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "The unique identifier for the course."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/inquiries/{inquiryId}",
+        "definition": {
+          "entityName": "Inquiry",
+          "schema": {
+            "$ref": "#/backend/entities/Inquiry"
+          },
+          "description": "Stores user inquiries related to courses or general questions. Each document contains the user's name, email, message, associated course ID (if applicable), and submission date.",
+          "params": [
+            {
+              "name": "inquiryId",
+              "description": "The unique identifier for the inquiry."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to securely manage course information and user inquiries for the SpruceConnect application. It leverages structural segregation to separate course data from inquiry data, ensuring that different security rules can be applied to each type of data. Authorization independence is not a primary concern as there are no complex relationships requiring denormalization in this scenario. The structure prioritizes simplicity and clarity for ease of maintenance and debugging. Specifically:\n\n*   `/courses`: Stores course details, including title, description, category, duration, and image URL. This collection is publicly accessible for reading, allowing any user to browse the course catalog.\n*   `/inquiries`: Stores user inquiries related to courses or general questions. Each document contains the user's name, email, message, associated course ID (if applicable), and submission date. This collection requires appropriate write validation to ensure data integrity.\n\nThis design facilitates straightforward security rules by isolating different data types into separate collections, adhering to the principle of Structural Segregation. The rules can be written to allow read access to the `/courses` collection for all users, while restricting write access to `/inquiries` based on validation criteria. This setup supports the required QAPs by enabling secure list operations on the courses collection and controlled data entry in the inquiries collection."
+  }
+}
