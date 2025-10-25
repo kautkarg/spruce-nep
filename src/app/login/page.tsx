@@ -82,7 +82,7 @@ export default function LoginPage() {
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Sign-In Failed',
+        title: 'Google Sign-In Failed',
         description: 'There was a problem signing in with Google. Please try again.',
       });
     }
@@ -101,7 +101,7 @@ export default function LoginPage() {
         toast({
             variant: 'destructive',
             title: 'Account Not Found',
-            description: 'No account exists with this email. Please create an account first.',
+            description: 'No account exists with this email. Would you like to create one?',
         });
       } else if (error.code === 'auth/wrong-password') {
          toast({
@@ -125,21 +125,21 @@ export default function LoginPage() {
         await createUserWithEmailAndPassword(auth, email, password);
         toast({
             title: 'Account Created!',
-            description: "Welcome! Your account has been created successfully.",
+            description: "Welcome to Spruce Lifeskills! You're now signed in.",
         });
         router.push('/');
     } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
             toast({
                 variant: 'destructive',
-                title: 'Email Already in Use',
+                title: 'Email Already Registered',
                 description: 'An account with this email already exists. Please sign in instead.',
             });
         } else {
              toast({
                 variant: 'destructive',
                 title: 'Signup Failed',
-                description: 'We couldn\'t create your account right now. Please try again later.',
+                description: 'We couldn\'t create your account at this time. Please try again later.',
             });
         }
     }
@@ -156,13 +156,13 @@ export default function LoginPage() {
       await sendPasswordResetEmail(auth, email);
       toast({
         title: 'Password Reset Email Sent',
-        description: 'Check your inbox for a reset link. If you dont see it, please check your spam folder.',
+        description: 'Check your inbox for a reset link. If you don\'t see it, please check your spam folder.',
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Error Sending Reset Email',
-        description: "We couldn't send a reset email. Please ensure the email address is correct.",
+        description: "We couldn't send a reset email. Please ensure the email address is correct and try again.",
       });
     }
   };
