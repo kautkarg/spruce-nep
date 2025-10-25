@@ -30,7 +30,20 @@ export default function DashboardPage() {
 
   const enrolledCourses = useMemo(() => {
     if (!enrollments) return [];
-    return enrollments.map(enrollment => courseMap.get(enrollment.courseId)).filter(Boolean) as Course[];
+    const uniqueCourseIds = new Set<string>();
+    const uniqueCourses: Course[] = [];
+    
+    enrollments.forEach(enrollment => {
+      if (!uniqueCourseIds.has(enrollment.courseId)) {
+        const course = courseMap.get(enrollment.courseId);
+        if (course) {
+          uniqueCourseIds.add(enrollment.courseId);
+          uniqueCourses.push(course);
+        }
+      }
+    });
+
+    return uniqueCourses;
   }, [enrollments]);
 
   useEffect(() => {
