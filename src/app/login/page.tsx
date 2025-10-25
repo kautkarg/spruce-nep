@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, fetchSignInMethodsForEmail } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { useEffect } from 'react';
@@ -97,7 +97,7 @@ export default function LoginPage() {
       });
       router.push('/dashboard');
     } catch (error: any) {
-      if (error.code === 'auth/user-not-found') {
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
             variant: 'destructive',
             title: 'Hmm, no account found.',
@@ -148,24 +148,11 @@ export default function LoginPage() {
   const handlePasswordReset = async () => {
     const email = form.getValues('email');
     if (!email) {
-      form.setError('email', { type: 'manual', message: 'Please enter your email to reset your password.' });
+      form.setError('email', { type: 'manual', message: 'Please pop in your email address first!' });
       return;
     }
 
     try {
-      // Check if the user exists before sending the email
-      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-
-      if (signInMethods.length === 0) {
-        // User does not exist
-        toast({
-          variant: 'destructive',
-          title: 'Is that the right email?',
-          description: 'We couldn\'t find an account with that email. Please double-check it.',
-        });
-        return;
-      }
-
       await sendPasswordResetEmail(auth, email);
       toast({
         title: 'Check your inbox!',
@@ -259,3 +246,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
