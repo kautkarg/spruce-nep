@@ -51,44 +51,46 @@ export default function LoginPage() {
     defaultValues: { email: '', password: '' },
   });
 
-  // This is the reliable way to handle redirection after login.
-  // It waits until Firebase has confirmed the user is authenticated.
-  useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push(redirectUrl);
-    }
-  }, [user, isUserLoading, router, redirectUrl]);
-  
-   // This hook handles the result from signInWithRedirect
+  // Effect to handle the result of a redirect-based sign-in.
+  // This is the most reliable way to get user info after Google redirects back to the app.
   useEffect(() => {
     if (!auth) return;
-    
+
     getRedirectResult(auth)
       .then((result) => {
         if (result && result.user) {
-          // User is signed in. Let the other useEffect handle redirection.
-          // This ensures the user state is set before we try to redirect.
+          // A user was successfully signed in via redirect.
           toast({
             title: 'Welcome!',
             description: "You're signed in and ready to go.",
           });
+          // The other useEffect will now handle the redirection to the correct page.
         }
       })
       .catch((error) => {
-        // Handle Errors here.
+        // Handle any errors that occurred during the redirect sign-in.
         toast({
           variant: 'destructive',
           title: 'Sign-in failed!',
           description: error.message || 'Something went wrong during sign-in. Please try again.',
         });
       });
-  }, [auth, toast]);
+  }, [auth, toast]); // This hook runs once on component mount.
+
+  // This effect handles redirection for ANY authenticated user,
+  // whether from a redirect, a direct password login, or an existing session.
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push(redirectUrl);
+    }
+  }, [user, isUserLoading, router, redirectUrl]);
+
 
   const handleGoogleSignIn = async () => {
     if (!auth) return;
     const provider = new GoogleAuthProvider();
     try {
-      // Use redirect which is more robust against popup blockers.
+      // Use redirect, which is more robust against popup blockers and browser issues.
       await signInWithRedirect(auth, provider);
     } catch (error: any) {
       toast({
@@ -103,11 +105,11 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // We no longer need to redirect here. The useEffect will handle it.
       toast({
         title: 'Just like magic!',
         description: "You're signed in and ready to go.",
       });
+      // The useEffect will handle the redirect.
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -129,11 +131,11 @@ export default function LoginPage() {
     if (!auth) return;
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-       // We no longer need to redirect here. The useEffect will handle it.
       toast({
         title: 'Welcome to the club!',
         description: "Your account has been created. Let's get started!",
       });
+       // The useEffect will handle the redirect.
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -262,3 +264,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
