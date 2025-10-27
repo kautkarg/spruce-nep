@@ -32,11 +32,6 @@ export default function MembershipPage() {
 
                     <div className="max-w-md mx-auto">
                         <Card className="shadow-lg border-2 border-primary/20 relative overflow-hidden">
-                             <div className="absolute top-0 right-0 -m-4">
-                                <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <Star className="h-12 w-12 text-primary" />
-                                </div>
-                            </div>
                             <CardHeader className="p-8">
                                 <CardTitle className="text-primary font-serif">
                                     Pro Membership
