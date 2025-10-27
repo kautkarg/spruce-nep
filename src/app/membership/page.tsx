@@ -64,7 +64,7 @@ export default function MembershipPage() {
                             </CardContent>
                             <CardFooter className="p-8 border-t bg-muted/50">
                                 <Button size="xl" className="w-full" asChild>
-                                    <Link href="/courses?enroll=c1&plan=membership">
+                                    <Link href="/membership?action=checkout">
                                         Join the Membership
                                         <ArrowRight className="ml-2 h-5 w-5" />
                                     </Link>
