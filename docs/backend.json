@@ -1,11 +1,10 @@
-
 {
   "entities": {
     "Course": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Course",
       "type": "object",
-      "description": "Represents an educational course offered by Spruce Life Skills.",
+      "description": "Represents a course offered by Spruce Life Skills.",
       "properties": {
         "id": {
           "type": "string",
@@ -17,19 +16,15 @@
         },
         "description": {
           "type": "string",
-          "description": "A detailed description of the course content and objectives."
+          "description": "A detailed description of the course."
         },
         "category": {
           "type": "string",
-          "description": "The category or subject area the course belongs to (e.g., 'Leadership', 'Communication')."
-        },
-        "duration": {
-          "type": "string",
-          "description": "The duration of the course (e.g., '4 weeks', 'Self-paced')."
+          "description": "The category that the course belongs to (e.g., NEP)."
         },
         "imageUrl": {
           "type": "string",
-          "description": "URL to the image representing the course.",
+          "description": "URL of the image representing the course.",
           "format": "uri"
         }
       },
@@ -38,7 +33,6 @@
         "title",
         "description",
         "category",
-        "duration",
         "imageUrl"
       ]
     },
@@ -46,7 +40,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Inquiry",
       "type": "object",
-      "description": "Represents an inquiry submitted by a user.",
+      "description": "Represents an inquiry or enrollment request from a user.",
       "properties": {
         "id": {
           "type": "string",
@@ -54,24 +48,28 @@
         },
         "name": {
           "type": "string",
-          "description": "The name of the person submitting the inquiry."
+          "description": "Name of the person making the inquiry."
         },
         "email": {
           "type": "string",
-          "description": "The email address of the person submitting the inquiry.",
+          "description": "Email address of the person making the inquiry.",
           "format": "email"
         },
-        "message": {
+        "phoneNumber": {
           "type": "string",
-          "description": "The message or question submitted by the person."
+          "description": "Phone number of the person making the inquiry."
         },
         "courseId": {
           "type": "string",
-          "description": "Reference to Course. (Relationship: Course 1:N Inquiry). The course the inquiry is regarding, if applicable."
+          "description": "Reference to Course. (Relationship: Course 1:N Inquiry)"
         },
-        "submissionDate": {
+        "message": {
           "type": "string",
-          "description": "The date and time when the inquiry was submitted.",
+          "description": "Additional message or details provided by the user."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date and time when the inquiry was submitted.",
           "format": "date-time"
         }
       },
@@ -79,69 +77,17 @@
         "id",
         "name",
         "email",
+        "phoneNumber",
+        "courseId",
         "message",
-        "submissionDate"
+        "date"
       ]
-    },
-    "UserProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "User Profile",
-      "type": "object",
-      "description": "Represents a user's profile in the system.",
-      "properties": {
-        "uid": {
-          "type": "string",
-          "description": "The user's unique ID from Firebase Authentication."
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "description": "The user's email address."
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name."
-        },
-        "photoURL": {
-          "type": "string",
-          "format": "uri",
-          "description": "URL of the user's profile picture."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp of when the user profile was created."
-        }
-      },
-      "required": ["uid", "email", "createdAt"]
-    },
-    "Enrollment": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Enrollment",
-      "type": "object",
-      "description": "Represents a user's enrollment in a course.",
-      "properties": {
-        "userId": {
-          "type": "string",
-          "description": "The ID of the user who is enrolled."
-        },
-        "courseId": {
-          "type": "string",
-          "description": "The ID of the course the user is enrolled in."
-        },
-        "enrolledAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp of when the enrollment occurred."
-        }
-      },
-      "required": ["userId", "courseId", "enrolledAt"]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
@@ -153,7 +99,13 @@
           "schema": {
             "$ref": "#/backend/entities/Course"
           },
-          "description": "Stores course details, including title, description, category, duration, and image URL."
+          "description": "Stores information about each course.",
+          "params": [
+            {
+              "name": "courseId",
+              "description": "Unique identifier for the course."
+            }
+          ]
         }
       },
       {
@@ -163,29 +115,16 @@
           "schema": {
             "$ref": "#/backend/entities/Inquiry"
           },
-          "description": "Stores user inquiries related to courses or general questions."
-        }
-      },
-      {
-        "path": "/users/{userId}",
-        "definition": {
-            "entityName": "UserProfile",
-            "schema": {
-                "$ref": "#/backend/entities/UserProfile"
-            },
-            "description": "Stores public-facing user profile information."
-        }
-      },
-      {
-        "path": "/enrollments/{enrollmentId}",
-        "definition": {
-            "entityName": "Enrollment",
-            "schema": {
-                "$ref": "#/backend/entities/Enrollment"
-            },
-            "description": "Tracks which user is enrolled in which course."
+          "description": "Stores user inquiries related to the courses.",
+          "params": [
+            {
+              "name": "inquiryId",
+              "description": "Unique identifier for the inquiry."
+            }
+          ]
         }
       }
-    ]
+    ],
+    "reasoning": "This Firestore data structure is designed to support the SpruceConnect application, focusing on courses and user inquiries. It prioritizes simplicity, security, and scalability. Since all data is public, no special access control is necessary.\n\n*   **Courses Collection:** Stores information about each course. This allows easy retrieval and display of course details in the app's course catalog.\n*   **Inquiries Collection:** Stores user inquiries related to the courses. This helps to manage and respond to user requests efficiently.\n\nAuthorization Independence (N/A): Since there are no write permissions necessary, authorization independence is irrelevant. The course and inquiry data is considered open access.\n\nQAPs Support (List operations): The structure supports listing all courses and inquiries without complex filtering. This is because all documents in each collection share the same security posture."
   }
 }
