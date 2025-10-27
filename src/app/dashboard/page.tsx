@@ -3,18 +3,37 @@
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFirebase } from '@/firebase';
+import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
 import { Header } from '@/components/common/Header';
 import { AppFooter } from '@/components/common/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { courses } from '@/lib/courses';
 import { Button } from '@/components/ui/button';
-import { Leaf, BookOpen } from 'lucide-react';
+import { Leaf, BookOpen, User, BookUser } from 'lucide-react';
 import Link from 'next/link';
+import { collection } from 'firebase/firestore';
 
 export default function DashboardPage() {
-  const { user, isUserLoading } = useFirebase();
+  const { user, isUserLoading, firestore } = useFirebase();
   const router = useRouter();
+
+  // New: Query for the user's enrollments sub-collection
+  const enrollmentsQuery = useMemoFirebase(() => {
+    if (!firestore || !user?.uid) return null;
+    return collection(firestore, `users/${user.uid}/enrollments`);
+  }, [firestore, user?.uid]);
+
+  const { data: enrollments, isLoading: isEnrollmentsLoading } = useCollection<{courseId: string}>(enrollmentsQuery);
+
+  const enrolledCourseIds = useMemo(() => {
+    return enrollments?.map(e => e.courseId) || [];
+  }, [enrollments]);
+
+  const enrolledCourses = useMemo(() => {
+    return courses.filter(course => enrolledCourseIds.includes(course.id));
+  }, [enrolledCourseIds]);
+  
+  const loading = isUserLoading || isEnrollmentsLoading;
 
   const renderLoadingSkeleton = () => (
     <div className="flex items-center justify-center h-screen bg-background">
@@ -22,17 +41,37 @@ export default function DashboardPage() {
     </div>
   );
 
-  const AllCoursesList = () => {
-    if (courses.length === 0) {
+  const EnrolledCoursesList = () => {
+    if (loading) {
+       return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(3)].map((_, i) => (
+                <Card key={i} className="flex flex-col animate-pulse">
+                    <CardHeader><div className="h-10 w-10 bg-muted rounded-md"></div></CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="h-6 bg-muted rounded w-3/4"></div>
+                        <div className="h-4 bg-muted rounded w-full"></div>
+                        <div className="h-4 bg-muted rounded w-2/3"></div>
+                        <div className="h-10 bg-muted rounded w-full mt-4"></div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+       )
+    }
+
+    if (enrolledCourses.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
           <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No Courses Available</h3>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">No Courses Yet</h3>
             <p className="mt-2 text-body">
-              There are currently no courses to display.
+              You haven&apos;t enrolled in any courses. Explore our catalog to get started!
             </p>
-            <Button variant="outline" className="mt-6" onClick={() => router.push('/')}>
-              Back to Home
+            <Button variant="outline" className="mt-6" asChild>
+              <Link href="/courses">
+                Explore Courses
+              </Link>
             </Button>
         </div>
       );
@@ -40,7 +79,7 @@ export default function DashboardPage() {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courses.map((course) => (
+        {enrolledCourses.map((course) => (
           <Card key={course.id} className="flex flex-col overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
              <CardHeader className="flex-grow">
               <div className="mb-4">
@@ -52,7 +91,7 @@ export default function DashboardPage() {
             <CardContent>
               <Button asChild className="w-full">
                 <Link href={`/courses?enroll=${course.id}`}>
-                    View Details & Enroll
+                    View Course
                 </Link>
               </Button>
             </CardContent>
@@ -61,9 +100,9 @@ export default function DashboardPage() {
       </div>
     );
   };
-
+  
   if (isUserLoading) {
-    return renderLoadingSkeleton();
+      return renderLoadingSkeleton();
   }
 
   return (
@@ -76,18 +115,21 @@ export default function DashboardPage() {
               Welcome, {user?.isAnonymous ? 'Student' : (user?.displayName || 'Student')}!
             </h1>
             <p className="mt-4 text-body-lead text-muted-foreground max-w-3xl leading-relaxed">
-              This is your personal dashboard. Here you can find all available courses and start your learning journey.
+              This is your personal dashboard. Here you can find all your enrolled courses and continue your learning journey.
             </p>
           </div>
            <Card>
               <CardHeader>
-                <CardTitle>All Available Courses</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <BookUser className="h-6 w-6" />
+                  My Enrolled Courses
+                </CardTitle>
                 <CardDescription>
-                  Explore our programs and enroll to get started.
+                  Your journey to new skills starts here.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <AllCoursesList />
+                <EnrolledCoursesList />
               </CardContent>
             </Card>
         </div>
@@ -96,4 +138,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-    

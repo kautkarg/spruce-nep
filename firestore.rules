@@ -2,26 +2,29 @@
  * @fileoverview Firestore Security Rules for SpruceConnect.
  *
  * Core Philosophy:
- * This ruleset provides public read access to course and inquiry data, as per the application's design where all data is considered open access.
+ * This ruleset provides public read access to both courses and inquiries, as
+ * all data is considered non-sensitive and intended for open consumption.
+ * All write operations are disallowed, reflecting a read-only data model for this application.
  *
  * Data Structure:
  * - /courses/{courseId}: Stores information about each course.
  * - /inquiries/{inquiryId}: Stores user inquiries related to the courses.
  *
  * Key Security Decisions:
- * - No write operations are permitted through these rules.
- * - Public read access (get, list) is enabled for both courses and inquiries.
+ * - Public read access for all data.
+ * - No write access granted to any user.
+ * - No specific validation is enforced, given the read-only nature of the rules.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows anyone to read course data. No write access is allowed.
+     * @description Allows public read access to course information. No writes allowed.
      * @path /courses/{courseId}
-     * @allow (get, list) Anyone can view course details.
-     * @deny (create, update, delete) No one can create, update, or delete courses via the client.
-     * @principle Public read access.
+     * @allow (get, list) Public access to read course data.
+     * @deny (create, update, delete) No one is allowed to modify course data.
+     * @principle Public read access, no write access.
      */
     match /courses/{courseId} {
       allow get: if true;
@@ -32,11 +35,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows anyone to read inquiry data. No write access is allowed.
+     * @description Allows public read access to user inquiries. No writes allowed.
      * @path /inquiries/{inquiryId}
-     * @allow (get, list) Anyone can view inquiry details.
-     * @deny (create, update, delete) No one can create, update, or delete inquiries via the client.
-     * @principle Public read access.
+     * @allow (get, list) Public access to read inquiry data.
+     * @deny (create, update, delete) No one is allowed to modify inquiry data.
+     * @principle Public read access, no write access.
      */
     match /inquiries/{inquiryId} {
       allow get: if true;

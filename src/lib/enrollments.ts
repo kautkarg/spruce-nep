@@ -16,7 +16,8 @@ export type EnrollmentData = {
 };
 
 /**
- * Enrolls a user in a course by creating an enrollment document in Firestore.
+ * Enrolls a user in a course by creating an enrollment document in a sub-collection
+ * under the user's document in Firestore.
  * This operation is designed to be non-blocking from the UI perspective,
  * but it returns a promise that resolves upon completion or rejects on error.
  *
@@ -26,10 +27,11 @@ export type EnrollmentData = {
  */
 export function enrollInCourse(firestore: Firestore, enrollmentData: EnrollmentData): Promise<void> {
   return new Promise((resolve, reject) => {
-    const enrollmentsCollection = collection(firestore, 'enrollments');
+    // New Path: /users/{userId}/enrollments
+    const enrollmentsCollection = collection(firestore, `users/${enrollmentData.userId}/enrollments`);
 
     const enrollmentRecord = {
-      ...enrollmentData,
+      courseId: enrollmentData.courseId, // Only store the courseId
       enrolledAt: serverTimestamp(),
     };
 
