@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X, Leaf, CreditCard, PartyPopper, BookUser, ArrowRight } from "lucide-react";
+import { Check, X, Leaf, CreditCard, PartyPopper, BookUser, ArrowRight, Lock } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -211,11 +211,15 @@ export function CourseCatalog() {
                 The `enrollInCourse` function should only be called after a successful payment confirmation from your gateway.
             */}
           </div>
-          <DialogFooter className="p-6 border-t bg-muted/50">
+          <DialogFooter className="p-6 border-t bg-muted/50 flex-col">
             <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
               {isProcessing ? <Leaf className="mr-2 h-4 w-4 animate-pulse" /> : <CreditCard className="mr-2 h-4 w-4" />}
               {isProcessing ? "Processing Payment..." : `Pay ₹${selectedCourse.fees.toLocaleString()} & Start Learning`}
             </Button>
+            <p className="text-caption text-muted-foreground mt-2 flex items-center justify-center gap-2">
+                <Lock className="h-3 w-3" />
+                University-certified course, job placement support, and NEP credits included.
+            </p>
           </DialogFooter>
         </>
       )
