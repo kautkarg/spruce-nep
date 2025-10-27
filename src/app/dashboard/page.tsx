@@ -33,7 +33,7 @@ export default function DashboardPage() {
     const uniqueCourses: Course[] = [];
     
     enrollments.forEach(enrollment => {
-      if (!uniqueCourseIds.has(enrollment.courseId)) {
+      if (enrollment && !uniqueCourseIds.has(enrollment.courseId)) {
         const course = courseMap.get(enrollment.courseId);
         if (course) {
           uniqueCourseIds.add(enrollment.courseId);
@@ -70,7 +70,7 @@ export default function DashboardPage() {
       );
     }
 
-    if (enrolledCourses.length === 0) {
+    if (!enrollments || enrolledCourses.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
           <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
