@@ -2,10 +2,10 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, Leaf, UserCircle, LayoutDashboard, Star } from 'lucide-react';
+import { Menu, X, Leaf, UserCircle, LayoutDashboard, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
@@ -43,7 +43,7 @@ export function Header() {
               <Avatar className="h-10 w-10">
                 <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
                 <AvatarFallback>
-                  <UserCircle />
+                  {user.isAnonymous ? <UserCircle /> : user.displayName?.charAt(0) || <UserCircle />}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -53,7 +53,7 @@ export function Header() {
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{user.isAnonymous ? 'Guest User' : (user.displayName || 'Welcome')}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {user.isAnonymous ? 'Anonymous' : user.email}
+                  {user.isAnonymous ? 'Sign in for full access' : user.email}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -69,7 +69,14 @@ export function Header() {
       );
     }
 
-    return null;
+    return (
+        <Button asChild variant="outline">
+            <Link href="/login">
+                <LogIn className="mr-2 h-4 w-4" />
+                Login
+            </Link>
+        </Button>
+    )
   }
 
   return (
@@ -127,13 +134,16 @@ export function Header() {
                                 )}
                             </ul>
                             </nav>
+                             <div className="p-6 border-t">
+                                <UserMenu />
+                            </div>
                         </div>
                     </SheetContent>
                 </Sheet>
             </div>
 
-            <div className="flex items-center justify-end">
-                {/* UserMenu removed since login is anonymous */}
+            <div className="hidden md:flex items-center justify-end">
+                <UserMenu />
             </div>
         </div>
       </div>
