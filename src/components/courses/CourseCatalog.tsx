@@ -29,16 +29,20 @@ import {
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useFirebase, useCollection, useMemoFirebase } from "@/firebase";
+import { useFirebase, useDoc, useMemoFirebase } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { enrollInCourse } from "@/lib/enrollments";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { collection, query, where } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
 
 type EnrollmentStep = 'details' | 'payment' | 'success';
+
+type UserProfile = {
+  enrolledCourseIds?: string[];
+};
 
 export function CourseCatalog() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
@@ -55,17 +59,17 @@ export function CourseCatalog() {
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
-  const enrollmentsQuery = useMemoFirebase(() => {
+  const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid) return null;
-    return query(collection(firestore, 'enrollments'), where('userId', '==', user.uid));
+    return doc(firestore, 'users', user.uid);
   }, [firestore, user?.uid]);
 
-  const { data: enrollments } = useCollection(enrollmentsQuery);
+  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
 
   const isAlreadyEnrolled = useMemo(() => {
-    if (!enrollments || !selectedCourse) return false;
-    return enrollments.some(enrollment => enrollment.courseId === selectedCourse.id);
-  }, [enrollments, selectedCourse]);
+    if (!userProfile || !selectedCourse) return false;
+    return userProfile.enrolledCourseIds?.includes(selectedCourse.id) ?? false;
+  }, [userProfile, selectedCourse]);
 
   // Effect to handle opening course dialog from URL
   useEffect(() => {

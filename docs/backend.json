@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Course": {
@@ -36,57 +37,45 @@
         "imageUrl"
       ]
     },
-    "Inquiry": {
+    "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Inquiry",
+      "title": "User Profile",
       "type": "object",
-      "description": "Represents an inquiry or enrollment request from a user.",
+      "description": "Represents a user's profile, including their enrolled courses.",
       "properties": {
-        "id": {
+        "uid": {
           "type": "string",
-          "description": "Unique identifier for the Inquiry entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "Name of the person making the inquiry."
+          "description": "The user's unique ID from Firebase Authentication."
         },
         "email": {
           "type": "string",
-          "description": "Email address of the person making the inquiry.",
+          "description": "The user's email address.",
           "format": "email"
         },
-        "phoneNumber": {
+        "displayName": {
           "type": "string",
-          "description": "Phone number of the person making the inquiry."
+          "description": "The user's display name."
         },
-        "courseId": {
-          "type": "string",
-          "description": "Reference to Course. (Relationship: Course 1:N Inquiry)"
+        "enrolledCourseIds": {
+          "type": "array",
+          "description": "An array of course IDs that the user is enrolled in.",
+          "items": {
+            "type": "string"
+          }
         },
-        "message": {
+        "lastEnrolledAt": {
           "type": "string",
-          "description": "Additional message or details provided by the user."
-        },
-        "date": {
-          "type": "string",
-          "description": "Date and time when the inquiry was submitted.",
+          "description": "Timestamp of the last enrollment activity.",
           "format": "date-time"
         }
       },
       "required": [
-        "id",
-        "name",
-        "email",
-        "phoneNumber",
-        "courseId",
-        "message",
-        "date"
+        "uid"
       ]
     }
   },
   "auth": {
     "providers": [
-      "password",
       "anonymous"
     ]
   },
@@ -109,22 +98,22 @@
         }
       },
       {
-        "path": "/inquiries/{inquiryId}",
+        "path": "/users/{userId}",
         "definition": {
-          "entityName": "Inquiry",
+          "entityName": "UserProfile",
           "schema": {
-            "$ref": "#/backend/entities/Inquiry"
+            "$ref": "#/backend/entities/UserProfile"
           },
-          "description": "Stores user inquiries related to the courses.",
+          "description": "Stores user profile information, including an array of enrolled course IDs.",
           "params": [
             {
-              "name": "inquiryId",
-              "description": "Unique identifier for the inquiry."
+              "name": "userId",
+              "description": "The user's UID."
             }
           ]
         }
       }
     ],
-    "reasoning": "This Firestore data structure is designed to support the SpruceConnect application, focusing on courses and user inquiries. It prioritizes simplicity, security, and scalability. Since all data is public, no special access control is necessary.\n\n*   **Courses Collection:** Stores information about each course. This allows easy retrieval and display of course details in the app's course catalog.\n*   **Inquiries Collection:** Stores user inquiries related to the courses. This helps to manage and respond to user requests efficiently.\n\nAuthorization Independence (N/A): Since there are no write permissions necessary, authorization independence is irrelevant. The course and inquiry data is considered open access.\n\nQAPs Support (List operations): The structure supports listing all courses and inquiries without complex filtering. This is because all documents in each collection share the same security posture."
+    "reasoning": "This Firestore data structure is designed to support the SpruceConnect application with a focus on simplicity and security. It uses a top-level `courses` collection for public course data and a `users` collection to store user-specific information. Enrollments are stored as an array within each user's document, which simplifies security rules and data fetching for the user's dashboard."
   }
 }

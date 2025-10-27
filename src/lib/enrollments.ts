@@ -2,10 +2,12 @@
 'use client';
 
 import { 
-  addDoc,
-  collection,
+  doc,
+  setDoc,
   serverTimestamp,
   type Firestore,
+  arrayUnion,
+  FieldValue,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -16,10 +18,10 @@ export type EnrollmentData = {
 };
 
 /**
- * Enrolls a user in a course by creating an enrollment document in a sub-collection
- * under the user's document in Firestore.
- * This operation is designed to be non-blocking from the UI perspective,
- * but it returns a promise that resolves upon completion or rejects on error.
+ * Enrolls a user in a course by updating an array of course IDs
+ * on the user's document in Firestore.
+ * This operation is non-blocking and uses `setDoc` with `{ merge: true }`
+ * to avoid overwriting the user document.
  *
  * @param firestore - The Firestore database instance.
  * @param enrollmentData - An object containing the userId and courseId.
@@ -27,24 +29,28 @@ export type EnrollmentData = {
  */
 export function enrollInCourse(firestore: Firestore, enrollmentData: EnrollmentData): Promise<void> {
   return new Promise((resolve, reject) => {
-    // New Path: /users/{userId}/enrollments
-    const enrollmentsCollection = collection(firestore, `users/${enrollmentData.userId}/enrollments`);
+    // Reference to the user's document
+    const userDocRef = doc(firestore, 'users', enrollmentData.userId);
 
-    const enrollmentRecord = {
-      courseId: enrollmentData.courseId, // Only store the courseId
-      enrolledAt: serverTimestamp(),
+    const userUpdatePayload = {
+      // Use arrayUnion to add the new courseId without creating duplicates
+      enrolledCourseIds: arrayUnion(enrollmentData.courseId),
+      // Use a server timestamp to track the last enrollment activity
+      lastEnrolledAt: serverTimestamp(),
     };
 
-    addDoc(enrollmentsCollection, enrollmentRecord)
+    // Use setDoc with merge:true to create the doc if it doesn't exist
+    // or update it if it does, without overwriting other fields.
+    setDoc(userDocRef, userUpdatePayload, { merge: true })
       .then(() => {
         resolve(); // Resolve the promise on successful write
       })
       .catch((serverError) => {
         // Create a contextual error to be surfaced to the developer
         const permissionError = new FirestorePermissionError({
-          path: enrollmentsCollection.path,
-          operation: 'create',
-          requestResourceData: enrollmentRecord,
+          path: userDocRef.path,
+          operation: 'update', // This is effectively an update operation
+          requestResourceData: userUpdatePayload,
         });
 
         // Emit the error globally so it can be caught by the development overlay

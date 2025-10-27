@@ -2,38 +2,42 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { Header } from '@/components/common/Header';
 import { AppFooter } from '@/components/common/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { courses } from '@/lib/courses';
 import { Button } from '@/components/ui/button';
-import { Leaf, BookOpen, User, BookUser } from 'lucide-react';
+import { Leaf, BookOpen, BookUser } from 'lucide-react';
 import Link from 'next/link';
-import { collection } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
+
+// Define the type for the user profile data, including the enrollments array
+type UserProfile = {
+  enrolledCourseIds?: string[];
+};
 
 export default function DashboardPage() {
   const { user, isUserLoading, firestore } = useFirebase();
-  const router = useRouter();
 
-  // New: Query for the user's enrollments sub-collection
-  const enrollmentsQuery = useMemoFirebase(() => {
+  // New: Reference to the user's own document
+  const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid) return null;
-    return collection(firestore, `users/${user.uid}/enrollments`);
+    return doc(firestore, 'users', user.uid);
   }, [firestore, user?.uid]);
 
-  const { data: enrollments, isLoading: isEnrollmentsLoading } = useCollection<{courseId: string}>(enrollmentsQuery);
+  // New: Fetch the user's document data using useDoc
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
   const enrolledCourseIds = useMemo(() => {
-    return enrollments?.map(e => e.courseId) || [];
-  }, [enrollments]);
+    return userProfile?.enrolledCourseIds || [];
+  }, [userProfile]);
 
   const enrolledCourses = useMemo(() => {
     return courses.filter(course => enrolledCourseIds.includes(course.id));
   }, [enrolledCourseIds]);
   
-  const loading = isUserLoading || isEnrollmentsLoading;
+  const loading = isUserLoading || isProfileLoading;
 
   const renderLoadingSkeleton = () => (
     <div className="flex items-center justify-center h-screen bg-background">

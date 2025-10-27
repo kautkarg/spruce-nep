@@ -1,15 +1,13 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, ArrowRight, Leaf, LogOut, UserCircle, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Leaf, UserCircle, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { useState } from 'react';
 import { useFirebase } from '@/firebase';
-import { signOut } from 'firebase/auth';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,15 +26,7 @@ const navLinks = [
 
 export function Header() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, isUserLoading, auth } = useFirebase();
-
-  const handleSignOut = async () => {
-    if (auth) {
-      await signOut(auth);
-      router.push('/');
-    }
-  };
+  const { user, isUserLoading } = useFirebase();
 
   const UserMenu = () => {
     if (isUserLoading) {
@@ -140,7 +130,7 @@ export function Header() {
             </div>
 
             <div className="flex items-center justify-end">
-                <UserMenu />
+                {/* UserMenu removed since login is anonymous */}
             </div>
         </div>
       </div>
