@@ -1,49 +1,20 @@
 
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useFirebase } from '@/firebase';
 import { Header } from '@/components/common/Header';
 import { AppFooter } from '@/components/common/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { courses, Course } from '@/lib/courses';
+import { courses } from '@/lib/courses';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BookOpen, Leaf } from 'lucide-react';
-
-const courseMap = new Map(courses.map(course => [course.id, course]));
+import { Leaf, BookOpen } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
-  const { user, isUserLoading, firestore } = useFirebase();
+  const { user, isUserLoading } = useFirebase();
   const router = useRouter();
-
-  const enrollmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !user?.uid) return null;
-    return query(collection(firestore, 'enrollments'), where('userId', '==', user.uid));
-  }, [firestore, user?.uid]);
-
-  const { data: enrollments, isLoading: isLoadingEnrollments } = useCollection(enrollmentsQuery);
-
-  const enrolledCourses = useMemo(() => {
-    if (!enrollments) return [];
-    const uniqueCourseIds = new Set<string>();
-    const uniqueCourses: Course[] = [];
-    
-    enrollments.forEach(enrollment => {
-      if (enrollment && !uniqueCourseIds.has(enrollment.courseId)) {
-        const course = courseMap.get(enrollment.courseId);
-        if (course) {
-          uniqueCourseIds.add(enrollment.courseId);
-          uniqueCourses.push(course);
-        }
-      }
-    });
-
-    return uniqueCourses;
-  }, [enrollments]);
 
   const renderLoadingSkeleton = () => (
     <div className="flex items-center justify-center h-screen bg-background">
@@ -51,35 +22,17 @@ export default function DashboardPage() {
     </div>
   );
 
-  const EnrolledCoursesList = () => {
-    if (isLoadingEnrollments) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[...Array(3)].map((_, i) => (
-            <Card key={i} className="flex flex-col">
-              <CardHeader>
-                <Skeleton className="h-8 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </CardHeader>
-              <CardContent className="flex-grow flex flex-col justify-end">
-                <Skeleton className="h-10 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      );
-    }
-
-    if (!enrollments || enrolledCourses.length === 0) {
+  const AllCoursesList = () => {
+    if (courses.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
           <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No Courses Yet</h3>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">No Courses Available</h3>
             <p className="mt-2 text-body">
-              You have not enrolled in any courses.
+              There are currently no courses to display.
             </p>
-            <Button variant="outline" className="mt-6" onClick={() => router.push('/courses')}>
-              Explore Courses
+            <Button variant="outline" className="mt-6" onClick={() => router.push('/')}>
+              Back to Home
             </Button>
         </div>
       );
@@ -87,8 +40,8 @@ export default function DashboardPage() {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {enrolledCourses.map((course, index) => (
-          <Card key={`${course.id}-${index}`} className="flex flex-col overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+        {courses.map((course) => (
+          <Card key={course.id} className="flex flex-col overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
              <CardHeader className="flex-grow">
               <div className="mb-4">
                   <course.Icon className="w-10 h-10 text-primary" />
@@ -97,8 +50,10 @@ export default function DashboardPage() {
               <CardDescription>{course.certification}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Start Learning
+              <Button asChild className="w-full">
+                <Link href={`/courses?enroll=${course.id}`}>
+                    View Details & Enroll
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -107,7 +62,7 @@ export default function DashboardPage() {
     );
   };
 
-  if (isUserLoading || !user) {
+  if (isUserLoading) {
     return renderLoadingSkeleton();
   }
 
@@ -118,21 +73,21 @@ export default function DashboardPage() {
         <div className="container">
           <div className="mb-12">
             <h1 className="text-h1 font-serif">
-              Welcome, {user.isAnonymous ? 'Student' : (user.displayName || 'Student')}!
+              Welcome, {user?.isAnonymous ? 'Student' : (user?.displayName || 'Student')}!
             </h1>
             <p className="mt-4 text-body-lead text-muted-foreground max-w-3xl leading-relaxed">
-              This is your personal dashboard. Here you can find your enrolled courses and track your progress.
+              This is your personal dashboard. Here you can find all available courses and start your learning journey.
             </p>
           </div>
            <Card>
               <CardHeader>
-                <CardTitle>My Courses</CardTitle>
+                <CardTitle>All Available Courses</CardTitle>
                 <CardDescription>
-                  Courses you have successfully enrolled in.
+                  Explore our programs and enroll to get started.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <EnrolledCoursesList />
+                <AllCoursesList />
               </CardContent>
             </Card>
         </div>
