@@ -31,7 +31,6 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
     <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
     <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.012,35.846,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
-
   </svg>
 );
 
@@ -53,7 +52,6 @@ export default function LoginPage() {
   });
 
   // Effect to handle the result of a redirect-based sign-in.
-  // This is the most reliable way to get user info after Google redirects back to the app.
   useEffect(() => {
     if (!auth) return;
 
@@ -76,7 +74,7 @@ export default function LoginPage() {
           description: error.message || 'Something went wrong during sign-in. Please try again.',
         });
       });
-  }, [auth, toast]); // This hook runs once on component mount.
+  }, [auth, toast]); // This hook runs once when the component mounts.
 
   // This effect handles redirection for ANY authenticated user,
   // whether from a redirect, a direct password login, or an existing session.
@@ -105,12 +103,14 @@ export default function LoginPage() {
   const handleEmailSignIn = async ({ email, password }: z.infer<typeof formSchema>) => {
     if (!auth) return;
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Just like magic!',
-        description: "You're signed in and ready to go.",
-      });
-      // The useEffect will handle the redirect.
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        toast({
+          title: 'Just like magic!',
+          description: "You're signed in and ready to go.",
+        });
+        router.push(redirectUrl); // Manually redirect on success
+      }
     } catch (error: any) {
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast({
@@ -131,12 +131,14 @@ export default function LoginPage() {
   const handleEmailSignUp = async ({ email, password }: z.infer<typeof formSchema>) => {
     if (!auth) return;
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Welcome to the club!',
-        description: "Your account has been created. Let's get started!",
-      });
-       // The useEffect will handle the redirect.
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if(userCredential.user) {
+        toast({
+          title: 'Welcome to the club!',
+          description: "Your account has been created. Let's get started!",
+        });
+        router.push(redirectUrl); // Manually redirect on success
+      }
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         toast({
@@ -265,5 +267,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

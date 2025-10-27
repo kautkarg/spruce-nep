@@ -52,5 +52,3 @@ export function enrollInCourse(firestore: Firestore, enrollmentData: EnrollmentD
       });
   });
 }
-
-    

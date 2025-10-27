@@ -12,7 +12,7 @@ import { courses, Course } from '@/lib/courses';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Leaf } from 'lucide-react';
 
 const courseMap = new Map(courses.map(course => [course.id, course]));
 
@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
   const renderLoadingSkeleton = () => (
     <div className="flex items-center justify-center h-screen bg-background">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <Leaf className="h-32 w-32 animate-pulse text-primary" />
     </div>
   );
 

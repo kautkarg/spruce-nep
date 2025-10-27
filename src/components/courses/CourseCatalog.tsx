@@ -76,6 +76,7 @@ export function CourseCatalog() {
         openDialog(courseToOpen);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handlePayment = async () => {
