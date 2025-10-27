@@ -1,14 +1,17 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Leaf } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Leaf, LogIn, Mail } from 'lucide-react';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -36,6 +39,10 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 export default function LoginPage() {
   const { auth, user, isUserLoading } = useFirebase();
   const router = useRouter();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -47,9 +54,46 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // Let the useEffect handle the redirect
     } catch (error) {
       console.error('Error during Google sign-in:', error);
+      toast({
+        variant: "destructive",
+        title: "Sign-in Failed",
+        description: "Could not sign in with Google. Please try again.",
+      });
+    }
+  };
+  
+  const handleSignInWithEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+       // If user not found, try to create a new account
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          toast({
+            title: "Welcome!",
+            description: "Your account has been created and you're now signed in.",
+          });
+        } catch (createError: any) {
+          toast({
+            variant: "destructive",
+            title: "Registration Failed",
+            description: createError.message || "Could not create your account. Please try again.",
+          });
+        }
+      } else {
+         toast({
+            variant: "destructive",
+            title: "Sign-in Failed",
+            description: error.message || "An unknown error occurred. Please try again.",
+        });
+      }
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -73,11 +117,52 @@ export default function LoginPage() {
           <CardTitle className="font-serif">Welcome Back</CardTitle>
           <CardDescription>Sign in to access your student dashboard.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+           <form onSubmit={handleSignInWithEmail} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+               <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? <Leaf className="mr-2 h-4 w-4 animate-pulse" /> : <Mail className="mr-2 h-4 w-4" />}
+              {isSubmitting ? "Signing in..." : "Sign in with Email"}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
           <Button
             variant="outline"
             className="w-full h-12 text-body-lead"
             onClick={handleSignInWithGoogle}
+            disabled={isSubmitting}
           >
             <GoogleIcon className="mr-3 h-5 w-5" />
             Sign in with Google
