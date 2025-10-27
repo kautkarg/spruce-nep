@@ -1,7 +1,8 @@
+
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, Leaf, UserCircle, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Leaf, UserCircle, LayoutDashboard, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname, useRouter } from 'next/navigation';
@@ -21,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 const navLinks = [
     { href: '/courses', label: 'Courses' },
+    { href: '/membership', label: 'Membership' },
     { href: '/reviews', label: 'Reviews' },
 ];
 
@@ -118,6 +120,7 @@ export function Header() {
                             <nav className='flex-grow p-6'>
                             <ul className='space-y-4'>
                                 <li><SheetClose asChild><Link href="/courses" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Courses</Link></SheetClose></li>
+                                <li><SheetClose asChild><Link href="/membership" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Membership</Link></SheetClose></li>
                                 <li><SheetClose asChild><Link href="/reviews" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Reviews</Link></SheetClose></li>
                                  {user && (
                                   <li><SheetClose asChild><Link href="/dashboard" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Dashboard</Link></SheetClose></li>
