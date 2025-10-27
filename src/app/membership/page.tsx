@@ -38,8 +38,8 @@ export default function MembershipPage() {
                                 </div>
                             </div>
                             <CardHeader className="p-8">
-                                <CardTitle asChild>
-                                    <h2 className="text-primary font-serif">Pro Membership</h2>
+                                <CardTitle className="text-primary font-serif">
+                                    Pro Membership
                                 </CardTitle>
                                 <CardDescription className="text-body-lead">
                                     Everything you need to get ahead, all in one place.
