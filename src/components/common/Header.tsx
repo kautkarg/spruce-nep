@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, Leaf, UserCircle, LayoutDashboard, LogIn, Star } from 'lucide-react';
+import { Menu, X, Leaf, UserCircle, LayoutDashboard, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname } from 'next/navigation';
@@ -144,7 +144,6 @@ export function Header() {
             <div className="hidden md:flex items-center justify-end gap-4">
                 <Button asChild>
                     <Link href="/membership">
-                        <Star className="mr-2 h-4 w-4"/>
                         Become a Member
                     </Link>
                 </Button>
