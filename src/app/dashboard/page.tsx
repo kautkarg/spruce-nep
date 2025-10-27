@@ -45,12 +45,6 @@ export default function DashboardPage() {
     return uniqueCourses;
   }, [enrollments]);
 
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isUserLoading, router]);
-
   const renderLoadingSkeleton = () => (
     <div className="flex items-center justify-center h-screen bg-background">
       <Leaf className="h-32 w-32 animate-pulse text-primary" />
@@ -82,7 +76,7 @@ export default function DashboardPage() {
           <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-semibold text-foreground">No Courses Yet</h3>
             <p className="mt-2 text-body">
-              You are not enrolled in any courses.
+              You have not enrolled in any courses.
             </p>
             <Button variant="outline" className="mt-6" onClick={() => router.push('/courses')}>
               Explore Courses
@@ -124,7 +118,7 @@ export default function DashboardPage() {
         <div className="container">
           <div className="mb-12">
             <h1 className="text-h1 font-serif">
-              Welcome, {user.displayName || 'Student'}!
+              Welcome, {user.isAnonymous ? 'Student' : (user.displayName || 'Student')}!
             </h1>
             <p className="mt-4 text-body-lead text-muted-foreground max-w-3xl leading-relaxed">
               This is your personal dashboard. Here you can find your enrolled courses and track your progress.

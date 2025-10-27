@@ -342,9 +342,10 @@ export function CourseCatalog() {
               </Button>
             )
           ) : (
-            <Button asChild className="w-full" size="lg">
-              <Link href={`/login?redirect=/courses?enroll=${selectedCourse.id}`}>Login to Start Your Journey</Link>
-            </Button>
+             <Button onClick={() => setEnrollmentStep('payment')} disabled={isProcessing} className="w-full" size="lg">
+                 Enroll for ₹{selectedCourse.fees.toLocaleString()}
+                 <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
           )}
         </DialogFooter>
       </>

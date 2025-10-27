@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -30,14 +29,7 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const { user, isUserLoading, auth } = useFirebase();
-
-  const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-      e.preventDefault();
-      setIsLoading(true);
-      router.push(href);
-  };
 
   const handleSignOut = async () => {
     if (auth) {
@@ -67,9 +59,9 @@ export function Header() {
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.displayName || 'Welcome'}</p>
+                <p className="text-sm font-medium leading-none">{user.isAnonymous ? 'Guest User' : (user.displayName || 'Welcome')}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  {user.email}
+                  {user.isAnonymous ? 'Anonymous' : user.email}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -80,24 +72,12 @@ export function Header() {
                 <span>Dashboard</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
     }
 
-    return (
-      <Button asChild variant="outline">
-        <Link href="/login">
-          Login
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Link>
-      </Button>
-    )
+    return null;
   }
 
   return (
@@ -154,20 +134,6 @@ export function Header() {
                                 )}
                             </ul>
                             </nav>
-                            <div className="mt-auto p-6 border-t bg-muted/50">
-                                {user ? (
-                                   <Button onClick={handleSignOut} size="lg" className="w-full">
-                                    Sign Out
-                                  </Button>
-                                ) : (
-                                  <Button asChild size="lg" className="w-full">
-                                      <Link href="/login">
-                                          {isLoading && <Leaf className="mr-2 h-4 w-4 animate-pulse" />}
-                                          {isLoading ? 'Loading...' : 'Login / Sign Up'}
-                                      </Link>
-                                  </Button>
-                                )}
-                            </div>
                         </div>
                     </SheetContent>
                 </Sheet>
