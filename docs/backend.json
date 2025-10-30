@@ -120,60 +120,20 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/courses/{courseId}",
-        "definition": {
-          "entityName": "Course",
-          "schema": {
-            "$ref": "#/backend/entities/Course"
-          },
-          "description": "Stores information about each course.",
-          "params": [
-            {
-              "name": "courseId",
-              "description": "Unique identifier for the course."
-            }
-          ]
-        }
+    "paths": {
+      "/courses/{courseId}": {
+          "schema": { "$ref": "#/entities/Course" },
+          "description": "Stores information about each course."
       },
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile information, including enrolled courses and membership status.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The user's UID."
-            }
-          ]
-        }
+      "/users/{userId}": {
+          "schema": { "$ref": "#/entities/UserProfile" },
+          "description": "Stores user profile information, including enrolled courses and membership status."
       },
-       {
-        "path": "/users/{userId}/memberships/{membershipId}",
-        "definition": {
-          "entityName": "Membership",
-          "schema": {
-            "$ref": "#/backend/entities/Membership"
-          },
-          "description": "Stores a user's membership subscription details.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The user's UID."
-            },
-            {
-              "name": "membershipId",
-              "description": "Unique ID for the membership record."
-            }
-          ]
-        }
+       "/users/{userId}/memberships/{membershipId}": {
+          "schema": { "$ref": "#/entities/Membership" },
+          "description": "Stores a user's membership subscription details."
       }
-    ],
+    },
     "reasoning": "This Firestore data structure supports both individual course enrollments and a new membership model. Memberships are stored in a sub-collection under each user, which provides a secure and scalable way to manage subscriptions. The 'membershipStatus' on the UserProfile provides a quick way to check if a user is an active member without needing to query the sub-collection."
   }
 }

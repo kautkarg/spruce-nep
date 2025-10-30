@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useFirebase, useDoc, useMemoFirebase } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { enrollInCourse } from "@/lib/enrollments";
+import { enrollInCourse, enrollInMembership } from "@/lib/enrollments";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { doc } from "firebase/firestore";
@@ -80,7 +80,6 @@ export function CourseCatalog() {
   // Effect to handle opening dialogs from URL parameters
   useEffect(() => {
     const courseIdToOpen = searchParams.get('enroll');
-    const plan = searchParams.get('plan');
     const action = searchParams.get('action');
 
     if (action === 'checkout' && pathname === '/membership') {
@@ -90,10 +89,6 @@ export function CourseCatalog() {
         const courseToOpen = courses.find(c => c.id === courseIdToOpen);
         if (courseToOpen) {
             openCourseDialog(courseToOpen);
-            if (plan === 'membership') {
-                setIsMembershipCheckout(true);
-                setEnrollmentStep('payment');
-            }
         }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,11 +107,8 @@ export function CourseCatalog() {
     setTimeout(async () => {
       try {
         if (isMembershipCheckout) {
-          // TODO: Implement membership enrollment logic
-          console.log("Simulating membership payment for:", user.uid);
-          // This is where you would update the user's profile to 'active' membership
+          await enrollInMembership(firestore, { userId: user.uid, tier: 'yearly' });
         } else if (selectedCourse) {
-          console.log("Simulating course payment for:", user.uid, selectedCourse.id);
           await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
         }
         
@@ -158,7 +150,6 @@ export function CourseCatalog() {
     // Clean up URL
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.delete('enroll');
-    newParams.delete('plan');
     newParams.delete('action');
     router.replace(`${pathname}?${newParams.toString()}`);
   }
