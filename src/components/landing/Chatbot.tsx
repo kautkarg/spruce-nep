@@ -298,13 +298,11 @@ export function Chatbot() {
 
   return (
     <>
-      {!isOpen && (
-        <div className="fixed bottom-20 right-6 z-40 md:bottom-6">
-          <Button onClick={toggleChat} className="rounded-full w-16 h-16 shadow-lg bg-accent text-accent-foreground hover:bg-accent/90 p-0" aria-label="Toggle Chat">
-              <MessageSquare className="w-8 h-8" />
-          </Button>
-        </div>
-      )}
+      <div className="fixed bottom-20 right-6 z-40 md:bottom-6">
+        <Button onClick={toggleChat} className="rounded-full w-16 h-16 shadow-lg bg-accent text-accent-foreground hover:bg-accent/90 p-0" aria-label="Toggle Chat">
+            {isOpen ? <X className="w-8 h-8" /> : <MessageSquare className="w-8 h-8" />}
+        </Button>
+      </div>
 
       <div 
         className={cn(
@@ -408,6 +406,3 @@ export function Chatbot() {
     </>
   );
 }
-
-    
-    
