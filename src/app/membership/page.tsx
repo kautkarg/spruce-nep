@@ -73,9 +73,9 @@ export default async function MembershipPage() {
                 <section className="py-20 md:py-28">
                     <div className="container">
                         <div className="max-w-3xl mx-auto text-center mb-16">
-                            <span className="text-caption font-semibold uppercase text-primary tracking-widest">BECOME A MEMBER</span>
+                            <span className="text-caption font-semibold uppercase text-primary tracking-widest">PRO MEMBERSHIP</span>
                             <h1 className="mt-4 font-serif">
-                                Unlock Your Full Potential
+                                Your Lifelong Career Partner
                             </h1>
                             <p className="mt-6 text-body-lead text-muted-foreground leading-relaxed">
                                 Join the Spruce Lifeskills membership to get unlimited access to all courses, exclusive content, and dedicated career support. It's the ultimate investment in your future.
