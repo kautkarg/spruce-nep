@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, Leaf, UserCircle, LayoutDashboard, LogIn } from 'lucide-react';
+import { Menu, X, Leaf, UserCircle, LayoutDashboard, LogIn, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname } from 'next/navigation';

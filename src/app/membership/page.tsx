@@ -111,21 +111,25 @@ export default async function MembershipPage() {
                     <div className="container">
                         <div className="mb-16 max-w-4xl mx-auto text-center">
                             <h2 className="font-serif">
-                                What Our Students Say
+                                What Our Members Say
                             </h2>
                             <p className="mt-6 text-body-lead text-muted-foreground leading-relaxed">
-                                Real stories from students who have accelerated their careers with a Spruce Lifeskills membership.
+                                Real stories from members who have accelerated their careers with a Spruce Lifeskills Pro Membership.
                             </p>
                         </div>
                         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {featuredReviews.map((review, index) => (
-                                <div key={index} className="relative p-8 break-inside-avoid border-2 border-primary/10 bg-background/50 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 h-full flex flex-col group">
+                                <Card key={index} className="relative p-8 break-inside-avoid border-2 border-primary/10 bg-background/50 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 h-full flex flex-col group">
                                     <Quote className="absolute top-6 right-6 h-16 w-16 text-primary/5 transition-transform duration-300 group-hover:scale-110" />
-                                    <h3 className="text-h3 font-serif text-primary mb-4 relative z-10">{review.name}</h3>
-                                    <blockquote className="text-body-lead text-foreground/80 leading-relaxed flex-grow relative z-10">
-                                        “{review.review}”
-                                    </blockquote>
-                                </div>
+                                    <CardHeader className="p-0 mb-4 z-10">
+                                        <CardTitle className="text-primary">{review.name}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0 z-10 flex-grow">
+                                        <blockquote className="text-body-lead text-foreground/80 leading-relaxed">
+                                            “{review.review}”
+                                        </blockquote>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     </div>
