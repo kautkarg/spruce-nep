@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spruce Lifeskills - Course Catalog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Georgia:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="courses-catalog.css">
+</head>
+<body>
+
+    <section id="courses" class="section section-muted">
+        <div class="container">
+            <div class="courses-header">
+                <h2 class="section-title">
+                    Your Next Career Move Starts Here
+                </h2>
+                <p class="section-subheading">
+                    Ready to launch your career? Explore our university-approved, credit-based programs. Each one is a launchpad designed to make you not just a graduate, but a job-ready pro.
+                </p>
+            </div>
+            
+            <div class="courses-container">
+                <aside class="course-categories">
+                    <h3 class="categories-title">Course Categories</h3>
+                    <div class="categories-buttons">
+                        <button class="category-button active" data-category="Healthcare">Healthcare</button>
+                        <button class="category-button" data-category="Finance & Banking">Finance & Banking</button>
+                        <button class="category-button" data-category="Media & Tech">Media & Tech</button>
+                    </div>
+                </aside>
+                <main class="course-list-container">
+                    <div class="course-list">
+                        <!-- Courses will be dynamically inserted here by JS -->
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <script src="courses-catalog.js"></script>
+</body>
+</html>
