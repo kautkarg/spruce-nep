@@ -145,7 +145,7 @@ main {
     text-align: center;
 }
 .course-benefits {
-    margin-bottom: 3rem;
+    margin-top: 3rem;
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 3rem 2rem;
@@ -192,6 +192,7 @@ main {
 }
 
 .courses-container {
+    margin-top: 3rem;
     display: grid;
     gap: 3rem;
 }
@@ -319,5 +320,3 @@ main {
 .course-link:hover {
     text-decoration: underline;
 }
-
-    
