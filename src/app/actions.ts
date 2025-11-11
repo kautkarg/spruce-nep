@@ -12,25 +12,9 @@ const inquirySchema = z.object({
 });
 
 export async function submitInquiry(prevState: any, formData: FormData) {
-    const courses = formData.getAll('course');
-    
-    const validatedFields = inquirySchema.safeParse({
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        course: courses,
-        message: formData.get('message'),
-    });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Looks like some fields need a little polish. Please review the form!',
-    };
-  }
-
-  // The form now submits to WhatsApp, so the backend fetch is no longer needed.
-  // This function is retained in case of future use but the core logic is removed to prevent server errors.
-
+  // This server action is no longer in active use since the form was updated to redirect to WhatsApp.
+  // The original logic is removed to prevent potential server-side errors from being triggered.
+  // The function now returns a stable, predictable response to ensure it doesn't crash if called.
   return {
     message: "This action is no longer in use. Please submit the form via WhatsApp.",
     errors: {},
