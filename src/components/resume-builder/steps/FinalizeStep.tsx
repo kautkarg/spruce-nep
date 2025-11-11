@@ -1,21 +1,20 @@
+
 "use client";
 
 import { useFormContext } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormMessage, FormControl } from '@/components/ui/form';
 import { ResumeFormValues } from '../ResumeBuilder';
 import { Section } from './Section';
-import { Award, FileText, PlusCircle, Trash2, User } from 'lucide-react';
+import { Award, CheckCircle, FileText, PlusCircle, Trash2, User } from 'lucide-react';
 import { useFieldArray } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { MonthYearPicker } from '../MonthYearPicker';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
-import React from 'react';
 import { cn } from '@/lib/utils';
-import { FormControl } from '@/components/ui/form';
+import React from 'react';
 
 
 const templates = [
@@ -37,64 +36,40 @@ export default function FinalizeStep() {
 
     const selectedTemplate = watch('template');
 
-    const [api, setApi] = React.useState<CarouselApi>()
-    const [current, setCurrent] = React.useState(0)
-
-    React.useEffect(() => {
-        if (!api) return;
-
-        const initialTemplateIndex = templates.findIndex(t => t.id === selectedTemplate);
-        if (initialTemplateIndex !== -1) {
-            api.scrollTo(initialTemplateIndex, true);
-            setCurrent(initialTemplateIndex);
-        }
-
-        const handleSelect = () => {
-            const selectedIndex = api.selectedScrollSnap();
-            setCurrent(selectedIndex);
-            setValue('template', templates[selectedIndex].id);
-        };
-        
-        api.on("select", handleSelect);
-
-        return () => {
-            api.off("select", handleSelect);
-        };
-    }, [api, selectedTemplate, setValue]);
-
-
     return (
         <div className="space-y-6">
              <Section title="Choose Your Template" icon={FileText} isComplete={!!selectedTemplate}>
                 <FormField
                     control={control}
                     name="template"
-                    render={({ field }) => (
+                    render={() => (
                         <FormItem>
-                           <FormControl>
-                                <Carousel setApi={setApi} className="w-full">
-                                    <CarouselContent>
-                                        {templates.map((template) => (
-                                            <CarouselItem key={template.id}>
-                                                <Card className='overflow-hidden'>
-                                                    <CardContent className="p-0">
-                                                        <Image
-                                                            src={template.image}
-                                                            alt={template.name}
-                                                            width={400}
-                                                            height={565}
-                                                            className="w-full h-auto aspect-[8.5/11]"
-                                                        />
-                                                    </CardContent>
-                                                </Card>
-                                            </CarouselItem>
-                                        ))}
-                                    </CarouselContent>
-                                </Carousel>
-                           </FormControl>
-                            <div className="py-2 text-center text-sm text-muted-foreground">
-                                {templates[current]?.name}
-                            </div>
+                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                {templates.map((template) => {
+                                    const isSelected = selectedTemplate === template.id;
+                                    return (
+                                        <div key={template.id} onClick={() => setValue('template', template.id)} className="cursor-pointer">
+                                            <Card className={cn("overflow-hidden transition-all", isSelected ? 'ring-2 ring-primary ring-offset-2' : 'hover:shadow-md')}>
+                                                <CardContent className="p-0 relative">
+                                                    <Image
+                                                        src={template.image}
+                                                        alt={template.name}
+                                                        width={400}
+                                                        height={565}
+                                                        className="w-full h-auto aspect-[8.5/11]"
+                                                    />
+                                                     {isSelected && (
+                                                        <div className="absolute inset-0 bg-primary/70 flex items-center justify-center">
+                                                            <CheckCircle className="h-10 w-10 text-primary-foreground" />
+                                                        </div>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                            <p className={cn("mt-2 text-center text-sm font-medium text-muted-foreground", isSelected && "text-primary")}>{template.name}</p>
+                                        </div>
+                                    )
+                                })}
+                           </div>
                             <FormMessage />
                         </FormItem>
                     )}
