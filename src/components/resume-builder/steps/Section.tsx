@@ -15,6 +15,8 @@ export const Section = ({ title, icon: Icon, children, isComplete }: { title: st
           {title}
         </h3>
       </div>
-      <div>{children}</div>
+      <div className="pl-11">{children}</div>
     </div>
   );
+
+    

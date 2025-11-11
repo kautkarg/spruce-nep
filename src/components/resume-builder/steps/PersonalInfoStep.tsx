@@ -7,12 +7,15 @@ import { Input } from '@/components/ui/input';
 import { ResumeFormValues } from '../ResumeBuilder';
 import { Section } from './Section';
 import { User } from 'lucide-react';
+import { hasContent } from '../ResumeBuilder';
 
 export default function PersonalInfoStep() {
     const form = useFormContext<ResumeFormValues>();
 
+    const isComplete = hasContent(form.getValues('personal.name'));
+
     return (
-        <Section title="Personal Information" icon={User}>
+        <Section title="Personal Information" icon={User} isComplete={isComplete}>
             <div className="space-y-4">
                 <FormField control={form.control} name="personal.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Full Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
                 <FormField control={form.control} name="personal.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="Email" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -22,3 +25,5 @@ export default function PersonalInfoStep() {
         </Section>
     );
 }
+
+    

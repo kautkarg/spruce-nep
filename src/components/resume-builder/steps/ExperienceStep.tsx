@@ -10,16 +10,19 @@ import { MonthYearPicker } from '../MonthYearPicker';
 import { ResumeFormValues } from '../ResumeBuilder';
 import { Section } from './Section';
 import { Briefcase, PlusCircle, Trash2 } from 'lucide-react';
+import { hasContent } from '../ResumeBuilder';
 
 export default function ExperienceStep() {
-    const { control } = useFormContext<ResumeFormValues>();
+    const { control, getValues } = useFormContext<ResumeFormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: "experience",
     });
 
+    const isComplete = hasContent(getValues('experience'), 'title');
+
     return (
-        <Section title="Experience / Projects" icon={Briefcase}>
+        <Section title="Experience / Projects" icon={Briefcase} isComplete={isComplete}>
             <div className="space-y-4">
                 {fields.map((item, index) => (
                     <div key={item.id} className="space-y-3 p-4 border rounded-md mb-4 relative bg-muted/20">
@@ -45,3 +48,5 @@ export default function ExperienceStep() {
         </Section>
     );
 }
+
+    

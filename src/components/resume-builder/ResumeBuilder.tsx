@@ -17,6 +17,7 @@ import ExperienceStep from './steps/ExperienceStep';
 import SkillsStep from './steps/SkillsStep';
 import FinalizeStep from './steps/FinalizeStep';
 import { AtsClassicTemplate, AtsCompactTemplate, AtsTraditionalTemplate, ModernCreativeTemplate, ModernMinimalistTemplate, ModernStylishTemplate } from './templates';
+import { Progress } from '../ui/progress';
 
 // --- Zod Schema for Validation ---
 const personalInfoSchema = z.object({
@@ -168,6 +169,7 @@ export function ResumeBuilder() {
     const resumePreviewRef = useRef<HTMLDivElement>(null);
     const isMobile = useIsMobile();
     const [currentStep, setCurrentStep] = useState(0);
+    const [progress, setProgress] = useState(0);
     
     const form = useForm<ResumeFormValues>({
         resolver: zodResolver(resumeSchema),
@@ -203,6 +205,17 @@ export function ResumeBuilder() {
     useEffect(() => {
         const subscription = form.watch((value) => {
             localStorage.setItem('spruce-resume-data', JSON.stringify(value));
+            
+            // Calculate progress
+            const totalFields = 5; // Personal, Summary, Education, Experience, Skills
+            let completedFields = 0;
+            if (hasContent(value.personal?.name)) completedFields++;
+            if (hasContent(value.summary)) completedFields++;
+            if (hasContent(value.education, 'school')) completedFields++;
+            if (hasContent(value.experience, 'title')) completedFields++;
+            if (hasContent(value.skills)) completedFields++;
+            
+            setProgress((completedFields / totalFields) * 100);
         });
         return () => subscription.unsubscribe();
     }, [form]);
@@ -256,6 +269,10 @@ export function ResumeBuilder() {
             <div className={cn("grid grid-cols-1 gap-8", !isMobile && "lg:grid-cols-12")}>
                 <div className={cn("space-y-6", !isMobile && "lg:col-span-5 xl:col-span-4")}>
                     <div className="bg-card p-6 rounded-lg shadow-sm">
+                        <div className="mb-4">
+                            <p className="text-sm font-semibold text-gray-700 mb-2">Resume Progress</p>
+                            <Progress value={progress} />
+                        </div>
                         <Stepper steps={steps} currentStep={currentStep} />
                     </div>
                     
@@ -298,3 +315,5 @@ export function ResumeBuilder() {
         </FormProvider>
     );
 }
+
+    
