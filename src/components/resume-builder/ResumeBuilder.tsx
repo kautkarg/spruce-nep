@@ -345,10 +345,10 @@ export function ResumeBuilder() {
                     <div className="text-center mb-6 border-b border-gray-800 pb-4">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
                         {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
-                            <div className="flex justify-center items-baseline gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
-                                {hasContent(resumeData.personal.email) && <div className="flex items-baseline gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
-                                {hasContent(resumeData.personal.phone) && <div className="flex items-baseline gap-1.5"><Phone className="h-3 w-3" />{resumeData.personal.phone}</div>}
-                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-baseline gap-1.5"><Linkedin className="h-3 w-3" />{resumeData.personal.linkedin}</div>}
+                            <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
+                                {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
+                                {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{resumeData.personal.phone}</div>}
+                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5"><Linkedin className="h-3 w-3" />{resumeData.personal.linkedin}</div>}
                             </div>
                         )}
                     </div>
@@ -396,9 +396,9 @@ export function ResumeBuilder() {
                         </div>
                         <div className="w-1/3 bg-gray-100 p-6 rounded-md -my-8 -mr-8">
                             {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Contact</h2><div className="space-y-2 text-xs text-gray-700">
-                                    {hasContent(resumeData.personal.email) && <div className="flex items-baseline gap-2"><Mail className="h-3 w-3 shrink-0" /><span>{resumeData.personal.email}</span></div>}
-                                    {hasContent(resumeData.personal.phone) && <div className="flex items-baseline gap-2"><Phone className="h-3 w-3 shrink-0" /><span>{resumeData.personal.phone}</span></div>}
-                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-baseline gap-2"><Linkedin className="h-3 w-3 shrink-0" /><span>{resumeData.personal.linkedin}</span></div>}
+                                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-2"><Mail className="h-3 w-3 shrink-0" /><span>{resumeData.personal.email}</span></div>}
+                                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-2"><Phone className="h-3 w-3 shrink-0" /><span>{resumeData.personal.phone}</span></div>}
+                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-2"><Linkedin className="h-3 w-3 shrink-0" /><span>{resumeData.personal.linkedin}</span></div>}
                             </div></div>}
 
                             {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
@@ -479,17 +479,17 @@ export function ResumeBuilder() {
                                             <FormMessage />
                                         </FormItem>)} />
                                     </Section>
+
+                                    <div className="space-y-4">
+                                        <h2 className="text-2xl font-bold text-gray-800 sr-only">Actions</h2>
+                                        <Button onClick={handleDownload} className="w-full gap-2 bg-primary hover:bg-primary/90">
+                                            <Printer className="h-4 w-4" />
+                                            Download as PDF
+                                        </Button>
+                                    </div>
                                 </form>
                             </Form>
                         </FormProvider>
-
-                        <div className="space-y-4">
-                             <h2 className="text-2xl font-bold text-gray-800 sr-only">Actions</h2>
-                            <Button onClick={handleDownload} className="w-full gap-2 bg-primary hover:bg-primary/90">
-                                <Printer className="h-4 w-4" />
-                                Download as PDF
-                            </Button>
-                        </div>
                     </div>
                     <div className="lg:col-span-7 xl:col-span-8">
                         <div className="sticky top-8">
@@ -503,9 +503,5 @@ export function ResumeBuilder() {
         </div>
     );
 }
-
-    
-
-    
 
     
