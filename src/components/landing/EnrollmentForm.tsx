@@ -51,7 +51,7 @@ export function EnrollmentForm() {
   const onSubmit = async (data: InquiryFormValues) => {
     setIsSubmitting(true);
     
-    const whatsAppNumber = "918446294890";
+    const whatsAppNumber = "8446294890";
     const selectedCourses = data.course.join(', ');
     const finalMessage = data.message || `Interested in the course(s): ${selectedCourses}. Please provide more information.`;
 
