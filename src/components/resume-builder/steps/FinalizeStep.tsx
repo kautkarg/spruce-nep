@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useFormContext } from 'react-hook-form';
@@ -6,24 +7,22 @@ import { Button } from "@/components/ui/button";
 import { FormField, FormItem, FormLabel, FormMessage, FormControl } from '@/components/ui/form';
 import { ResumeFormValues } from '../ResumeBuilder';
 import { Section } from './Section';
-import { Award, CheckCircle, FileText, PlusCircle, Trash2, User } from 'lucide-react';
+import { Award, FileText, PlusCircle, Trash2, User } from 'lucide-react';
 import { useFieldArray } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { MonthYearPicker } from '../MonthYearPicker';
 import { Textarea } from '@/components/ui/textarea';
-import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 
 const templates = [
-    { id: 'ats-classic', name: 'Classic', image: '/images/resume-templates/ats-classic.png' },
-    { id: 'ats-traditional', name: 'Traditional', image: '/images/resume-templates/ats-traditional.png' },
-    { id: 'ats-compact', name: 'Compact', image: '/images/resume-templates/ats-compact.png' },
-    { id: 'modern-stylish', name: 'Stylish', image: '/images/resume-templates/modern-stylish.png' },
-    { id: 'modern-creative', name: 'Creative', image: '/images/resume-templates/modern-creative.png' },
-    { id: 'modern-minimalist', name: 'Minimalist', image: '/images/resume-templates/modern-minimalist.png' },
+    { id: 'ats-classic', name: 'Classic' },
+    { id: 'ats-traditional', name: 'Traditional' },
+    { id: 'ats-compact', name: 'Compact' },
+    { id: 'modern-stylish', name: 'Stylish' },
+    { id: 'modern-creative', name: 'Creative' },
+    { id: 'modern-minimalist', name: 'Minimalist' },
 ];
 
 
@@ -44,29 +43,18 @@ export default function FinalizeStep() {
                     name="template"
                     render={() => (
                         <FormItem>
-                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                           <div className="flex flex-wrap gap-2">
                                 {templates.map((template) => {
                                     const isSelected = selectedTemplate === template.id;
                                     return (
-                                        <div key={template.id} onClick={() => setValue('template', template.id)} className="cursor-pointer">
-                                            <Card className={cn("overflow-hidden transition-all", isSelected ? 'ring-2 ring-primary ring-offset-2' : 'hover:shadow-md')}>
-                                                <CardContent className="p-0 relative">
-                                                    <Image
-                                                        src={template.image}
-                                                        alt={template.name}
-                                                        width={400}
-                                                        height={565}
-                                                        className="w-full h-auto aspect-[8.5/11]"
-                                                    />
-                                                     {isSelected && (
-                                                        <div className="absolute inset-0 bg-primary/70 flex items-center justify-center">
-                                                            <CheckCircle className="h-10 w-10 text-primary-foreground" />
-                                                        </div>
-                                                    )}
-                                                </CardContent>
-                                            </Card>
-                                            <p className={cn("mt-2 text-center text-sm font-medium text-muted-foreground", isSelected && "text-primary")}>{template.name}</p>
-                                        </div>
+                                        <Button
+                                            key={template.id}
+                                            type="button"
+                                            variant={isSelected ? 'primary' : 'outline'}
+                                            onClick={() => setValue('template', template.id)}
+                                        >
+                                            {template.name}
+                                        </Button>
                                     )
                                 })}
                            </div>
@@ -115,3 +103,4 @@ export default function FinalizeStep() {
         </div>
     );
 }
+
