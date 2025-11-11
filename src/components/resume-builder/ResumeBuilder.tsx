@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray, Controller, useFormContext, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -356,7 +356,7 @@ export function ResumeBuilder() {
                             </div>
                         </Section>
 
-                        <Form {...form}>
+                        <FormProvider {...form}>
                             <form className="space-y-6">
                                 <Section title="Personal Information" icon={User}>
                                     <FormField control={form.control} name="personal.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Full Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -420,7 +420,7 @@ export function ResumeBuilder() {
                                     </FormItem>)} />
                                 </Section>
                             </form>
-                        </Form>
+                        </FormProvider>
                     </div>
                     <div className="lg:col-span-7 xl:col-span-8">
                         <div className="sticky top-8">
@@ -435,4 +435,3 @@ export function ResumeBuilder() {
     );
 }
 
-    
