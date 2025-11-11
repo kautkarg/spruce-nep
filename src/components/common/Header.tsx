@@ -2,23 +2,12 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, X, Leaf, UserCircle, LayoutDashboard, LogIn, Star } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { useFirebase } from '@/firebase';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-
 
 const navLinks = [
     { href: '/courses', label: 'Courses' },
@@ -27,56 +16,6 @@ const navLinks = [
 
 export function Header() {
   const pathname = usePathname();
-  const { user, isUserLoading } = useFirebase();
-
-  const UserMenu = () => {
-    if (isUserLoading) {
-      return <Leaf className="h-6 w-6 animate-pulse" />;
-    }
-
-    if (user) {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
-                <AvatarFallback>
-                  {user.isAnonymous ? <UserCircle /> : user.displayName?.charAt(0) || <UserCircle />}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.isAnonymous ? 'Guest User' : (user.displayName || 'Welcome')}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user.isAnonymous ? 'Sign in for full access' : user.email}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    }
-
-    return (
-        <Button asChild variant="outline">
-            <Link href="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign In
-            </Link>
-        </Button>
-    )
-  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-lg">
@@ -126,15 +65,15 @@ export function Header() {
                             <nav className='flex-grow p-6'>
                             <ul className='space-y-4'>
                                 <li><SheetClose asChild><Link href="/courses" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Courses</Link></SheetClose></li>
-                                <li><SheetClose asChild><Link href="/membership" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Membership</Link></SheetClose></li>
                                 <li><SheetClose asChild><Link href="/reviews" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Reviews</Link></SheetClose></li>
-                                 {user && (
-                                  <li><SheetClose asChild><Link href="/dashboard" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Dashboard</Link></SheetClose></li>
-                                )}
                             </ul>
                             </nav>
                              <div className="p-6 border-t">
-                                <UserMenu />
+                                <Button asChild className="w-full">
+                                    <Link href="#enroll">
+                                        Enroll Now
+                                    </Link>
+                                </Button>
                             </div>
                         </div>
                     </SheetContent>
@@ -143,11 +82,10 @@ export function Header() {
 
             <div className="hidden md:flex items-center justify-end gap-4">
                 <Button asChild>
-                    <Link href="/membership">
-                        Become a Member
+                    <Link href="#enroll">
+                        Enroll Now
                     </Link>
                 </Button>
-                <UserMenu />
             </div>
         </div>
       </div>

@@ -36,104 +36,18 @@
         "category",
         "imageUrl"
       ]
-    },
-    "UserProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "User Profile",
-      "type": "object",
-      "description": "Represents a user's profile, including their enrolled courses and membership status.",
-      "properties": {
-        "uid": {
-          "type": "string",
-          "description": "The user's unique ID from Firebase Authentication."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The user's display name."
-        },
-        "enrolledCourseIds": {
-          "type": "array",
-          "description": "An array of course IDs that the user is enrolled in.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "lastEnrolledAt": {
-          "type": "string",
-          "description": "Timestamp of the last enrollment activity.",
-          "format": "date-time"
-        },
-        "membershipStatus": {
-          "type": "string",
-          "description": "The current status of the user's membership.",
-          "enum": ["active", "inactive", "none"]
-        }
-      },
-      "required": [
-        "uid"
-      ]
-    },
-    "Membership": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Membership",
-      "type": "object",
-      "description": "Represents a user's membership subscription.",
-      "properties": {
-        "userId": {
-          "type": "string",
-          "description": "The ID of the user who owns this membership."
-        },
-        "tier": {
-          "type": "string",
-          "description": "The membership tier (e.g., 'monthly', 'yearly').",
-          "enum": ["monthly", "yearly"]
-        },
-        "status": {
-          "type": "string",
-          "description": "The current status of the membership.",
-          "enum": ["active", "cancelled", "expired"]
-        },
-        "startDate": {
-          "type": "string",
-          "description": "The start date of the current billing period.",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "description": "The end date of the current billing period.",
-          "format": "date-time"
-        }
-      },
-      "required": ["userId", "tier", "status", "startDate"]
     }
   },
   "auth": {
-    "providers": [
-      "anonymous",
-      "google.com",
-      "password"
-    ]
+    "providers": []
   },
   "firestore": {
     "paths": {
       "/courses/{courseId}": {
           "schema": { "$ref": "#/entities/Course" },
           "description": "Stores information about each course."
-      },
-      "/users/{userId}": {
-          "schema": { "$ref": "#/entities/UserProfile" },
-          "description": "Stores user profile information, including enrolled courses and membership status."
-      },
-       "/users/{userId}/memberships/{membershipId}": {
-          "schema": { "$ref": "#/entities/Membership" },
-          "description": "Stores a user's membership subscription details."
       }
     },
-    "reasoning": "This Firestore data structure supports both individual course enrollments and a new membership model. Memberships are stored in a sub-collection under each user, which provides a secure and scalable way to manage subscriptions. The 'membershipStatus' on the UserProfile provides a quick way to check if a user is an active member without needing to query the sub-collection."
+    "reasoning": "This Firestore data structure stores public course information. User-specific data is no longer stored as authentication and membership features have been removed."
   }
 }

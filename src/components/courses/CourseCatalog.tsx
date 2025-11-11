@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { courses } from "@/lib/courses";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { Check, X, Leaf, CreditCard, PartyPopper, BookUser, ArrowRight, Lock, Star } from "lucide-react";
+import { Check, X, ArrowRight } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import {
   Select,
@@ -29,63 +29,25 @@ import {
 import { CourseBenefits } from "./CourseBenefits";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useFirebase, useDoc, useMemoFirebase } from "@/firebase";
-import { useToast } from "@/hooks/use-toast";
-import { enrollInCourse, enrollInMembership } from "@/lib/enrollments";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { doc } from "firebase/firestore";
 
 const categories = ["Healthcare", "Finance & Banking", "Media & Tech"];
-
-type EnrollmentStep = 'details' | 'payment' | 'success';
-
-type UserProfile = {
-  enrolledCourseIds?: string[];
-  membershipStatus?: 'active' | 'inactive' | 'none';
-};
 
 export function CourseCatalog() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [isMembershipCheckout, setIsMembershipCheckout] = useState(false);
-  const [enrollmentStep, setEnrollmentStep] = useState<EnrollmentStep>('details');
-  const [isProcessing, setIsProcessing] = useState(false);
   
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
-  const { user, firestore } = useFirebase();
 
   const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!firestore || !user?.uid) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user?.uid]);
-
-  const { data: userProfile } = useDoc<UserProfile>(userDocRef);
-
-  const isAlreadyEnrolled = useMemo(() => {
-    if (!userProfile || !selectedCourse) return false;
-    return userProfile.enrolledCourseIds?.includes(selectedCourse.id) ?? false;
-  }, [userProfile, selectedCourse]);
-
-  const hasActiveMembership = useMemo(() => {
-    return userProfile?.membershipStatus === 'active';
-  }, [userProfile]);
-
   // Effect to handle opening dialogs from URL parameters
   useEffect(() => {
     const courseIdToOpen = searchParams.get('enroll');
-    const action = searchParams.get('action');
 
-    if (action === 'checkout' && pathname === '/membership') {
-        setIsMembershipCheckout(true);
-        setEnrollmentStep('payment');
-    } else if (courseIdToOpen) {
+    if (courseIdToOpen) {
         const courseToOpen = courses.find(c => c.id === courseIdToOpen);
         if (courseToOpen) {
             openCourseDialog(courseToOpen);
@@ -94,160 +56,23 @@ export function CourseCatalog() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, pathname]);
 
-  const handlePayment = async () => {
-    if (!user || !firestore) {
-        // Redirect to login if user is not authenticated
-        router.push('/login');
-        return;
-    }
-
-    setIsProcessing(true);
-    // DEVELOPER NOTE: Replace this with your payment gateway API.
-    // The success callback should trigger the enrollment.
-    setTimeout(async () => {
-      try {
-        if (isMembershipCheckout) {
-          await enrollInMembership(firestore, { userId: user.uid, tier: 'yearly' });
-        } else if (selectedCourse) {
-          await enrollInCourse(firestore, { userId: user.uid, courseId: selectedCourse.id });
-        }
-        
-        toast({
-            title: isMembershipCheckout ? "Welcome to the Club!" : "Let the learning commence!",
-            description: isMembershipCheckout 
-                ? "You're now a Pro Member. Enjoy unlimited access!"
-                : `You're officially enrolled in "${selectedCourse?.title}".`,
-        });
-        setEnrollmentStep('success');
-
-      } catch (error) {
-         console.error("Enrollment failed:", error);
-         toast({
-          variant: "destructive",
-          title: "Oh no, a wild error appeared!",
-          description: "Something went wrong. Please give it another go.",
-        });
-        setEnrollmentStep('payment');
-      } finally {
-        setIsProcessing(false);
-      }
-    }, 2000); // Simulating 2-second payment processing.
-  };
-
 
   const openCourseDialog = (course: Course) => {
     setSelectedCourse(course);
-    setIsMembershipCheckout(false);
-    setEnrollmentStep('details');
   }
 
   const closeDialog = () => {
     setSelectedCourse(null);
-    setIsMembershipCheckout(false);
-    setIsProcessing(false);
-    setTimeout(() => setEnrollmentStep('details'), 300);
     
     // Clean up URL
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.delete('enroll');
-    newParams.delete('action');
     router.replace(`${pathname}?${newParams.toString()}`);
   }
   
   const renderDialogContent = () => {
-    const isDialogOpen = !!selectedCourse || isMembershipCheckout;
+    const isDialogOpen = !!selectedCourse;
     if (!isDialogOpen) return null;
-
-    if (enrollmentStep === 'success') {
-      return (
-        <>
-          <DialogHeader className="p-6 text-center items-center">
-            <PartyPopper className="h-16 w-16 text-primary mb-4" />
-            <DialogTitle asChild>
-              <h4 className="text-primary mb-2 font-serif">
-                {isMembershipCheckout ? "Welcome to the Club!" : "You're In! Welcome Aboard!"}
-              </h4>
-            </DialogTitle>
-            <DialogDescription className="text-body text-foreground/90 max-w-sm mx-auto">
-              {isMembershipCheckout 
-                ? "You're now a Pro Member with unlimited access to all our courses."
-                : `You've successfully enrolled in "${selectedCourse?.title}".`
-              } Your learning adventure begins now.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="p-6 border-t bg-muted/50">
-            <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg">
-              Go to My Dashboard
-            </Button>
-          </DialogFooter>
-        </>
-      )
-    }
-
-    if (enrollmentStep === 'payment') {
-      const title = isMembershipCheckout ? "Join Pro Membership" : `Enroll in ${selectedCourse?.title}`;
-      const price = isMembershipCheckout ? 4999 : selectedCourse?.fees;
-      const description = isMembershipCheckout ? "Get unlimited access to all courses and workshops." : "One-time investment for a lifetime of skills.";
-
-      return (
-         <>
-          <DialogHeader className="p-6">
-             <Button variant="ghost" size="icon" className="absolute right-4 top-4 h-8 w-8" onClick={closeDialog}>
-                <X className="h-4 w-4" />
-                <span className="sr-only">Back</span>
-              </Button>
-            <DialogTitle asChild>
-              <h4 className="text-primary mb-2 font-serif">
-                Final Step: Secure Your Spot
-              </h4>
-            </DialogTitle>
-             <DialogDescription className="text-body text-left text-foreground/90">
-             You're one step away from unlocking your potential. This is where the magic happens!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="px-6 pb-6 space-y-6">
-            <div className="border rounded-lg p-4 space-y-2 bg-muted/50">
-                <div className="flex justify-between items-center text-body font-semibold">
-                    <span>{title}</span>
-                    <span>₹{price?.toLocaleString()}</span>
-                </div>
-                 <p className="text-sm text-muted-foreground">{description}</p>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="card-number">Card Number</Label>
-                <Input id="card-number" placeholder="1234 5678 9101 1121" className="mt-1" />
-              </div>
-              <div>
-                <Label htmlFor="card-name">Name on Card</Label>
-                <Input id="card-name" placeholder="Your Name" className="mt-1" />
-              </div>
-              <div className="flex gap-4">
-                <div className="w-1/2">
-                  <Label htmlFor="expiry-date">Expiry Date</Label>
-                  <Input id="expiry-date" placeholder="MM/YY" className="mt-1" />
-                </div>
-                <div className="w-1/2">
-                  <Label htmlFor="cvc">CVC</Label>
-                  <Input id="cvc" placeholder="123" className="mt-1" />
-                </div>
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="p-6 border-t bg-muted/50 flex-col">
-            <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
-              {isProcessing ? <Leaf className="mr-2 h-4 w-4 animate-pulse" /> : <CreditCard className="mr-2 h-4 w-4" />}
-              {isProcessing ? "Processing Payment..." : `Pay ₹${price?.toLocaleString()} & Start Learning`}
-            </Button>
-             <p className='text-caption text-muted-foreground mt-4 flex items-center justify-center gap-2'>
-              <Lock className="h-3 w-3" />
-              University-certified course, job placement support, and NEP credits included.
-            </p>
-          </DialogFooter>
-        </>
-      )
-    }
     
     // Details step for a course
     if (!selectedCourse) return null;
@@ -293,34 +118,12 @@ export function CourseCatalog() {
           </ScrollArea>
         </DialogDescription>
         <DialogFooter className="p-6 border-t bg-muted/50 gap-4">
-            {hasActiveMembership ? (
-                 <Button className="w-full" size="lg" variant="outline" disabled>
-                    <Star className="mr-2 h-4 w-4" />
-                    Already included in your Pro Membership!
-                </Button>
-            ) : isAlreadyEnrolled ? (
-              <Button onClick={() => router.push('/dashboard')} className="w-full" size="lg" variant="outline">
-                <BookUser className="mr-2 h-4 w-4" />
-                You're Already Enrolled! Go to Dashboard
-              </Button>
-            ) : (
-             <>
-                <div className="w-full space-y-2">
-                    <Button onClick={() => setEnrollmentStep('payment')} className="w-full" size="lg">
-                        Enroll for ₹{selectedCourse.fees.toLocaleString()}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                    <p className="text-caption text-center text-muted-foreground">One-time purchase for lifetime access.</p>
-                </div>
-                 <div className="w-full space-y-2">
-                    <Button onClick={() => { setIsMembershipCheckout(true); setEnrollmentStep('payment'); }} variant="outline" className="w-full bg-primary/5 border-primary/20 hover:bg-primary/10" size="lg">
-                        <Star className="mr-2 h-4 w-4" />
-                        Join Pro & Get All Courses
-                    </Button>
-                     <p className="text-caption text-center text-muted-foreground">₹4,999/year. Includes this and all future courses.</p>
-                </div>
-            </>
-          )}
+            <Button asChild className="w-full" size="lg">
+              <Link href="/#enroll">
+                Enroll Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
         </DialogFooter>
       </>
     )
@@ -386,7 +189,7 @@ export function CourseCatalog() {
           </div>
         </div>
 
-        <Dialog open={!!selectedCourse || isMembershipCheckout} onOpenChange={(isOpen) => { if (!isOpen) closeDialog(); }}>
+        <Dialog open={!!selectedCourse} onOpenChange={(isOpen) => { if (!isOpen) closeDialog(); }}>
           <DialogContent className="sm:max-w-lg p-0">{renderDialogContent()}</DialogContent>
         </Dialog>
       </section>

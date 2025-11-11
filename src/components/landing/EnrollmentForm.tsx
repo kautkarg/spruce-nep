@@ -25,7 +25,6 @@ import { courses } from "@/lib/courses";
 import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
-import { useFirebase } from "@/firebase";
 
 const inquirySchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -38,7 +37,6 @@ type InquiryFormValues = z.infer<typeof inquirySchema>;
 
 export function EnrollmentForm() {
   const { toast } = useToast();
-  const { user } = useFirebase();
 
   const form = useForm<InquiryFormValues>({
     resolver: zodResolver(inquirySchema),
@@ -49,12 +47,6 @@ export function EnrollmentForm() {
       message: "",
     },
   });
-
-  React.useEffect(() => {
-    if (user?.displayName) {
-      form.setValue('name', user.displayName);
-    }
-  }, [user, form]);
 
   const onSubmit = async (data: InquiryFormValues) => {
     const formData = new FormData();
@@ -82,9 +74,6 @@ export function EnrollmentForm() {
       });
       if (result.reset) {
         form.reset();
-        if (user?.displayName) {
-          form.setValue('name', user.displayName);
-        }
       }
     }
   };
