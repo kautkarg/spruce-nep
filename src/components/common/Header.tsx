@@ -11,6 +11,7 @@ import Image from 'next/image';
 
 const navLinks = [
     { href: '/courses', label: 'Courses' },
+    { href: '/resume-builder', label: 'Resume Builder'},
     { href: '/reviews', label: 'Reviews' },
 ];
 
@@ -64,8 +65,9 @@ export function Header() {
                         <div className="flex flex-col h-full">
                             <nav className='flex-grow p-6'>
                             <ul className='space-y-4'>
-                                <li><SheetClose asChild><Link href="/courses" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Courses</Link></SheetClose></li>
-                                <li><SheetClose asChild><Link href="/reviews" className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>Reviews</Link></SheetClose></li>
+                                {navLinks.map((link) => (
+                                <li key={link.href}><SheetClose asChild><Link href={link.href} className='block text-body-lead font-semibold p-2 rounded-md hover:bg-muted leading-relaxed'>{link.label}</Link></SheetClose></li>
+                                ))}
                             </ul>
                             </nav>
                              <div className="p-6 border-t">

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, BookOpen, Star, Leaf } from 'lucide-react';
+import { Home, BookOpen, Star, Leaf, NotebookPen } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -11,6 +11,7 @@ import Image from 'next/image';
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/courses', label: 'Courses', icon: BookOpen },
+  { href: '/resume-builder', label: 'Resume', icon: NotebookPen },
   { href: '/reviews', label: 'Reviews', icon: Star },
 ];
 
