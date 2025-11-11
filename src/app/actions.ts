@@ -38,6 +38,5 @@ export type GoogleReview = {
  * You can edit the `src/lib/reviews.ts` file to manage the testimonials displayed on your site.
  */
 export async function getGoogleReviews(): Promise<GoogleReview[]> {
-    console.log("Fetching manually curated reviews from src/lib/reviews.ts.");
     return manualReviews;
 }
