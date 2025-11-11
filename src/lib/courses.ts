@@ -11,6 +11,7 @@ export type Course = {
   trainerInfo: string;
   fees: number;
   certification: 'RTMNU Certified' | 'AAPC Certified';
+  link?: string;
   details: {
     credits: string;
     duration: string;
@@ -31,6 +32,7 @@ export const courses: Course[] = [
     trainerInfo: 'Our trainers are industry-certified professionals with over 10 years of experience in healthcare information management and revenue cycle optimization. They bring extensive real-world knowledge from working with leading hospitals and insurance companies.',
     fees: 2000,
     certification: 'AAPC Certified',
+    link: 'https://sprucelifeskills.org.in/course/medical-coding/',
     details: {
         credits: "2 Points",
         duration: "45 Hours (Online)",
@@ -63,6 +65,7 @@ export const courses: Course[] = [
     trainerInfo: 'Led by seasoned medical billing experts with a deep understanding of the healthcare revenue cycle. Our trainers have a proven track record of improving billing efficiency and reducing claim denials for major healthcare providers.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/medical-billing/',
     details: {
         credits: "2 Points",
         duration: "45 Hours (Online)",
@@ -96,6 +99,7 @@ export const courses: Course[] = [
     trainerInfo: 'Our instructors are AR management specialists with extensive experience in optimizing revenue cycles for healthcare organizations. They bring practical insights on denial management, appeals, and improving cash flow.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/accounts-receivable-ar-management/',
     details: {
         credits: "2 Points",
         duration: "45 Hours (Online)",
@@ -129,6 +133,7 @@ export const courses: Course[] = [
     trainerInfo: 'This program is taught by experienced clinical research and pharmacovigilance professionals who have managed global clinical trials and implemented drug safety programs for leading pharmaceutical companies.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/clinical-research/',
     details: {
         credits: "2 Points",
         duration: "60 Hours (Online)",
@@ -162,6 +167,7 @@ export const courses: Course[] = [
     trainerInfo: 'Our trainers are certified Debt Recovery Agents with years of experience in the banking and financial services industry. They specialize in ethical negotiation tactics and legal compliance in the collections process.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/debt-recovery-agent-dra/',
     details: {
         credits: "2 Points",
         duration: "30 Hours (Online)",
@@ -195,6 +201,7 @@ export const courses: Course[] = [
     trainerInfo: 'This course is led by veteran banking professionals and Certified Credit Professionals who have managed large credit portfolios. They bring deep expertise in credit risk analysis, lending policies, and financial modeling.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/certified-credit-professional-ccp/',
     details: {
         credits: "2 Points",
         duration: "45 Hours (Online)",
@@ -228,6 +235,7 @@ export const courses: Course[] = [
     trainerInfo: 'Learn from senior UX/UI designers who have worked on popular consumer apps and enterprise software. Our instructors are experts in design thinking, user research, and creating beautiful, user-centric digital products.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/ui-ux-designing/',
     details: {
         credits: "2 Points",
         duration: "45 Hours (Online)",
@@ -260,6 +268,7 @@ export const courses: Course[] = [
     trainerInfo: 'Our trainers are professional 3D artists and animators from the gaming and visual effects industries. They bring production experience from major studios and are masters of tools like Blender, Maya, and ZBrush.',
     fees: 2000,
     certification: 'RTMNU Certified',
+    link: 'https://sprucelifeskills.org.in/course/3d-animation-and-vfx/',
     details: {
         credits: "2 Points",
         duration: "60 Hours (Online)",
@@ -285,8 +294,3 @@ export const courses: Course[] = [
     }
   },
 ];
-
-    
-    
-
-    
