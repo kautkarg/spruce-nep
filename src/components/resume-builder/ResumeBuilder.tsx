@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useForm, useFieldArray, Controller, useFormContext, FormProvider } from "react-hook-form";
+import { useForm, useFieldArray, FormProvider, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -247,7 +247,7 @@ export function ResumeBuilder() {
     };
 
     const getAchievements = (achievements: string | undefined | null) => {
-      if (!achievements) return [];
+      if (typeof achievements !== 'string') return [];
       return achievements.split('\n').filter(line => line.trim() !== '');
     }
 
@@ -359,69 +359,71 @@ export function ResumeBuilder() {
                         </Section>
 
                         <FormProvider {...form}>
-                            <form className="space-y-6">
-                                <Section title="Personal Information" icon={User}>
-                                    <FormField control={form.control} name="personal.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Full Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="personal.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="Email" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="personal.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input placeholder="Phone" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                    <FormField control={form.control} name="personal.linkedin" render={({ field }) => (<FormItem><FormLabel>LinkedIn Profile URL</FormLabel><FormControl><Input placeholder="LinkedIn Profile URL" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                </Section>
-                                
-                                <Section title="Summary / Objective" icon={UserCheck}>
-                                    <FormField control={form.control} name="summary" render={({ field }) => (<FormItem><FormControl><Textarea placeholder="A brief summary of your skills and career goals..." {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
-                                </Section>
+                            <Form {...form}>
+                                <form className="space-y-6">
+                                    <Section title="Personal Information" icon={User}>
+                                        <FormField control={form.control} name="personal.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Full Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name="personal.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="Email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name="personal.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input placeholder="Phone" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name="personal.linkedin" render={({ field }) => (<FormItem><FormLabel>LinkedIn Profile URL</FormLabel><FormControl><Input placeholder="LinkedIn Profile URL" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                    </Section>
+                                    
+                                    <Section title="Summary / Objective" icon={UserCheck}>
+                                        <FormField control={form.control} name="summary" render={({ field }) => (<FormItem><FormControl><Textarea placeholder="A brief summary of your skills and career goals..." {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
+                                    </Section>
 
-                                <Section title="Education" icon={GraduationCap}>
-                                    <DynamicSection name="education" title="Education" newItem={{ school: "", degree: "", date: "", gpa: "" }} fieldsConfig={[
-                                        { key: 'school', label: 'School / University', placeholder: 'e.g., State University' },
-                                        { key: 'degree', label: 'Degree & Major', placeholder: 'e.g., B.S. in Computer Science' },
-                                        { key: 'date', label: 'Date', placeholder: 'e.g., Aug 2020 - May 2024' },
-                                        { key: 'gpa', label: 'GPA (Optional)', placeholder: 'e.g., 3.8/4.0' }
-                                    ]} />
-                                </Section>
+                                    <Section title="Education" icon={GraduationCap}>
+                                        <DynamicSection name="education" title="Education" newItem={{ school: "", degree: "", date: "", gpa: "" }} fieldsConfig={[
+                                            { key: 'school', label: 'School / University', placeholder: 'e.g., State University' },
+                                            { key: 'degree', label: 'Degree & Major', placeholder: 'e.g., B.S. in Computer Science' },
+                                            { key: 'date', label: 'Date', placeholder: 'e.g., Aug 2020 - May 2024' },
+                                            { key: 'gpa', label: 'GPA (Optional)', placeholder: 'e.g., 3.8/4.0' }
+                                        ]} />
+                                    </Section>
 
-                                <Section title="Experience / Projects" icon={Briefcase}>
-                                    <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: "", achievements: "" }} fieldsConfig={[
-                                        { key: 'title', label: 'Title', placeholder: 'e.g., Software Engineer Intern' },
-                                        { key: 'organization', label: 'Organization', placeholder: 'e.g., Tech Company Inc.' },
-                                        { key: 'dates', label: 'Dates', placeholder: 'e.g., June 2023 - Aug 2023' },
-                                        { key: 'achievements', label: 'Achievements (one per line)', type: 'textarea', placeholder: 'Describe your responsibilities and achievements...' }
-                                    ]} />
-                                </Section>
+                                    <Section title="Experience / Projects" icon={Briefcase}>
+                                        <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: "", achievements: "" }} fieldsConfig={[
+                                            { key: 'title', label: 'Title', placeholder: 'e.g., Software Engineer Intern' },
+                                            { key: 'organization', label: 'Organization', placeholder: 'e.g., Tech Company Inc.' },
+                                            { key: 'dates', label: 'Dates', placeholder: 'e.g., June 2023 - Aug 2023' },
+                                            { key: 'achievements', label: 'Achievements (one per line)', type: 'textarea', placeholder: 'Describe your responsibilities and achievements...' }
+                                        ]} />
+                                    </Section>
 
-                                <Section title="Awards & Honors" icon={Award}>
-                                    <DynamicSection name="awards" title="Award" newItem={{ name: "", date: "", description: "" }} fieldsConfig={[
-                                        { key: 'name', label: 'Award Name', placeholder: 'e.g., Dean\'s List' },
-                                        { key: 'date', label: 'Date', placeholder: 'e.g., Spring 2023' },
-                                        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Recognized for academic excellence.' }
-                                    ]} />
-                                </Section>
-                                
-                                <Section title="Volunteer & Leadership" icon={HeartHandshake}>
-                                    <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: "", description: "" }} fieldsConfig={[
-                                        { key: 'role', label: 'Role', placeholder: 'e.g., Team Lead' },
-                                        { key: 'organization', label: 'Organization', placeholder: 'e.g., Annual Tech Fest' },
-                                        { key: 'dates', label: 'Dates', placeholder: 'e.g., March 2023' },
-                                        { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Led a team of 5 volunteers...' }
-                                    ]} />
-                                </Section>
+                                    <Section title="Awards & Honors" icon={Award}>
+                                        <DynamicSection name="awards" title="Award" newItem={{ name: "", date: "", description: "" }} fieldsConfig={[
+                                            { key: 'name', label: 'Award Name', placeholder: 'e.g., Dean\'s List' },
+                                            { key: 'date', label: 'Date', placeholder: 'e.g., Spring 2023' },
+                                            { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Recognized for academic excellence.' }
+                                        ]} />
+                                    </Section>
+                                    
+                                    <Section title="Volunteer & Leadership" icon={HeartHandshake}>
+                                        <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: "", description: "" }} fieldsConfig={[
+                                            { key: 'role', label: 'Role', placeholder: 'e.g., Team Lead' },
+                                            { key: 'organization', label: 'Organization', placeholder: 'e.g., Annual Tech Fest' },
+                                            { key: 'dates', label: 'Dates', placeholder: 'e.g., March 2023' },
+                                            { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Led a team of 5 volunteers...' }
+                                        ]} />
+                                    </Section>
 
-                                <Section title="Certifications" icon={Award}>
-                                     <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: "" }} fieldsConfig={[
-                                        { key: 'name', label: 'Certification Name', placeholder: 'e.g., Certified JavaScript Developer' },
-                                        { key: 'issuer', label: 'Issuing Organization', placeholder: 'e.g., Tech Certification Inc.' },
-                                        { key: 'date', label: 'Date', placeholder: 'e.g., June 2023' }
-                                    ]} />
-                                </Section>
+                                    <Section title="Certifications" icon={Award}>
+                                         <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: "" }} fieldsConfig={[
+                                            { key: 'name', label: 'Certification Name', placeholder: 'e.g., Certified JavaScript Developer' },
+                                            { key: 'issuer', label: 'Issuing Organization', placeholder: 'e.g., Tech Certification Inc.' },
+                                            { key: 'date', label: 'Date', placeholder: 'e.g., June 2023' }
+                                        ]} />
+                                    </Section>
 
-                                <Section title="Skills" icon={Briefcase}>
-                                    <FormField control={form.control} name="skills" render={({ field }) => (<FormItem>
-                                        <FormLabel>Skills (comma-separated)</FormLabel>
-                                        <FormControl><Textarea placeholder="e.g., React, Python, Team Leadership" {...field} rows={3} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>)} />
-                                </Section>
-                            </form>
+                                    <Section title="Skills" icon={Briefcase}>
+                                        <FormField control={form.control} name="skills" render={({ field }) => (<FormItem>
+                                            <FormLabel>Skills (comma-separated)</FormLabel>
+                                            <FormControl><Textarea placeholder="e.g., React, Python, Team Leadership" {...field} rows={3} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>)} />
+                                    </Section>
+                                </form>
+                            </Form>
                         </FormProvider>
                     </div>
                     <div className="lg:col-span-7 xl:col-span-8">
@@ -436,3 +438,4 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
