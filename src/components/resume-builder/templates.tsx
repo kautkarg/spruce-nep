@@ -26,15 +26,15 @@ export const AtsClassicTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
         ))}</div>}
 
-        {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+        {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
             <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
         ))}</div>}
         
-        {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+        {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Awards &amp; Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
         ))}</div>}
 
-        {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
+        {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Volunteer &amp; Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
             <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
         ))}</div>}
 
@@ -67,7 +67,7 @@ export const AtsTraditionalTemplate: React.FC<TemplateProps> = ({ resumeData }) 
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
         ))}</div>}
 
-        {hasContent(resumeData.experience, 'title') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+        {hasContent(resumeData.experience, 'title') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
             <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
         ))}</div>}
         
@@ -77,11 +77,11 @@ export const AtsTraditionalTemplate: React.FC<TemplateProps> = ({ resumeData }) 
             <div key={index} className="mb-2"><h3 className="text-sm font-semibold text-gray-800 inline">{cert.name}</h3><span className="text-sm italic">, {cert.issuer}</span><span className="text-xs text-gray-500 float-right">{cert.date}</span></div>
         ))}</div>}
 
-        {hasContent(resumeData.awards, 'name') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+        {hasContent(resumeData.awards, 'name') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Awards &amp; Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
         ))}</div>}
 
-        {hasContent(resumeData.volunteering, 'role') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
+        {hasContent(resumeData.volunteering, 'role') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Volunteer &amp; Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
             <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
         ))}</div>}
     </>
@@ -106,7 +106,7 @@ export const AtsCompactTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
         
         {hasContent(resumeData.skills) && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Skills</h2><p>{resumeData.skills}</p></div>}
         
-        {hasContent(resumeData.experience, 'title') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+        {hasContent(resumeData.experience, 'title') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-800 text-[12px]">{exp.title}</h3><p className="text-gray-500">{exp.dates}</p></div><p className="italic mb-0.5">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-4 space-y-0.5">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
         ))}</div>}
         
@@ -118,7 +118,7 @@ export const AtsCompactTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
             <div key={index} className="mb-1"><h3 className="font-semibold text-gray-800 inline">{cert.name}</h3><span className="italic">, {cert.issuer}</span><span className="float-right">{cert.date}</span></div>
         ))}</div>}
 
-        {hasContent(resumeData.awards, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+        {hasContent(resumeData.awards, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Awards &amp; Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
             <div key={index} className="mb-1"><div className="flex justify-between items-baseline"><h3 className="font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-gray-500">{award.date}</p>}</div>{award.description && <p>{award.description}</p>}</div>
         ))}</div>}
     </div>
@@ -131,7 +131,7 @@ export const ModernStylishTemplate: React.FC<TemplateProps> = ({ resumeData }) =
                 <h1 className="text-4xl font-bold tracking-tight mb-2 text-gray-800">{resumeData.personal?.name}</h1>
                 {hasContent(resumeData.summary) && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
                 
-                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
                     <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                 ))}</div>}
 
