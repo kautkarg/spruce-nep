@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { submitInquiry as submitInquiryAction } from "@/app/actions";
 import { Lock, Leaf, ChevronsUpDown, Check } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -37,6 +36,7 @@ type InquiryFormValues = z.infer<typeof inquirySchema>;
 
 export function EnrollmentForm() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<InquiryFormValues>({
     resolver: zodResolver(inquirySchema),
@@ -49,33 +49,33 @@ export function EnrollmentForm() {
   });
 
   const onSubmit = async (data: InquiryFormValues) => {
-    const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('phone', data.phone);
-    data.course.forEach(course => formData.append('course', course));
-    if (data.message) {
-      formData.append('message', data.message);
-    } else {
-      formData.append('message', `Interested in the course(s): ${data.course.join(', ')}. Please provide more information.`);
-    }
+    setIsSubmitting(true);
+    
+    const whatsAppNumber = "918446294890";
+    const selectedCourses = data.course.join(', ');
+    const finalMessage = data.message || `Interested in the course(s): ${selectedCourses}. Please provide more information.`;
 
-    const result = await submitInquiryAction(null, formData);
+    const messageText = `
+Hello Spruce Lifeskills, I have a new inquiry:
+*Name:* ${data.name}
+*Phone:* ${data.phone}
+*Course(s) of Interest:* ${selectedCourses}
+*Message:* ${finalMessage}
+    `.trim().replace(/\n+/g, '\n');
 
-    if (result.errors && Object.keys(result.errors).length > 0) {
-      toast({
-        title: "Just a little touch-up!",
-        description: "Looks like some fields need a little polish. Please review the form.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Got it!",
-        description: "Thanks for reaching out. We'll give you a call shortly to chat!",
-      });
-      if (result.reset) {
-        form.reset();
-      }
-    }
+    const encodedMessage = encodeURIComponent(messageText);
+    const whatsappUrl = `https://wa.me/${whatsAppNumber}?text=${encodedMessage}`;
+
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+      title: "Redirecting to WhatsApp",
+      description: "Your message has been prepared. Please send it through WhatsApp.",
+    });
+
+    form.reset();
+    setIsSubmitting(false);
   };
 
   return (
@@ -207,9 +207,9 @@ export function EnrollmentForm() {
                   />
                   
                   <div className="text-center pt-4">
-                      <Button type="submit" size="xl" className="w-full" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting && <Leaf className="mr-2 h-4 w-4 animate-pulse" />}
-                        {form.formState.isSubmitting ? "Submitting..." : "Request a Callback"}
+                      <Button type="submit" size="xl" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting && <Leaf className="mr-2 h-4 w-4 animate-pulse" />}
+                        {isSubmitting ? "Redirecting..." : "Request a Callback"}
                       </Button>
                       <p className='text-caption text-muted-foreground mt-4 flex items-center justify-center gap-2'>
                         <Lock className="h-3 w-3" />
