@@ -1,9 +1,8 @@
-
 "use client";
 
 import { useFormContext } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormLabel, FormMessage, FormControl } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ResumeFormValues } from '../ResumeBuilder';
 import { Section } from './Section';
 import { Award, FileText, PlusCircle, Trash2, User } from 'lucide-react';
@@ -11,98 +10,96 @@ import { useFieldArray } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { MonthYearPicker } from '../MonthYearPicker';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
 import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { FormControl } from '@/components/ui/form';
 
 
-const templates = {
-    'ats': [
-        { id: 'ats-classic', name: 'Classic', image: '/images/resume-templates/ats-classic.png' },
-        { id: 'ats-traditional', name: 'Traditional', image: '/images/resume-templates/ats-traditional.png' },
-        { id: 'ats-compact', name: 'Compact', image: '/images/resume-templates/ats-compact.png' },
-    ],
-    'modern': [
-        { id: 'modern-stylish', name: 'Stylish', image: '/images/resume-templates/modern-stylish.png' },
-        { id: 'modern-creative', name: 'Creative', image: '/images/resume-templates/modern-creative.png' },
-        { id: 'modern-minimalist', name: 'Minimalist', image: '/images/resume-templates/modern-minimalist.png' },
-    ]
-}
-
-const TemplatePreview = ({ id, name, image, isSelected, onClick }: { id: string, name: string, image: string, isSelected: boolean, onClick: () => void }) => (
-    <div className="space-y-2 cursor-pointer" onClick={onClick}>
-        <div className={cn("rounded-md border-2 transition-all", isSelected ? "border-primary ring-2 ring-primary/50" : "border-border hover:border-primary/50")}>
-            <Image 
-                src={image}
-                alt={name}
-                width={200}
-                height={282}
-                className="rounded-sm"
-            />
-        </div>
-        <p className={cn("text-center text-sm font-medium", isSelected ? "text-primary" : "text-muted-foreground")}>{name}</p>
-    </div>
-);
+const templates = [
+    { id: 'ats-classic', name: 'Classic', image: '/images/resume-templates/ats-classic.png' },
+    { id: 'ats-traditional', name: 'Traditional', image: '/images/resume-templates/ats-traditional.png' },
+    { id: 'ats-compact', name: 'Compact', image: '/images/resume-templates/ats-compact.png' },
+    { id: 'modern-stylish', name: 'Stylish', image: '/images/resume-templates/modern-stylish.png' },
+    { id: 'modern-creative', name: 'Creative', image: '/images/resume-templates/modern-creative.png' },
+    { id: 'modern-minimalist', name: 'Minimalist', image: '/images/resume-templates/modern-minimalist.png' },
+];
 
 
 export default function FinalizeStep() {
-    const { control, watch } = useFormContext<ResumeFormValues>();
-    const isMobile = useIsMobile();
-
+    const { control, watch, setValue } = useFormContext<ResumeFormValues>();
+    
     const awardsArray = useFieldArray({ control, name: "awards" });
     const volunteeringArray = useFieldArray({ control, name: "volunteering" });
     const certificationsArray = useFieldArray({ control, name: "certifications" });
 
     const selectedTemplate = watch('template');
 
-    const renderTemplateSelector = (isMobileView: boolean) => (
-        <Section title="Template" icon={FileText} isComplete={!!selectedTemplate}>
-            <FormField
-                control={control}
-                name="template"
-                render={({ field }) => (
-                    <FormItem>
-                        <Tabs defaultValue={field.value.startsWith('ats') ? 'ats' : 'modern'} className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="ats">ATS-Friendly</TabsTrigger>
-                                <TabsTrigger value="modern">Modern</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="ats" className="pt-4">
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {templates.ats.map(t => (
-                                        <TemplatePreview 
-                                            key={t.id}
-                                            {...t}
-                                            isSelected={selectedTemplate === t.id}
-                                            onClick={() => field.onChange(t.id)}
-                                        />
-                                    ))}
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="modern" className="pt-4">
-                               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {templates.modern.map(t => (
-                                        <TemplatePreview 
-                                            key={t.id}
-                                            {...t}
-                                            isSelected={selectedTemplate === t.id}
-                                            onClick={() => field.onChange(t.id)}
-                                        />
-                                    ))}
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-        </Section>
-    );
+    const [api, setApi] = React.useState<CarouselApi>()
+    const [current, setCurrent] = React.useState(0)
+
+    React.useEffect(() => {
+        if (!api) return;
+
+        const initialTemplateIndex = templates.findIndex(t => t.id === selectedTemplate);
+        if (initialTemplateIndex !== -1) {
+            api.scrollTo(initialTemplateIndex, true);
+            setCurrent(initialTemplateIndex);
+        }
+
+        const handleSelect = () => {
+            const selectedIndex = api.selectedScrollSnap();
+            setCurrent(selectedIndex);
+            setValue('template', templates[selectedIndex].id);
+        };
+        
+        api.on("select", handleSelect);
+
+        return () => {
+            api.off("select", handleSelect);
+        };
+    }, [api, selectedTemplate, setValue]);
+
 
     return (
         <div className="space-y-6">
-            {!isMobile && renderTemplateSelector(false)}
+             <Section title="Choose Your Template" icon={FileText} isComplete={!!selectedTemplate}>
+                <FormField
+                    control={control}
+                    name="template"
+                    render={({ field }) => (
+                        <FormItem>
+                           <FormControl>
+                                <Carousel setApi={setApi} className="w-full">
+                                    <CarouselContent>
+                                        {templates.map((template) => (
+                                            <CarouselItem key={template.id}>
+                                                <Card className='overflow-hidden'>
+                                                    <CardContent className="p-0">
+                                                        <Image
+                                                            src={template.image}
+                                                            alt={template.name}
+                                                            width={400}
+                                                            height={565}
+                                                            className="w-full h-auto aspect-[8.5/11]"
+                                                        />
+                                                    </CardContent>
+                                                </Card>
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                </Carousel>
+                           </FormControl>
+                            <div className="py-2 text-center text-sm text-muted-foreground">
+                                {templates[current]?.name}
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </Section>
 
             <Section title="Awards & Honors" icon={Award}>
                 {awardsArray.fields.map((field, index) => (
@@ -140,8 +137,6 @@ export default function FinalizeStep() {
                 ))}
                 <Button type="button" variant="outline" onClick={() => certificationsArray.append({ name: "", issuer: "", date: null })} className="w-full"><PlusCircle className="mr-2 h-4 w-4" />Add Certification</Button>
             </Section>
-
-            {isMobile && renderTemplateSelector(true)}
         </div>
     );
 }
