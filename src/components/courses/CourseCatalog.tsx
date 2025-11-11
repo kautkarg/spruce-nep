@@ -40,7 +40,6 @@ export function CourseCatalog() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const showBenefits = pathname === '/courses';
   const filteredCourses = courses.filter((c) => c.category === activeCategory);
 
   // Effect to handle opening dialogs from URL parameters
@@ -141,7 +140,6 @@ export function CourseCatalog() {
                   Ready to launch your career? Explore our university-approved, credit-based programs. Each one is a launchpad designed to make you not just a graduate, but a job-ready pro.
               </p>
           </div>
-          {showBenefits && <CourseBenefits />}
           
           <div className="mt-12">
             <div className="md:hidden mb-8">

@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
 const navLinks = [
-    { href: '/courses', label: 'Courses' },
     { href: '/resume-builder', label: 'Resume Builder'},
     { href: '/reviews', label: 'Reviews' },
 ];

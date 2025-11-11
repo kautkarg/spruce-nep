@@ -15,6 +15,12 @@ export function Hero() {
 
     const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
         e.preventDefault();
+        
+        if (href.startsWith('#')) {
+            document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
         setIsLoading(true);
         router.push(href);
     };
@@ -64,7 +70,7 @@ export function Hero() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Button asChild size="xl" className='w-full sm:w-auto'>
-                    <Link href="/courses" onClick={(e) => handleNavigate(e, '/courses')}>
+                    <Link href="#courses" onClick={(e) => handleNavigate(e, '#courses')}>
                         {isLoading && <Leaf className="h-5 w-5 mr-2 animate-pulse" />}
                         {isLoading ? "Loading..." : "View All Courses"}
                         {!isLoading && <ArrowRight className="h-5 w-5 ml-2" />}
