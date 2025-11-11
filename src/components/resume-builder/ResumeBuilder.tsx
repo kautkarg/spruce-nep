@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MonthYearPicker } from './MonthYearPicker';
 import { Progress } from '../ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // --- Zod Schema for Validation ---
 const personalInfoSchema = z.object({
@@ -122,6 +123,19 @@ const defaultValues: ResumeFormValues = {
       { name: 'Certified JavaScript Developer', issuer: 'Tech Certification Inc.', date: 'June 2023'}
   ]
 };
+
+const templates = {
+    'ats': [
+        { id: 'ats-classic', name: 'Classic' },
+        { id: 'ats-traditional', name: 'Traditional' },
+        { id: 'ats-compact', name: 'Compact' },
+    ],
+    'modern': [
+        { id: 'modern-stylish', name: 'Stylish' },
+        { id: 'modern-creative', name: 'Creative' },
+        { id: 'modern-minimalist', name: 'Minimalist' },
+    ]
+}
 
 // --- Reusable Components ---
 const Section = ({ title, icon: Icon, children, isComplete }: { title: string, icon: React.ElementType, children: React.ReactNode, isComplete?: boolean }) => (
@@ -271,7 +285,7 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({ name, title, newItem })
 
 // --- Main Resume Builder Component ---
 export function ResumeBuilder() {
-    const [template, setTemplate] = useState<'classic' | 'modern'>('classic');
+    const [selectedTemplate, setSelectedTemplate] = useState('ats-classic');
     const resumePreviewRef = useRef<HTMLDivElement>(null);
     
     const form = useForm<ResumeFormValues>({
@@ -380,88 +394,18 @@ export function ResumeBuilder() {
         }
     }
 
-    const ResumeContent = (
-        <>
-            {template === 'classic' && (
-                <>
-                    <div className="text-center mb-6 border-b border-gray-800 pb-4">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
-                        {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
-                             <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
-                                {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5">{resumeData.personal.email}</div>}
-                                {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
-                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5">{resumeData.personal.linkedin}</div>}
-                            </div>
-                        )}
-                    </div>
-
-                    {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
-                    
-                    {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                        <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
-                    ))}</div>}
-
-                    {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-                        <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
-                    ))}</div>}
-                    
-                    {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
-                        <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
-                    ))}</div>}
-
-                    {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
-                        <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
-                    ))}</div>}
-
-                    {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
-                        <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
-                    ))}</div>}
-
-                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
-                </>
-            )}
-            
-            {template === 'modern' && (
-                <>
-                    <div className="flex gap-8 h-full">
-                        <div className="w-2/3">
-                            <h1 className="text-4xl font-bold tracking-tight mb-2 text-gray-800">{resumeData.personal?.name}</h1>
-                            {hasContent(resumeData.summary) && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
-                            
-                            {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-                                <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
-                            ))}</div>}
-
-                             {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                                <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
-                              ))}</div>}
-                        </div>
-                        <div className="w-1/3 bg-gray-100 p-6 rounded-md -my-8 -mr-8">
-                            {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Contact</h2><div className="space-y-2 text-xs text-gray-700">
-                                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-2"><span>{resumeData.personal.email}</span></div>}
-                                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-2"><span>{resumeData.personal.phone}</span></div>}
-                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-2"><span>{resumeData.personal.linkedin}</span></div>}
-                            </div></div>}
-
-                            {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
-                            
-                            {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Awards</h2><div className="space-y-3 mt-2">{resumeData.awards?.map((award, index) => award.name && (
-                                <div key={index}><h3 className="text-xs font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>
-                            ))}</div></div>}
-
-                            {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Certifications</h2><div className="space-y-3 mt-2">{resumeData.certifications?.map((cert, index) => cert.name && (
-                                <div key={index}><h3 className="text-xs font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.issuer}</p></div>
-                            ))}</div></div>}
-                            
-                            {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Leadership</h2><div className="space-y-3 mt-2">{resumeData.volunteering?.map((item, index) => item.role && (
-                                <div key={index}><h3 className="text-xs font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.organization}</p></div>
-                            ))}</div></div>}
-                        </div>
-                    </div>
-                </>
-            )}
-        </>
-    );
+    const renderTemplate = () => {
+        const commonProps = { resumeData, hasContent, getAchievements };
+        switch(selectedTemplate) {
+            case 'ats-classic': return <AtsClassicTemplate {...commonProps} />;
+            case 'ats-traditional': return <AtsTraditionalTemplate {...commonProps} />;
+            case 'ats-compact': return <AtsCompactTemplate {...commonProps} />;
+            case 'modern-stylish': return <ModernStylishTemplate {...commonProps} />;
+            case 'modern-creative': return <ModernCreativeTemplate {...commonProps} />;
+            case 'modern-minimalist': return <ModernMinimalistTemplate {...commonProps} />;
+            default: return <AtsClassicTemplate {...commonProps} />;
+        }
+    }
 
     return (
         <div className="bg-gray-50 min-h-screen font-sans">
@@ -479,14 +423,30 @@ export function ResumeBuilder() {
                         </div>
                         
                         <Section title="Template" icon={FileText}>
-                            <div className="flex gap-2">
-                                <Button variant={template === 'classic' ? 'primary' : 'outline'} onClick={() => setTemplate('classic')} className="flex-1">
-                                    Classic (ATS-Friendly)
-                                </Button>
-                                <Button variant={template === 'modern' ? 'primary' : 'outline'} onClick={() => setTemplate('modern')} className="flex-1">
-                                    Modern
-                                </Button>
-                            </div>
+                            <Tabs defaultValue="ats">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="ats">ATS-Friendly</TabsTrigger>
+                                    <TabsTrigger value="modern">Modern</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="ats" className="pt-4">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {templates.ats.map(t => (
+                                            <Button key={t.id} variant={selectedTemplate === t.id ? 'primary' : 'outline'} onClick={() => setSelectedTemplate(t.id)}>
+                                                {t.name}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="modern" className="pt-4">
+                                     <div className="grid grid-cols-2 gap-2">
+                                        {templates.modern.map(t => (
+                                            <Button key={t.id} variant={selectedTemplate === t.id ? 'primary' : 'outline'} onClick={() => setSelectedTemplate(t.id)}>
+                                                {t.name}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
                         </Section>
 
                         <FormProvider {...form}>
@@ -544,7 +504,7 @@ export function ResumeBuilder() {
                     <div className="lg:col-span-7 xl:col-span-8">
                         <div className="sticky top-8">
                             <div id="resume-preview" ref={resumePreviewRef} className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
-                                {ResumeContent}
+                                {renderTemplate()}
                             </div>
                         </div>
                     </div>
@@ -553,5 +513,235 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
+// --- TEMPLATE COMPONENTS ---
+
+type TemplateProps = {
+    resumeData: ResumeFormValues;
+    hasContent: (arr: any[] | undefined | string, key?: string) => boolean;
+    getAchievements: (achievements: string | undefined | null) => string[];
+};
+
+const AtsClassicTemplate: React.FC<TemplateProps> = ({ resumeData, hasContent, getAchievements }) => (
+    <>
+        <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
+            {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
+                 <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
+                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5">{resumeData.personal.email}</div>}
+                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
+                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5">{resumeData.personal.linkedin}</div>}
+                </div>
+            )}
+        </div>
+
+        {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
+        
+        {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+        ))}</div>}
+
+        {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+        ))}</div>}
+        
+        {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
+        ))}</div>}
+
+        {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
+            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
+        ))}</div>}
+
+        {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
+        ))}</div>}
+
+        {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Skills</h2><p className="text-xs">{resumeData.skills}</p></div>}
+    </>
+);
+
+const AtsTraditionalTemplate: React.FC<TemplateProps> = ({ resumeData, hasContent, getAchievements }) => (
+    <>
+        <div className="text-center mb-6">
+            <h1 className="text-2xl font-serif font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
+            {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
+                 <div className="flex justify-center items-center gap-x-3 gap-y-1 text-xs text-gray-500 mt-2 flex-wrap">
+                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5">{resumeData.personal.email}</div>}
+                    {hasContent(resumeData.personal.phone) && <span>|</span>}
+                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
+                    {hasContent(resumeData.personal.linkedin) && <span>|</span>}
+                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5">{resumeData.personal.linkedin}</div>}
+                </div>
+            )}
+        </div>
+
+        {hasContent(resumeData.summary) && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
+        
+        {hasContent(resumeData.education, 'school') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+        ))}</div>}
+
+        {hasContent(resumeData.experience, 'title') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+        ))}</div>}
+        
+        {hasContent(resumeData.skills) && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Skills</h2><p className="text-xs leading-relaxed">{resumeData.skills}</p></div>}
+
+        {hasContent(resumeData.certifications, 'name') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
+            <div key={index} className="mb-2"><h3 className="text-sm font-semibold text-gray-800 inline">{cert.name}</h3><span className="text-sm italic">, {cert.issuer}</span><span className="text-xs text-gray-500 float-right">{cert.date}</span></div>
+        ))}</div>}
+
+        {hasContent(resumeData.awards, 'name') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
+        ))}</div>}
+
+        {hasContent(resumeData.volunteering, 'role') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
+            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
+        ))}</div>}
+    </>
+);
+
+const AtsCompactTemplate: React.FC<TemplateProps> = ({ resumeData, hasContent, getAchievements }) => (
+    <div className="text-[10px] leading-snug">
+        <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
+            {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
+                 <div className="flex justify-center items-center gap-x-2 gap-y-1 text-[9px] text-gray-600 mt-1 flex-wrap">
+                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5">{resumeData.personal.email}</div>}
+                    {hasContent(resumeData.personal.phone) && <span>•</span>}
+                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
+                    {hasContent(resumeData.personal.linkedin) && <span>•</span>}
+                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5">{resumeData.personal.linkedin}</div>}
+                </div>
+            )}
+        </div>
+
+        {hasContent(resumeData.summary) && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Summary</h2><p>{resumeData.summary}</p></div>}
+        
+        {hasContent(resumeData.skills) && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Skills</h2><p>{resumeData.skills}</p></div>}
+        
+        {hasContent(resumeData.experience, 'title') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="font-semibold text-gray-800">{exp.title}</h3><p className="text-gray-500">{exp.dates}</p></div><p className="italic mb-0.5">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-4 space-y-0.5">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
+        ))}</div>}
+        
+        {hasContent(resumeData.education, 'school') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+            <div key={index} className="mb-1.5"><div className="flex justify-between items-baseline"><h3 className="font-semibold text-gray-800">{edu.school}</h3><p className="text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+        ))}</div>}
+
+        {hasContent(resumeData.certifications, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
+            <div key={index} className="mb-1"><h3 className="font-semibold text-gray-800 inline">{cert.name}</h3><span className="italic">, {cert.issuer}</span><span className="float-right">{cert.date}</span></div>
+        ))}</div>}
+
+        {hasContent(resumeData.awards, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+            <div key={index} className="mb-1"><div className="flex justify-between items-baseline"><h3 className="font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-gray-500">{award.date}</p>}</div>{award.description && <p>{award.description}</p>}</div>
+        ))}</div>}
+    </div>
+);
+
+const ModernStylishTemplate: React.FC<TemplateProps> = ({ resumeData, hasContent, getAchievements }) => (
+    <>
+        <div className="grid grid-cols-3 gap-8">
+            <div className="col-span-2">
+                <h1 className="text-4xl font-bold tracking-tight mb-2 text-gray-800">{resumeData.personal?.name}</h1>
+                {hasContent(resumeData.summary) && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
+                
+                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+                    <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+                ))}</div>}
+
+                 {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+                  ))}</div>}
+            </div>
+            <div className="col-span-1 bg-gray-100 p-6 -my-8 -mr-8">
+                {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Contact</h2><div className="space-y-2 text-xs text-gray-700">
+                        {hasContent(resumeData.personal.email) && <div className="flex items-center gap-2"><span>{resumeData.personal.email}</span></div>}
+                        {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-2"><span>{resumeData.personal.phone}</span></div>}
+                        {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-2"><span>{resumeData.personal.linkedin}</span></div>}
+                </div></div>}
+
+                {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-[10px] font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
+                
+                {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Awards</h2><div className="space-y-3 mt-2">{resumeData.awards?.map((award, index) => award.name && (
+                    <div key={index}><h3 className="text-xs font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>
+                ))}</div></div>}
+
+                {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Certifications</h2><div className="space-y-3 mt-2">{resumeData.certifications?.map((cert, index) => cert.name && (
+                    <div key={index}><h3 className="text-xs font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.issuer}</p></div>
+                ))}</div></div>}
+                
+                {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Leadership</h2><div className="space-y-3 mt-2">{resumeData.volunteering?.map((item, index) => item.role && (
+                    <div key={index}><h3 className="text-xs font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.organization}</p></div>
+                ))}</div></div>}
+            </div>
+        </div>
+    </>
+);
+
+const ModernCreativeTemplate: React.FC<TemplateProps> = ({ resumeData, hasContent, getAchievements }) => (
+    <div className="flex flex-col h-full font-serif text-gray-700">
+        <header className="text-center p-6 bg-teal-50">
+            <h1 className="text-4xl font-bold text-teal-800">{resumeData.personal?.name}</h1>
+            <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-teal-700 mt-2 flex-wrap">
+                {hasContent(resumeData.personal.email) && <div>{resumeData.personal.email}</div>}
+                {hasContent(resumeData.personal.phone) && <div>{resumeData.personal.phone}</div>}
+                {hasContent(resumeData.personal.linkedin) && <div>{resumeData.personal.linkedin}</div>}
+            </div>
+        </header>
+
+        <main className="flex-grow p-6">
+            {hasContent(resumeData.summary) && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Objective</h2><p className="text-sm">{resumeData.summary}</p></section>}
+            
+            <div className="grid grid-cols-3 gap-6">
+                <div className="col-span-2">
+                    {hasContent(resumeData.experience, 'title') && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Experience</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+                        <div key={index} className="mb-4"><h3 className="text-base font-bold">{exp.title} | <span className="font-normal italic">{exp.organization}</span></h3><p className="text-xs text-gray-500 mb-1">{exp.dates}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1 text-sm">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
+                    ))}</section>}
+                </div>
+                <div className="col-span-1">
+                    {hasContent(resumeData.education, 'school') && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+                        <div key={index} className="mb-3"><h3 className="text-base font-bold">{edu.school}</h3><p className="text-sm italic">{edu.degree}</p><p className="text-xs text-gray-500">{edu.date}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div>
+                    ))}</section>}
+                    
+                    {hasContent(resumeData.skills) && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Skills</h2><p className="text-sm">{resumeData.skills}</p></section>}
+                    
+                    {hasContent(resumeData.awards, 'name') && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Awards</h2>{resumeData.awards?.map((award, index) => award.name && (
+                        <div key={index} className="mb-2"><h3 className="text-base font-bold">{award.name} <span className="text-xs text-gray-500">({award.date})</span></h3></div>
+                    ))}</section>}
+                </div>
+            </div>
+        </main>
+    </div>
+);
+
+const ModernMinimalistTemplate: React.FC<TemplateProps> = ({ resumeData, hasContent, getAchievements }) => (
+    <div className="font-sans text-xs">
+        <header className="mb-6">
+            <h1 className="text-3xl font-light tracking-widest uppercase text-center">{resumeData.personal?.name}</h1>
+             <div className="flex justify-center items-center gap-x-3 gap-y-1 text-[10px] text-gray-500 mt-2 flex-wrap">
+                {hasContent(resumeData.personal.email) && <div>{resumeData.personal.email}</div>}
+                {hasContent(resumeData.personal.phone) && <div className='font-bold'>·</div>}
+                {hasContent(resumeData.personal.phone) && <div>{resumeData.personal.phone}</div>}
+                {hasContent(resumeData.personal.linkedin) && <div className='font-bold'>·</div>}
+                {hasContent(resumeData.personal.linkedin) && <div>{resumeData.personal.linkedin}</div>}
+            </div>
+        </header>
+        <hr className="my-4"/>
+        
+        {hasContent(resumeData.summary) && <section className="mb-4"><p className="text-center italic">{resumeData.summary}</p></section>}
+
+        {hasContent(resumeData.experience, 'title') && <section className="mb-4"><h2 className="text-sm font-semibold tracking-wider uppercase mb-2">Experience</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-3 grid grid-cols-4 gap-2"><div className="col-span-1 text-gray-500"><p>{exp.dates}</p><p className='font-semibold'>{exp.organization}</p></div><div className="col-span-3"><h3 className="text-sm font-bold">{exp.title}</h3>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-4 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div></div>
+        ))}</section>}
+
+        {hasContent(resumeData.education, 'school') && <section className="mb-4"><h2 className="text-sm font-semibold tracking-wider uppercase mb-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+            <div key={index} className="mb-2 grid grid-cols-4 gap-2"><div className="col-span-1 text-gray-500"><p>{edu.date}</p></div><div className="col-span-3"><h3 className="text-sm font-bold">{edu.school}</h3><p>{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+        ))}</section>}
+        
+        {hasContent(resumeData.skills) && <section className="mb-4"><h2 className="text-sm font-semibold tracking-wider uppercase mb-2">Skills</h2><p>{resumeData.skills}</p></section>}
+    </div>
+);
+    
 
     
