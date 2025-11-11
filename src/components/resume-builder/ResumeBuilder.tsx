@@ -224,6 +224,8 @@ export function ResumeBuilder() {
     const handleDownload = async () => {
         const element = resumePreviewRef.current;
         if (!element) return;
+        
+        // Dynamically import html2pdf.js only on the client-side
         const html2pdf = (await import('html2pdf.js')).default;
 
         const options = {
@@ -244,7 +246,7 @@ export function ResumeBuilder() {
         return arr.some(item => item && (typeof item[key] === 'string' && item[key].trim() !== ''));
     };
 
-    const getAchievements = (achievements: string | undefined) => {
+    const getAchievements = (achievements: string | undefined | null) => {
       if (!achievements) return [];
       return achievements.split('\n').filter(line => line.trim() !== '');
     }
@@ -434,4 +436,3 @@ export function ResumeBuilder() {
         </div>
     );
 }
-
