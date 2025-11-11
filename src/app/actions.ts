@@ -28,44 +28,14 @@ export async function submitInquiry(prevState: any, formData: FormData) {
     };
   }
 
-  const submissionData = {
-    ...validatedFields.data,
-    course: validatedFields.data.course.join(', '), // Convert array to comma-separated string for backend
+  // The form now submits to WhatsApp, so the backend fetch is no longer needed.
+  // This function is retained in case of future use but the core logic is removed to prevent server errors.
+
+  return {
+    message: "This action is no longer in use. Please submit the form via WhatsApp.",
+    errors: {},
+    reset: true,
   };
-  
-  try {
-    // This is where you would send the data to your external backend.
-    // Your developer should replace this URL with your actual backend API endpoint.
-    const response = await fetch("https://your-backend-api.com/inquiries", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(submissionData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        message: `Oops! We hit a snag. ${errorData.message || 'Please try submitting again.'}`,
-        errors: {},
-      };
-    }
-
-    const result = await response.json();
-    return {
-      message: result.message || "All set! We'll be in touch soon to chat.",
-      errors: {},
-      reset: true,
-    };
-
-  } catch (error) {
-    console.error("Failed to submit inquiry:", error);
-    return {
-      message: "Oh no! A network glitch happened. Please check your connection and try again.",
-      errors: {},
-    };
-  }
 }
 
 // --- Google Reviews ---
