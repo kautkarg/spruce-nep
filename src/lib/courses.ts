@@ -92,7 +92,7 @@ export const courses: Course[] = [
   },
   {
     id: 'c3',
-    title: 'Account Receivable',
+    title: 'Account Receivable (AR Billing)',
     description: 'Master the Accounts Receivable (AR) process in medical billing and revenue cycle management.',
     Icon: Banknote,
     category: 'Healthcare',
@@ -235,7 +235,7 @@ export const courses: Course[] = [
     trainerInfo: 'Learn from senior UX/UI designers who have worked on popular consumer apps and enterprise software. Our instructors are experts in design thinking, user research, and creating beautiful, user-centric digital products.',
     fees: 2000,
     certification: 'RTMNU Certified',
-    link: 'https://sprucelifeskills.org.in/course/ui-ux-designing/',
+    link: 'https://sprucelifeskills.org.in/course/ui-ux/',
     details: {
         credits: "2 Points",
         duration: "45 Hours (Online)",
@@ -261,14 +261,14 @@ export const courses: Course[] = [
   },
   {
     id: 'c8',
-    title: '3D Animation',
+    title: '3D Animation (Maya)',
     description: 'Learn 3D modeling, texturing, animation, and rendering for careers in gaming, VFX, and multimedia.',
     Icon: Box,
     category: 'Media & Tech',
     trainerInfo: 'Our trainers are professional 3D artists and animators from the gaming and visual effects industries. They bring production experience from major studios and are masters of tools like Blender, Maya, and ZBrush.',
     fees: 2000,
     certification: 'RTMNU Certified',
-    link: 'https://sprucelifeskills.org.in/course/3d-animation-and-vfx/',
+    link: 'https://sprucelifeskills.org.in/course/maya-3d-animation/',
     details: {
         credits: "2 Points",
         duration: "60 Hours (Online)",
