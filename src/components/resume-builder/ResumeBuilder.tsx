@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -12,6 +13,7 @@ import { PlusCircle, Trash2, Printer, Mail, Phone, Linkedin, User, FileText, Awa
 import { cn } from '@/lib/utils';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MonthYearPicker } from './MonthYearPicker';
 
 // --- Zod Schema for Validation ---
 const personalInfoSchema = z.object({
@@ -96,7 +98,7 @@ const defaultValues: ResumeFormValues = {
     {
       school: 'University Name',
       degree: 'Degree & Major (e.g., B.S. in Computer Science)',
-      date: 'Month Year - Month Year',
+      date: 'May 2024',
       scoreType: 'CGPA',
       scoreValue: '8.5',
     },
@@ -105,7 +107,7 @@ const defaultValues: ResumeFormValues = {
     {
       title: 'Project Title / Job Title',
       organization: 'Course Name / Company Name',
-      dates: 'Month Year - Month Year',
+      dates: 'August 2023',
       achievements: 'Developed a web application using React and Node.js that improved user engagement by 20%.\nCollaborated with a team of 3 to design and implement a new feature for a mobile app.',
     },
   ],
@@ -137,7 +139,7 @@ type FieldConfig = {
     key: string;
     label: string;
     placeholder: string;
-    type?: 'input' | 'textarea';
+    type?: 'input' | 'textarea' | 'date';
 };
 
 interface DynamicSectionProps {
@@ -159,7 +161,7 @@ const EducationSection: React.FC = () => {
                 <div key={item.id} className="space-y-3 p-4 border rounded-md mb-4 relative bg-gray-50/50">
                     <FormField control={control} name={`education.${index}.school`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">School / University</FormLabel><FormControl><Input placeholder="e.g., State University" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={control} name={`education.${index}.degree`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Degree & Major</FormLabel><FormControl><Input placeholder="e.g., B.S. in Computer Science" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={control} name={`education.${index}.date`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Date</FormLabel><FormControl><Input placeholder="e.g., Aug 2020 - May 2024" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={control} name={`education.${index}.date`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">End Date</FormLabel><FormControl><MonthYearPicker field={field} /></FormControl><FormMessage /></FormItem>)} />
                     <div className="grid grid-cols-2 gap-2">
                         <FormField control={control} name={`education.${index}.scoreType`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger></FormControl><SelectContent><SelectItem value="CGPA">CGPA</SelectItem><SelectItem value="Percentage">Percentage</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                         <FormField control={control} name={`education.${index}.scoreValue`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score</FormLabel><FormControl><Input type="number" placeholder="e.g., 8.5 or 85" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
@@ -195,24 +197,24 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({ name, title, newItem })
             case 'experience': return [
                 { key: 'title', label: 'Title', placeholder: 'e.g., Software Engineer Intern' },
                 { key: 'organization', label: 'Organization', placeholder: 'e.g., Tech Company Inc.' },
-                { key: 'dates', label: 'Dates', placeholder: 'e.g., June 2023 - Aug 2023' },
+                { key: 'dates', label: 'Date', placeholder: 'e.g., June 2023 - Aug 2023', type: 'date' },
                 { key: 'achievements', label: 'Achievements (one per line)', type: 'textarea', placeholder: 'Describe your responsibilities and achievements...' }
             ];
             case 'awards': return [
                 { key: 'name', label: 'Award Name', placeholder: 'e.g., Dean\'s List' },
-                { key: 'date', label: 'Date', placeholder: 'e.g., Spring 2023' },
+                { key: 'date', label: 'Date', placeholder: 'e.g., Spring 2023', type: 'date' },
                 { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Recognized for academic excellence.' }
             ];
             case 'volunteering': return [
                 { key: 'role', label: 'Role', placeholder: 'e.g., Team Lead' },
                 { key: 'organization', label: 'Organization', placeholder: 'e.g., Annual Tech Fest' },
-                { key: 'dates', label: 'Dates', placeholder: 'e.g., March 2023' },
+                { key: 'dates', label: 'Date', placeholder: 'e.g., March 2023', type: 'date' },
                 { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Led a team of 5 volunteers...' }
             ];
             case 'certifications': return [
                 { key: 'name', label: 'Certification Name', placeholder: 'e.g., Certified JavaScript Developer' },
                 { key: 'issuer', label: 'Issuing Organization', placeholder: 'e.g., Tech Certification Inc.' },
-                { key: 'date', label: 'Date', placeholder: 'e.g., June 2023' }
+                { key: 'date', label: 'Date', placeholder: 'e.g., June 2023', type: 'date' }
             ];
             default: return [];
         }
@@ -235,6 +237,8 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({ name, title, newItem })
                                     <FormControl>
                                         {fieldConfig.type === 'textarea' ? (
                                             <Textarea placeholder={fieldConfig.placeholder} {...field} className="mt-1" rows={3} />
+                                        ) : fieldConfig.type === 'date' ? (
+                                            <MonthYearPicker field={field} />
                                         ) : (
                                             <Input placeholder={fieldConfig.placeholder} {...field} className="mt-1" />
                                         )}
@@ -499,9 +503,3 @@ export function ResumeBuilder() {
         </div>
     );
 }
-
-    
-
-    
-
-    
