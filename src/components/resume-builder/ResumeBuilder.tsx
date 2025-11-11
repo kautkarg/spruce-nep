@@ -288,7 +288,7 @@ export function ResumeBuilder() {
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
                     ))}</div>}
 
-                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{resumeData.skills?.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
+                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
                 </>
             )}
             
@@ -314,7 +314,7 @@ export function ResumeBuilder() {
                                     {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-2"><Linkedin className="h-3 w-3 shrink-0" /><span>{resumeData.personal.linkedin}</span></div>}
                             </div></div>}
 
-                            {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{resumeData.skills?.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
+                            {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
                             
                             {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Awards</h2><div className="space-y-3 mt-2">{resumeData.awards?.map((award, index) => award.name && (
                                 <div key={index}><h3 className="text-xs font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>
@@ -439,3 +439,4 @@ export function ResumeBuilder() {
     );
 }
 
+    
