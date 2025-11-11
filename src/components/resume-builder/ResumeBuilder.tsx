@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -9,11 +8,12 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle, Trash2, Printer, Mail, Phone, Linkedin, User, FileText, Award, UserCheck, HeartHandshake, GraduationCap, Briefcase } from "lucide-react";
+import { PlusCircle, Trash2, Printer, User, FileText, Award, UserCheck, HeartHandshake, GraduationCap, Briefcase, CheckCircle } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MonthYearPicker } from './MonthYearPicker';
+import { Progress } from '../ui/progress';
 
 // --- Zod Schema for Validation ---
 const personalInfoSchema = z.object({
@@ -124,16 +124,19 @@ const defaultValues: ResumeFormValues = {
 };
 
 // --- Reusable Components ---
-
-const Section = ({ title, icon: Icon, children }: { title: string, icon: React.ElementType, children: React.ReactNode }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm">
-    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
-      <Icon className="h-5 w-5" />
-      {title}
-    </h3>
-    <div className="space-y-4">{children}</div>
-  </div>
-);
+const Section = ({ title, icon: Icon, children, isComplete }: { title: string, icon: React.ElementType, children: React.ReactNode, isComplete?: boolean }) => (
+    <div className={cn("bg-white rounded-lg shadow-sm transition-all", isComplete && "bg-green-50 border-green-200 border")}>
+      <div className="p-5 border-b border-border">
+        <h3 className="text-lg font-bold flex items-center gap-3 text-gray-800">
+          <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-colors", isComplete ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-500")}>
+            {isComplete ? <CheckCircle className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
+          </div>
+          {title}
+        </h3>
+      </div>
+      <div className="p-5 space-y-4">{children}</div>
+    </div>
+  );
 
 type FieldConfig = {
     key: string;
@@ -328,7 +331,7 @@ export function ResumeBuilder() {
 
     const hasContent = (arr: any[] | undefined | string, key?: string) => {
         if (!arr) return false;
-        if (typeof arr === 'string') return arr.trim() !== '';
+        if (typeof arr === 'string') return arr.trim() !== '' && arr.trim() !== defaultValues[arr as keyof typeof defaultValues];
         if (arr.length === 0) return false;
         if (!key) return arr.some(item => item);
         return arr.some(item => item && (typeof item[key] === 'string' && item[key].trim() !== ''));
@@ -339,6 +342,44 @@ export function ResumeBuilder() {
       return achievements.split('\n').filter(line => line.trim() !== '');
     }
 
+    const calculateProgress = () => {
+        const sections = [
+            hasContent(resumeData.personal.name) && resumeData.personal.name !== defaultValues.personal.name,
+            hasContent(resumeData.personal.email) && resumeData.personal.email !== defaultValues.personal.email,
+            hasContent(resumeData.summary) && resumeData.summary !== defaultValues.summary,
+            hasContent(resumeData.education, 'school'),
+            hasContent(resumeData.experience, 'title'),
+            hasContent(resumeData.skills) && resumeData.skills !== defaultValues.skills,
+        ];
+        const completedCount = sections.filter(Boolean).length;
+        return (completedCount / sections.length) * 100;
+      };
+
+    const progress = calculateProgress();
+
+    const checkSectionComplete = (sectionName: keyof ResumeFormValues) => {
+        switch (sectionName) {
+            case 'personal':
+                return hasContent(resumeData.personal.name) && resumeData.personal.name !== defaultValues.personal.name && hasContent(resumeData.personal.email) && resumeData.personal.email !== defaultValues.personal.email;
+            case 'summary':
+                return hasContent(resumeData.summary) && resumeData.summary !== defaultValues.summary;
+            case 'education':
+                return hasContent(resumeData.education, 'school');
+            case 'experience':
+                return hasContent(resumeData.experience, 'title');
+             case 'skills':
+                return hasContent(resumeData.skills) && resumeData.skills !== defaultValues.skills;
+            case 'awards':
+                return hasContent(resumeData.awards, 'name');
+            case 'volunteering':
+                return hasContent(resumeData.volunteering, 'role');
+            case 'certifications':
+                return hasContent(resumeData.certifications, 'name');
+            default:
+                return false;
+        }
+    }
+
     const ResumeContent = (
         <>
             {template === 'classic' && (
@@ -346,37 +387,37 @@ export function ResumeBuilder() {
                     <div className="text-center mb-6 border-b border-gray-800 pb-4">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
                         {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
-                            <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
-                                {hasContent(resumeData.personal.email) && <div className="flex items-center">{resumeData.personal.email}</div>}
-                                {hasContent(resumeData.personal.phone) && <div className="flex items-center">{resumeData.personal.phone}</div>}
-                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-center">{resumeData.personal.linkedin}</div>}
+                             <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
+                                {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5">{resumeData.personal.email}</div>}
+                                {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
+                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5">{resumeData.personal.linkedin}</div>}
                             </div>
                         )}
                     </div>
 
-                    {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
+                    {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
                     
-                    {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+                    {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
                     ))}</div>}
 
-                    {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+                    {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
                         <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                     ))}</div>}
                     
-                    {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+                    {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
                     ))}</div>}
 
-                    {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
+                    {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
                         <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
                     ))}</div>}
 
-                    {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
+                    {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
                     ))}</div>}
 
-                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
+                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
                 </>
             )}
             
@@ -397,9 +438,9 @@ export function ResumeBuilder() {
                         </div>
                         <div className="w-1/3 bg-gray-100 p-6 rounded-md -my-8 -mr-8">
                             {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Contact</h2><div className="space-y-2 text-xs text-gray-700">
-                                    {hasContent(resumeData.personal.email) && <div className="flex items-center"><span>{resumeData.personal.email}</span></div>}
-                                    {hasContent(resumeData.personal.phone) && <div className="flex items-center"><span>{resumeData.personal.phone}</span></div>}
-                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center"><span>{resumeData.personal.linkedin}</span></div>}
+                                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-2"><span>{resumeData.personal.email}</span></div>}
+                                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-2"><span>{resumeData.personal.phone}</span></div>}
+                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-2"><span>{resumeData.personal.linkedin}</span></div>}
                             </div></div>}
 
                             {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
@@ -427,13 +468,22 @@ export function ResumeBuilder() {
             <div className="max-w-screen-2xl mx-auto p-4 md:p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <div className="lg:col-span-5 xl:col-span-4 space-y-6">
+
+                        <div className='bg-white p-6 rounded-lg shadow-sm space-y-4'>
+                            <div className='flex justify-between items-center'>
+                                <h3 className='font-bold text-gray-800'>Resume Progress</h3>
+                                <span className='text-sm font-bold text-primary'>{Math.round(progress)}%</span>
+                            </div>
+                            <Progress value={progress} />
+                            <p className='text-xs text-muted-foreground'>Fill out the key sections to complete your resume and impress employers!</p>
+                        </div>
                         
                         <Section title="Template" icon={FileText}>
                             <div className="flex gap-2">
-                                <Button variant={template === 'classic' ? 'default' : 'outline'} onClick={() => setTemplate('classic')} className="flex-1">
+                                <Button variant={template === 'classic' ? 'primary' : 'outline'} onClick={() => setTemplate('classic')} className="flex-1">
                                     Classic (ATS-Friendly)
                                 </Button>
-                                <Button variant={template === 'modern' ? 'default' : 'outline'} onClick={() => setTemplate('modern')} className="flex-1">
+                                <Button variant={template === 'modern' ? 'primary' : 'outline'} onClick={() => setTemplate('modern')} className="flex-1">
                                     Modern
                                 </Button>
                             </div>
@@ -442,38 +492,38 @@ export function ResumeBuilder() {
                         <FormProvider {...form}>
                             <Form {...form}>
                                 <form className="space-y-6">
-                                    <Section title="Personal Information" icon={User}>
+                                    <Section title="Personal Information" icon={User} isComplete={checkSectionComplete('personal')}>
                                         <FormField control={form.control} name="personal.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Full Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="personal.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="Email" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="personal.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input type="tel" placeholder="Phone" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="personal.linkedin" render={({ field }) => (<FormItem><FormLabel>LinkedIn Profile URL</FormLabel><FormControl><Input placeholder="LinkedIn Profile URL" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                     </Section>
                                     
-                                    <Section title="Summary / Objective" icon={UserCheck}>
+                                    <Section title="Summary / Objective" icon={UserCheck} isComplete={checkSectionComplete('summary')}>
                                         <FormField control={form.control} name="summary" render={({ field }) => (<FormItem><FormControl><Textarea placeholder="A brief summary of your skills and career goals..." {...field} rows={4} /></FormControl><FormMessage /></FormItem>)} />
                                     </Section>
 
-                                    <Section title="Education" icon={GraduationCap}>
+                                    <Section title="Education" icon={GraduationCap} isComplete={checkSectionComplete('education')}>
                                         <EducationSection />
                                     </Section>
 
-                                    <Section title="Experience / Projects" icon={Briefcase}>
+                                    <Section title="Experience / Projects" icon={Briefcase} isComplete={checkSectionComplete('experience')}>
                                         <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: null, achievements: "" }} />
                                     </Section>
 
-                                    <Section title="Awards & Honors" icon={Award}>
+                                    <Section title="Awards & Honors" icon={Award} isComplete={checkSectionComplete('awards')}>
                                         <DynamicSection name="awards" title="Award" newItem={{ name: "", date: null, description: "" }} />
                                     </Section>
                                     
-                                    <Section title="Volunteer & Leadership" icon={HeartHandshake}>
+                                    <Section title="Volunteer & Leadership" icon={HeartHandshake} isComplete={checkSectionComplete('volunteering')}>
                                         <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: null, description: "" }} />
                                     </Section>
 
-                                    <Section title="Certifications" icon={Award}>
+                                    <Section title="Certifications" icon={Award} isComplete={checkSectionComplete('certifications')}>
                                          <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: null }} />
                                     </Section>
 
-                                    <Section title="Skills" icon={Briefcase}>
+                                    <Section title="Skills" icon={Briefcase} isComplete={checkSectionComplete('skills')}>
                                         <FormField control={form.control} name="skills" render={({ field }) => (<FormItem>
                                             <FormLabel>Skills (comma-separated)</FormLabel>
                                             <FormControl><Textarea placeholder="e.g., React, Python, Team Leadership" {...field} rows={3} /></FormControl>
@@ -482,8 +532,8 @@ export function ResumeBuilder() {
                                     </Section>
                                     
                                     <div className="space-y-4">
-                                        <Button onClick={handleDownload} type="button" className="w-full gap-2 bg-primary hover:bg-primary/90">
-                                            <Printer className="h-4 w-4" />
+                                        <Button onClick={handleDownload} type="button" size="lg" className="w-full gap-2 bg-primary hover:bg-primary/90 text-lg">
+                                            <Printer className="h-5 w-5" />
                                             Download as PDF
                                         </Button>
                                     </div>
@@ -503,3 +553,5 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
+    
