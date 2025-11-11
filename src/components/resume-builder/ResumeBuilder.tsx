@@ -1,241 +1,301 @@
 
 "use client";
 
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
-import { PlusCircle, Trash2, Mail, Phone, Linkedin, MapPin } from "lucide-react";
+import { PlusCircle, Trash2, Printer, Mail, Phone, Linkedin, MapPin, GraduationCap, Briefcase, Star, User } from "lucide-react";
 
-const resumeSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Invalid phone number"),
-  address: z.string().min(1, "Address is required"),
-  linkedin: z.string().url("Invalid URL").optional().or(z.literal("")),
-  summary: z.string().min(10, "Summary is too short").max(500, "Summary is too long"),
-  experience: z.array(z.object({
-    title: z.string().min(1, "Job title is required"),
-    company: z.string().min(1, "Company name is required"),
-    startDate: z.string().min(1, "Start date is required"),
-    endDate: z.string().min(1, "End date is required"),
-    description: z.string().min(1, "Description is required"),
-  })),
-  education: z.array(z.object({
-    degree: z.string().min(1, "Degree is required"),
-    school: z.string().min(1, "School name is required"),
-    startDate: z.string().min(1, "Start date is required"),
-    endDate: z.string().min(1, "End date is required"),
-  })),
-  skills: z.array(z.object({
-    name: z.string().min(1, "Skill cannot be empty"),
-  })),
-});
-
-type ResumeFormValues = z.infer<typeof resumeSchema>;
-
-export function ResumeBuilder() {
-  const form = useForm<ResumeFormValues>({
-    resolver: zodResolver(resumeSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-      address: "",
-      linkedin: "",
-      summary: "",
-      experience: [{ title: "", company: "", startDate: "", endDate: "", description: "" }],
-      education: [{ degree: "", school: "", startDate: "", endDate: "" }],
-      skills: [{ name: "" }],
+// Initial state for a blank resume
+const initialResumeData = {
+  personal: {
+    name: 'Your Name',
+    email: 'your.email@example.com',
+    phone: '123-456-7890',
+    linkedin: 'linkedin.com/in/yourprofile',
+  },
+  education: [
+    {
+      school: 'University Name',
+      degree: 'Degree & Major (e.g., B.S. in Computer Science)',
+      date: 'Month Year - Month Year',
+      gpa: '4.0',
     },
-  });
+  ],
+  experience: [
+    {
+      title: 'Project Title / Job Title',
+      organization: 'Course Name / Company Name',
+      dates: 'Month Year - Month Year',
+      achievements: ['Developed a web application using React and Node.js that improved user engagement by 20%.', 'Collaborated with a team of 3 to design and implement a new feature for a mobile app.'],
+    },
+  ],
+  skills: ['React', 'Node.js', 'JavaScript', 'Tailwind CSS', 'SQL'],
+};
 
-  const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({ control: form.control, name: "experience" });
-  const { fields: eduFields, append: appendEdu, remove: removeEdu } = useFieldArray({ control: form.control, name: "education" });
-  const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({ control: form.control, name: "skills" });
+// --- Helper Components (kept in the same file as requested) ---
 
-  const formData = form.watch();
+// Section wrapper for styling consistency
+const Section = ({ title, icon: Icon, children }: { title: string, icon: React.ElementType, children: React.ReactNode }) => (
+  <div className="bg-white p-6 rounded-lg shadow-sm">
+    <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+      <Icon className="h-5 w-5" />
+      {title}
+    </h3>
+    <div className="space-y-4">
+      {children}
+    </div>
+  </div>
+);
+
+// Dynamic array section for education/experience
+const DynamicSection = ({ name, items, setData, fields, placeholder }: any) => {
+  const handleItemChange = (index: number, field: string, value: string | string[]) => {
+    setData((prev: any) => {
+      const newItems = [...prev[name]];
+      if (field === 'achievements') {
+        newItems[index][field] = Array.isArray(value) ? value : value.split('\n');
+      } else {
+        newItems[index][field] = value;
+      }
+      return { ...prev, [name]: newItems };
+    });
+  };
+
+  const addNewItem = () => {
+    const newItem = Object.fromEntries(fields.map((f: any) => [f.key, '']));
+    if (fields.some((f: any) => f.key === 'achievements')) {
+      newItem.achievements = [];
+    }
+    setData((prev: any) => ({ ...prev, [name]: [...prev[name], newItem] }));
+  };
+
+  const removeItem = (index: number) => {
+    setData((prev: any) => ({ ...prev, [name]: prev[name].filter((_: any, i: number) => i !== index) }));
+  };
 
   return (
-    <div className="grid md:grid-cols-2 gap-8 items-start">
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit((data) => console.log(data))} className="space-y-8">
-              {/* Personal Details */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Personal Information</h3>
-                <FormField control={form.control} name="fullName" render={({ field }) => ( <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                <FormField control={form.control} name="email" render={({ field }) => ( <FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="john.doe@email.com" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem><FormLabel>Phone</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                <FormField control={form.control} name="address" render={({ field }) => ( <FormItem><FormLabel>Address</FormLabel><FormControl><Input placeholder="City, Country" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                <FormField control={form.control} name="linkedin" render={({ field }) => ( <FormItem><FormLabel>LinkedIn Profile</FormLabel><FormControl><Input placeholder="https://linkedin.com/in/johndoe" {...field} /></FormControl><FormMessage /></FormItem> )} />
-              </div>
+    <div>
+      {items.map((item: any, index: number) => (
+        <div key={index} className="space-y-3 p-4 border rounded-md mb-4 relative bg-gray-50/50">
+          {fields.map((field: any) => (
+            <div key={field.key}>
+              <label className="text-sm font-medium text-gray-600">{field.label}</label>
+              {field.type === 'textarea' ? (
+                <Textarea
+                  placeholder={field.placeholder}
+                  value={Array.isArray(item[field.key]) ? item[field.key].join('\n') : item[field.key]}
+                  onChange={(e) => handleItemChange(index, field.key, e.target.value)}
+                  className="mt-1"
+                  rows={3}
+                />
+              ) : (
+                <Input
+                  type="text"
+                  placeholder={field.placeholder}
+                  value={item[field.key]}
+                  onChange={(e) => handleItemChange(index, field.key, e.target.value)}
+                  className="mt-1"
+                />
+              )}
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 text-red-500 hover:bg-red-100 hover:text-red-600 h-7 w-7"
+            onClick={() => removeItem(index)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      <Button type="button" variant="outline" onClick={addNewItem} className="w-full">
+        <PlusCircle className="mr-2 h-4 w-4" /> Add {placeholder}
+      </Button>
+    </div>
+  );
+};
 
-              <Separator />
+// --- Main Resume Builder Component ---
 
-              {/* Summary */}
-              <div>
-                <h3 className="text-lg font-semibold">Professional Summary</h3>
-                <FormField control={form.control} name="summary" render={({ field }) => ( <FormItem><FormLabel>Summary</FormLabel><FormControl><Textarea placeholder="A brief summary of your professional background..." {...field} /></FormControl><FormMessage /></FormItem> )} />
-              </div>
+export function ResumeBuilder() {
+  const [resumeData, setResumeData] = useState(initialResumeData);
 
-              <Separator />
-              
-              {/* Experience */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Work Experience</h3>
-                {expFields.map((field, index) => (
-                  <div key={field.id} className="space-y-4 p-4 border rounded-md mb-4 relative">
-                    <FormField control={form.control} name={`experience.${index}.title`} render={({ field }) => ( <FormItem><FormLabel>Job Title</FormLabel><FormControl><Input placeholder="Software Engineer" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <FormField control={form.control} name={`experience.${index}.company`} render={({ field }) => ( <FormItem><FormLabel>Company</FormLabel><FormControl><Input placeholder="Tech Solutions Inc." {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name={`experience.${index}.startDate`} render={({ field }) => ( <FormItem><FormLabel>Start Date</FormLabel><FormControl><Input placeholder="Jan 2020" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                        <FormField control={form.control} name={`experience.${index}.endDate`} render={({ field }) => ( <FormItem><FormLabel>End Date</FormLabel><FormControl><Input placeholder="Present" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    </div>
-                    <FormField control={form.control} name={`experience.${index}.description`} render={({ field }) => ( <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe your responsibilities and achievements..." {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive" onClick={() => removeExp(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button type="button" variant="outline" onClick={() => appendExp({ title: "", company: "", startDate: "", endDate: "", description: "" })}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Experience
-                </Button>
-              </div>
+  const handlePersonalChange = (field: string, value: string) => {
+    setResumeData(prev => ({ ...prev, personal: { ...prev.personal, [field]: value } }));
+  };
 
-              <Separator />
+  const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setResumeData(prev => ({ ...prev, skills: e.target.value.split(',').map(s => s.trim()) }));
+  };
 
-              {/* Education */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Education</h3>
-                {eduFields.map((field, index) => (
-                  <div key={field.id} className="space-y-4 p-4 border rounded-md mb-4 relative">
-                    <FormField control={form.control} name={`education.${index}.degree`} render={({ field }) => ( <FormItem><FormLabel>Degree / Certificate</FormLabel><FormControl><Input placeholder="B.S. in Computer Science" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <FormField control={form.control} name={`education.${index}.school`} render={({ field }) => ( <FormItem><FormLabel>School / University</FormLabel><FormControl><Input placeholder="State University" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name={`education.${index}.startDate`} render={({ field }) => ( <FormItem><FormLabel>Start Date</FormLabel><FormControl><Input placeholder="Aug 2016" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                        <FormField control={form.control} name={`education.${index}.endDate`} render={({ field }) => ( <FormItem><FormLabel>End Date</FormLabel><FormControl><Input placeholder="May 2020" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    </div>
-                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-destructive" onClick={() => removeEdu(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button type="button" variant="outline" onClick={() => appendEdu({ degree: "", school: "", startDate: "", endDate: "" })}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Education
-                </Button>
-              </div>
+  return (
+    <div className="bg-gray-50 min-h-screen font-sans">
+      <div className="max-w-7xl mx-auto p-4 md:p-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          
+          {/* Left Panel: Input Form */}
+          <div className="md:col-span-5 space-y-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Resume Details</h2>
+              <Button onClick={() => window.print()} className="gap-2 print:hidden bg-primary hover:bg-primary/90">
+                <Printer className="h-4 w-4" />
+                Print / Download PDF
+              </Button>
+            </div>
+            
+            <Section title="Personal Information" icon={User}>
+              <Input placeholder="Full Name" value={resumeData.personal.name} onChange={(e) => handlePersonalChange('name', e.target.value)} />
+              <Input placeholder="Email" value={resumeData.personal.email} onChange={(e) => handlePersonalChange('email', e.target.value)} />
+              <Input placeholder="Phone" value={resumeData.personal.phone} onChange={(e) => handlePersonalChange('phone', e.target.value)} />
+              <Input placeholder="LinkedIn Profile URL" value={resumeData.personal.linkedin} onChange={(e) => handlePersonalChange('linkedin', e.target.value)} />
+            </Section>
 
-              <Separator />
+            <Section title="Education" icon={GraduationCap}>
+              <DynamicSection
+                name="education"
+                items={resumeData.education}
+                setData={setResumeData}
+                placeholder="Education"
+                fields={[
+                  { key: 'school', label: 'School / University', placeholder: 'e.g., State University' },
+                  { key: 'degree', label: 'Degree & Major', placeholder: 'e.g., B.S. in Computer Science' },
+                  { key: 'date', label: 'Date', placeholder: 'e.g., Aug 2020 - May 2024' },
+                  { key: 'gpa', label: 'GPA (Optional)', placeholder: 'e.g., 3.8/4.0' }
+                ]}
+              />
+            </Section>
 
-              {/* Skills */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Skills</h3>
-                {skillFields.map((field, index) => (
-                  <div key={field.id} className="flex items-center gap-2 mb-2">
-                    <FormField control={form.control} name={`skills.${index}.name`} render={({ field }) => ( <FormItem className="flex-grow"><FormControl><Input placeholder="e.g., React" {...field} /></FormControl><FormMessage /></FormItem> )} />
-                    <Button type="button" variant="ghost" size="icon" className="text-destructive" onClick={() => removeSkill(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button type="button" variant="outline" onClick={() => appendSkill({ name: "" })}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Skill
-                </Button>
-              </div>
+            <Section title="Experience / Projects" icon={Briefcase}>
+              <DynamicSection
+                name="experience"
+                items={resumeData.experience}
+                setData={setResumeData}
+                placeholder="Experience"
+                fields={[
+                  { key: 'title', label: 'Title', placeholder: 'e.g., Software Engineer Intern' },
+                  { key: 'organization', label: 'Organization', placeholder: 'e.g., Tech Company Inc.' },
+                  { key: 'dates', label: 'Dates', placeholder: 'e.g., June 2023 - Aug 2023' },
+                  { key: 'achievements', label: 'Achievements (one per line)', type: 'textarea', placeholder: 'Describe your responsibilities and achievements...' }
+                ]}
+              />
+            </Section>
 
-              <Button type="submit" className="w-full" size="lg">Generate & Download</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-      
-      {/* Resume Preview */}
-      <Card className="sticky top-24">
-        <CardHeader>
-          <CardTitle>Live Preview</CardTitle>
-        </CardHeader>
-        <CardContent className="bg-white text-black p-8 rounded-b-xl aspect-[8.5/11]">
-            <div className="space-y-6">
+            <Section title="Skills" icon={Star}>
+              <p className="text-sm text-gray-500">Enter skills separated by commas.</p>
+              <Input
+                placeholder="e.g., React, Python, Team Leadership"
+                value={resumeData.skills.join(', ')}
+                onChange={handleSkillsChange}
+              />
+            </Section>
+          </div>
+
+          {/* Right Panel: Resume Preview */}
+          <div className="md:col-span-7">
+            <div className="sticky top-8 print:top-0">
+              <div id="resume-preview" className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
+                
                 {/* Header */}
-                <div className="text-center border-b pb-4">
-                    {formData.fullName && <h1 className="text-3xl font-bold tracking-tight">{formData.fullName}</h1>}
-                    <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
-                        {formData.email && <div className="flex items-center gap-1"><Mail className="h-3 w-3" /> {formData.email}</div>}
-                        {formData.phone && <div className="flex items-center gap-1"><Phone className="h-3 w-3" /> {formData.phone}</div>}
-                        {formData.address && <div className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {formData.address}</div>}
-                        {formData.linkedin && <div className="flex items-center gap-1"><Linkedin className="h-3 w-3" /> {formData.linkedin.replace('https://', '')}</div>}
-                    </div>
+                <div className="text-center mb-6 border-b pb-4">
+                  <h1 className="text-3xl font-bold tracking-tight">{resumeData.personal.name}</h1>
+                  <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
+                    {resumeData.personal.email && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
+                    {resumeData.personal.phone && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{resumeData.personal.phone}</div>}
+                    {resumeData.personal.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="h-3 w-3" />{resumeData.personal.linkedin}</div>}
+                  </div>
                 </div>
 
-                {/* Summary */}
-                {formData.summary && (
-                    <div>
-                        <h2 className="text-sm font-bold uppercase tracking-widest border-b mb-2 pb-1">Summary</h2>
-                        <p className="text-xs leading-relaxed">{formData.summary}</p>
+                {/* Education Section */}
+                <div className="mb-6">
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Education</h2>
+                  {resumeData.education.map((edu, index) => (
+                    <div key={index} className="mb-2">
+                      <div className="flex justify-between items-baseline">
+                        <h3 className="text-sm font-semibold">{edu.school}</h3>
+                        <p className="text-xs text-gray-500">{edu.date}</p>
+                      </div>
+                      <div className="flex justify-between items-baseline">
+                         <p className="text-sm italic">{edu.degree}</p>
+                         {edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}
+                      </div>
                     </div>
-                )}
+                  ))}
+                </div>
 
-                {/* Experience */}
-                {formData.experience && formData.experience[0]?.title && (
-                    <div>
-                        <h2 className="text-sm font-bold uppercase tracking-widest border-b mb-2 pb-1">Work Experience</h2>
-                        <div className="space-y-3">
-                            {formData.experience.map((exp, index) => exp.title && (
-                                <div key={index}>
-                                    <div className="flex justify-between items-baseline">
-                                        <h3 className="text-sm font-semibold">{exp.title}</h3>
-                                        <p className="text-xs text-gray-500">{exp.startDate} - {exp.endDate}</p>
-                                    </div>
-                                    <p className="text-xs font-medium italic">{exp.company}</p>
-                                    <p className="text-xs mt-1 leading-relaxed">{exp.description}</p>
-                                </div>
-                            ))}
-                        </div>
+                {/* Experience Section */}
+                <div className="mb-6">
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Experience / Projects</h2>
+                  {resumeData.experience.map((exp, index) => (
+                    <div key={index} className="mb-3">
+                      <div className="flex justify-between items-baseline">
+                        <h3 className="text-sm font-semibold">{exp.title}</h3>
+                        <p className="text-xs text-gray-500">{exp.dates}</p>
+                      </div>
+                      <p className="text-sm italic mb-1">{exp.organization}</p>
+                      <ul className="list-disc list-outside pl-5 space-y-1">
+                        {exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}
+                      </ul>
                     </div>
-                )}
-                
-                {/* Education */}
-                {formData.education && formData.education[0]?.degree && (
-                    <div>
-                        <h2 className="text-sm font-bold uppercase tracking-widest border-b mb-2 pb-1">Education</h2>
-                        <div className="space-y-3">
-                             {formData.education.map((edu, index) => edu.degree && (
-                                <div key={index}>
-                                    <div className="flex justify-between items-baseline">
-                                        <h3 className="text-sm font-semibold">{edu.degree}</h3>
-                                        <p className="text-xs text-gray-500">{edu.startDate} - {edu.endDate}</p>
-                                    </div>
-                                    <p className="text-xs font-medium italic">{edu.school}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                  ))}
+                </div>
 
-                {/* Skills */}
-                {formData.skills && formData.skills.length > 0 && formData.skills[0]?.name && (
-                    <div>
-                        <h2 className="text-sm font-bold uppercase tracking-widest border-b mb-2 pb-1">Skills</h2>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {formData.skills.map((skill, index) => skill.name && (
-                                <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">{skill.name}</span>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                {/* Skills Section */}
+                <div>
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Skills</h2>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {resumeData.skills.map((skill, index) => skill && (
+                      <span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
             </div>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </div>
+      
+      {/* Print-specific styles */}
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print-container, .print-container * {
+             visibility: visible;
+          }
+          #resume-preview, #resume-preview * {
+            visibility: visible;
+          }
+          #resume-preview {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+            overflow: hidden;
+            font-size: 10px; /* Adjust font size for print */
+          }
+           #resume-preview h1 { font-size: 24px; }
+           #resume-preview h2 { font-size: 12px; }
+           #resume-preview h3 { font-size: 11px; }
+           #resume-preview p, #resume-preview li, #resume-preview span { font-size: 10px; }
+           #resume-preview .text-xs { font-size: 9px; }
+
+          .print\\:hidden {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }
+
+    
