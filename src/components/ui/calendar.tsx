@@ -10,12 +10,15 @@ import { buttonVariants } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select"
 import { ScrollArea } from "./scroll-area"
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  monthOnly?: boolean;
+};
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  monthOnly = false,
   ...props
 }: CalendarProps) {
   return (
@@ -36,7 +39,7 @@ function Calendar({
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
-        head_row: "flex",
+        head_row: cn("flex", { "hidden": monthOnly }),
         head_cell:
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
@@ -55,7 +58,7 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        tbody: "hidden",
+        tbody: cn({ "hidden": monthOnly }),
         ...classNames,
       }}
       components={{

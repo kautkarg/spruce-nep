@@ -83,6 +83,7 @@ export function MonthYearPicker({ field }: MonthYearPickerProps) {
           captionLayout="dropdown-buttons"
           fromYear={1980}
           toYear={new Date().getFullYear() + 5}
+          monthOnly={true}
         />
       </PopoverContent>
     </Popover>
