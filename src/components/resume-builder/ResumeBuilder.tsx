@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import html2pdf from 'html2pdf.js';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -223,10 +222,13 @@ export function ResumeBuilder() {
     return arr.some(item => item && item[key]);
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const element = resumePreviewRef.current;
     if (!element) return;
     
+    // Dynamically import html2pdf.js only on the client-side
+    const html2pdf = (await import('html2pdf.js')).default;
+
     const options = {
       margin:       [0.5, 0.5, 0.5, 0.5],
       filename:     `Resume-${resumeData.personal.name.replace(/\s+/g, '-') || 'Student'}.pdf`,
@@ -441,3 +443,5 @@ export function ResumeBuilder() {
     </div>
   );
 }
+
+    
