@@ -20,9 +20,12 @@ interface MonthYearPickerProps {
 }
 
 export function MonthYearPicker({ field }: MonthYearPickerProps) {
-  const [date, setDate] = React.useState<Date | undefined>(
-    field.value ? new Date(field.value) : undefined
-  );
+  const [date, setDate] = React.useState<Date | undefined>(() => {
+      if (field.value && !isNaN(new Date(field.value).getTime())) {
+          return new Date(field.value);
+      }
+      return undefined;
+  });
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
