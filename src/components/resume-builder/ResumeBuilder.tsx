@@ -221,12 +221,12 @@ export function ResumeBuilder() {
     return arr.some(item => item && item[key]);
   };
   
-  const ResumePreview = (
-    <div id="resume-preview" className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
+  const ResumeContent = (
+      <>
         {template === 'classic' && (
             <>
                 {/* --- Classic Template (Single Column) --- */}
-                <div className="text-center mb-6 border-b pb-4">
+                <div className="text-center mb-6 border-b border-gray-800 pb-4">
                   <h1 className="text-3xl font-bold tracking-tight">{resumeData.personal.name || 'Your Name'}</h1>
                    { (resumeData.personal.email || resumeData.personal.phone || resumeData.personal.linkedin) && (
                         <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
@@ -305,20 +305,20 @@ export function ResumeBuilder() {
                 </div>
             </>
         )}
-    </div>
+      </>
   );
 
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
-      <div className="max-w-screen-2xl mx-auto p-4 md:p-8">
+      <div className="print-hide max-w-screen-2xl mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Panel: Input Form */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-6">
             <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-800">Resume Details</h2>
-                 <Button onClick={() => window.print()} className="w-full gap-2 print:hidden bg-primary hover:bg-primary/90">
+                 <Button onClick={() => window.print()} className="w-full gap-2 bg-primary hover:bg-primary/90">
                     <Printer className="h-4 w-4" />
                     Print / Download PDF
                 </Button>
@@ -412,56 +412,52 @@ export function ResumeBuilder() {
 
           {/* Right Panel: Resume Preview */}
           <div className="lg:col-span-7 xl:col-span-8">
-            <div className="sticky top-8 print:top-0">
-              {ResumePreview}
+            <div className="sticky top-8">
+              <div className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
+                {ResumeContent}
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* This is the dedicated print-only version of the resume */}
+      <div className="print-show">
+        {ResumeContent}
       </div>
       
       {/* Print-specific styles */}
       <style jsx global>{`
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          #resume-preview, #resume-preview * {
-            visibility: visible;
-          }
-          #resume-preview {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            box-shadow: none;
-            border-radius: 0;
-            overflow: hidden;
-            font-size: 10px; /* Adjust font size for print */
-          }
-           #resume-preview h1 { font-size: 24px; }
-           #resume-preview h2 { font-size: 12px; }
-           #resume-preview h3 { font-size: 11px; }
-           #resume-preview p, #resume-preview li, #resume-preview span, #resume-preview div { font-size: 10px; }
-           #resume-preview .text-xs { font-size: 9px; }
-           #resume-preview .text-sm { font-size: 10px; }
-           #resume-preview .text-base { font-size: 11px; }
-           #resume-preview .text-lg { font-size: 12px; }
-           #resume-preview .text-xl { font-size: 14px; }
-           #resume-preview .text-2xl { font-size: 16px; }
-           #resume-preview .text-3xl { font-size: 20px; }
-           #resume-preview .text-4xl { font-size: 24px; }
-
-          .print\\:hidden {
+          .print-hide {
             display: none;
           }
+          .print-show {
+            display: block;
+          }
+          body {
+            background-color: #fff;
+          }
+          /* You can add more fine-grained print styles here */
+          .print-show h1 { font-size: 24px; }
+          .print-show h2 { font-size: 12px; }
+          .print-show h3 { font-size: 11px; }
+          .print-show p, .print-show li, .print-show span, .print-show div { font-size: 10px; }
+          .print-show .text-xs { font-size: 9px; }
+          .print-show .text-sm { font-size: 10px; }
         }
+
         @page {
           size: A4;
           margin: 0.5in;
+        }
+
+        .print-show {
+          display: none;
         }
       `}</style>
     </div>
   );
 }
+
+    
