@@ -26,7 +26,7 @@ const personalInfoSchema = z.object({
 const educationSchema = z.object({
   school: z.string().min(1, "School name is required."),
   degree: z.string().min(1, "Degree is required."),
-  date: z.string().optional(),
+  date: z.string().nullable().optional(),
   scoreType: z.enum(['CGPA', 'Percentage']).optional(),
   scoreValue: z.string().optional(),
 }).refine(data => {
@@ -49,27 +49,27 @@ const educationSchema = z.object({
 const experienceSchema = z.object({
   title: z.string().min(1, "Title is required."),
   organization: z.string().min(1, "Organization is required."),
-  dates: z.string().optional(),
+  dates: z.string().nullable().optional(),
   achievements: z.string().optional(),
 });
 
 const awardSchema = z.object({
   name: z.string().min(1, "Award name is required."),
-  date: z.string().optional(),
+  date: z.string().nullable().optional(),
   description: z.string().optional(),
 });
 
 const volunteerSchema = z.object({
   role: z.string().min(1, "Role is required."),
   organization: z.string().min(1, "Organization is required."),
-  dates: z.string().optional(),
+  dates: z.string().nullable().optional(),
   description: z.string().optional(),
 });
 
 const certificationSchema = z.object({
   name: z.string().min(1, "Certification name is required."),
   issuer: z.string().optional(),
-  date: z.string().optional(),
+  date: z.string().nullable().optional(),
 });
 
 const resumeSchema = z.object({
@@ -177,7 +177,7 @@ const EducationSection: React.FC = () => {
                     </Button>
                 </div>
             ))}
-            <Button type="button" variant="outline" onClick={() => append({ school: "", degree: "", date: "", scoreType: "CGPA", scoreValue: "" })} className="w-full">
+            <Button type="button" variant="outline" onClick={() => append({ school: "", degree: "", date: null, scoreType: "CGPA", scoreValue: "" })} className="w-full">
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Education
             </Button>
         </div>
@@ -465,19 +465,19 @@ export function ResumeBuilder() {
                                     </Section>
 
                                     <Section title="Experience / Projects" icon={Briefcase}>
-                                        <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: "", achievements: "" }} />
+                                        <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: null, achievements: "" }} />
                                     </Section>
 
                                     <Section title="Awards & Honors" icon={Award}>
-                                        <DynamicSection name="awards" title="Award" newItem={{ name: "", date: "", description: "" }} />
+                                        <DynamicSection name="awards" title="Award" newItem={{ name: "", date: null, description: "" }} />
                                     </Section>
                                     
                                     <Section title="Volunteer & Leadership" icon={HeartHandshake}>
-                                        <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: "", description: "" }} />
+                                        <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: null, description: "" }} />
                                     </Section>
 
                                     <Section title="Certifications" icon={Award}>
-                                         <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: "" }} />
+                                         <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: null }} />
                                     </Section>
 
                                     <Section title="Skills" icon={Briefcase}>

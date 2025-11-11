@@ -26,15 +26,24 @@ export function MonthYearPicker({ field }: MonthYearPickerProps) {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (field.value) {
-      const fieldDate = new Date(field.value);
-      if (isNaN(fieldDate.getTime())) {
-         setDate(undefined);
-      } else if (date?.getTime() !== fieldDate.getTime()) {
-        setDate(fieldDate);
-      }
-    } else {
+    // CRITICAL FIX: Implement null-safe date handling.
+    // If the field value is falsy (null, undefined, empty string), set date to undefined.
+    if (!field.value) {
         setDate(undefined);
+        return;
+    }
+
+    const fieldDate = new Date(field.value);
+
+    // If the parsed date is invalid, also set to undefined to prevent crash.
+    if (isNaN(fieldDate.getTime())) {
+        setDate(undefined);
+        return;
+    }
+
+    // Only update state if the date has actually changed.
+    if (date?.getTime() !== fieldDate.getTime()) {
+      setDate(fieldDate);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [field.value]);
