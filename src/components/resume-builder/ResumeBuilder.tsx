@@ -27,6 +27,21 @@ const educationSchema = z.object({
   date: z.string().optional(),
   scoreType: z.enum(['CGPA', 'Percentage']).optional(),
   scoreValue: z.string().optional(),
+}).refine(data => {
+    if (data.scoreValue && data.scoreType) {
+        const score = parseFloat(data.scoreValue);
+        if (isNaN(score)) return true; // Let other string validations handle it if it's not a number
+        if (data.scoreType === 'CGPA') {
+            return score >= 0 && score <= 10;
+        }
+        if (data.scoreType === 'Percentage') {
+            return score >= 0 && score <= 100;
+        }
+    }
+    return true;
+}, {
+    message: "Invalid score value. CGPA must be <= 10, Percentage must be <= 100.",
+    path: ["scoreValue"],
 });
 
 const experienceSchema = z.object({
@@ -484,6 +499,8 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
+    
 
     
 
