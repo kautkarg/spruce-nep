@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -427,13 +426,7 @@ export function ResumeBuilder() {
             <div className="max-w-screen-2xl mx-auto p-4 md:p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-                        <div className="space-y-4">
-                            <h2 className="text-2xl font-bold text-gray-800">Resume Details</h2>
-                            <Button onClick={handleDownload} className="w-full gap-2 bg-primary hover:bg-primary/90">
-                                <Printer className="h-4 w-4" />
-                                Download as PDF
-                            </Button>
-                        </div>
+                        <h2 className="text-2xl font-bold text-gray-800">Resume Details</h2>
                         
                         <Section title="Template" icon={FileText}>
                             <div className="flex gap-2">
@@ -490,6 +483,13 @@ export function ResumeBuilder() {
                                 </form>
                             </Form>
                         </FormProvider>
+
+                        <div className="space-y-4">
+                            <Button onClick={handleDownload} className="w-full gap-2 bg-primary hover:bg-primary/90">
+                                <Printer className="h-4 w-4" />
+                                Download as PDF
+                            </Button>
+                        </div>
                     </div>
                     <div className="lg:col-span-7 xl:col-span-8">
                         <div className="sticky top-8">
@@ -503,3 +503,5 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
+    
