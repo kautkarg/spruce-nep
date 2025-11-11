@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Trash2, Printer, Mail, Phone, Linkedin, User, FileText, Award, UserCheck, HeartHandshake, GraduationCap, Briefcase } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // --- Zod Schema for Validation ---
 const personalInfoSchema = z.object({
@@ -24,7 +25,8 @@ const educationSchema = z.object({
   school: z.string().min(1, "School name is required."),
   degree: z.string().min(1, "Degree is required."),
   date: z.string().optional(),
-  gpa: z.string().optional(),
+  scoreType: z.enum(['CGPA', 'Percentage']).optional(),
+  scoreValue: z.string().optional(),
 });
 
 const experienceSchema = z.object({
@@ -80,7 +82,8 @@ const defaultValues: ResumeFormValues = {
       school: 'University Name',
       degree: 'Degree & Major (e.g., B.S. in Computer Science)',
       date: 'Month Year - Month Year',
-      gpa: '4.0',
+      scoreType: 'CGPA',
+      scoreValue: '8.5',
     },
   ],
   experience: [
@@ -125,16 +128,82 @@ type FieldConfig = {
 interface DynamicSectionProps {
     name: "education" | "experience" | "awards" | "volunteering" | "certifications";
     title: string;
-    fieldsConfig: FieldConfig[];
     newItem: object;
 }
 
-const DynamicSection: React.FC<DynamicSectionProps> = ({ name, title, fieldsConfig, newItem }) => {
+const EducationSection: React.FC = () => {
+    const { control } = useFormContext<ResumeFormValues>();
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "education",
+    });
+
+    return (
+        <div>
+            {fields.map((item, index) => (
+                <div key={item.id} className="space-y-3 p-4 border rounded-md mb-4 relative bg-gray-50/50">
+                    <FormField control={control} name={`education.${index}.school`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">School / University</FormLabel><FormControl><Input placeholder="e.g., State University" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={control} name={`education.${index}.degree`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Degree & Major</FormLabel><FormControl><Input placeholder="e.g., B.S. in Computer Science" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={control} name={`education.${index}.date`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Date</FormLabel><FormControl><Input placeholder="e.g., Aug 2020 - May 2024" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
+                    <div className="grid grid-cols-2 gap-2">
+                        <FormField control={control} name={`education.${index}.scoreType`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger></FormControl><SelectContent><SelectItem value="CGPA">CGPA</SelectItem><SelectItem value="Percentage">Percentage</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                        <FormField control={control} name={`education.${index}.scoreValue`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score</FormLabel><FormControl><Input type="number" placeholder="e.g., 8.5 or 85" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
+                    </div>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 text-red-500 hover:bg-red-100 hover:text-red-600 h-7 w-7"
+                        onClick={() => remove(index)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            ))}
+            <Button type="button" variant="outline" onClick={() => append({ school: "", degree: "", date: "", scoreType: "CGPA", scoreValue: "" })} className="w-full">
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Education
+            </Button>
+        </div>
+    );
+};
+
+
+const DynamicSection: React.FC<DynamicSectionProps> = ({ name, title, newItem }) => {
     const { control } = useFormContext<ResumeFormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name,
     });
+    
+    const getFieldsConfig = (name: DynamicSectionProps["name"]): FieldConfig[] => {
+        switch (name) {
+            case 'experience': return [
+                { key: 'title', label: 'Title', placeholder: 'e.g., Software Engineer Intern' },
+                { key: 'organization', label: 'Organization', placeholder: 'e.g., Tech Company Inc.' },
+                { key: 'dates', label: 'Dates', placeholder: 'e.g., June 2023 - Aug 2023' },
+                { key: 'achievements', label: 'Achievements (one per line)', type: 'textarea', placeholder: 'Describe your responsibilities and achievements...' }
+            ];
+            case 'awards': return [
+                { key: 'name', label: 'Award Name', placeholder: 'e.g., Dean\'s List' },
+                { key: 'date', label: 'Date', placeholder: 'e.g., Spring 2023' },
+                { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Recognized for academic excellence.' }
+            ];
+            case 'volunteering': return [
+                { key: 'role', label: 'Role', placeholder: 'e.g., Team Lead' },
+                { key: 'organization', label: 'Organization', placeholder: 'e.g., Annual Tech Fest' },
+                { key: 'dates', label: 'Dates', placeholder: 'e.g., March 2023' },
+                { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Led a team of 5 volunteers...' }
+            ];
+            case 'certifications': return [
+                { key: 'name', label: 'Certification Name', placeholder: 'e.g., Certified JavaScript Developer' },
+                { key: 'issuer', label: 'Issuing Organization', placeholder: 'e.g., Tech Certification Inc.' },
+                { key: 'date', label: 'Date', placeholder: 'e.g., June 2023' }
+            ];
+            default: return [];
+        }
+    }
+
+    const fieldsConfig = getFieldsConfig(name);
 
     return (
         <div>
@@ -269,7 +338,7 @@ export function ResumeBuilder() {
                     {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
                     
                     {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                        <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
+                        <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
                     ))}</div>}
 
                     {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
@@ -304,7 +373,7 @@ export function ResumeBuilder() {
                             ))}</div>}
 
                              {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                                <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
+                                <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
                               ))}</div>}
                         </div>
                         <div className="w-1/3 bg-gray-100 p-6 rounded-md -my-8 -mr-8">
@@ -373,46 +442,23 @@ export function ResumeBuilder() {
                                     </Section>
 
                                     <Section title="Education" icon={GraduationCap}>
-                                        <DynamicSection name="education" title="Education" newItem={{ school: "", degree: "", date: "", gpa: "" }} fieldsConfig={[
-                                            { key: 'school', label: 'School / University', placeholder: 'e.g., State University' },
-                                            { key: 'degree', label: 'Degree & Major', placeholder: 'e.g., B.S. in Computer Science' },
-                                            { key: 'date', label: 'Date', placeholder: 'e.g., Aug 2020 - May 2024' },
-                                            { key: 'gpa', label: 'GPA (Optional)', placeholder: 'e.g., 3.8/4.0' }
-                                        ]} />
+                                        <EducationSection />
                                     </Section>
 
                                     <Section title="Experience / Projects" icon={Briefcase}>
-                                        <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: "", achievements: "" }} fieldsConfig={[
-                                            { key: 'title', label: 'Title', placeholder: 'e.g., Software Engineer Intern' },
-                                            { key: 'organization', label: 'Organization', placeholder: 'e.g., Tech Company Inc.' },
-                                            { key: 'dates', label: 'Dates', placeholder: 'e.g., June 2023 - Aug 2023' },
-                                            { key: 'achievements', label: 'Achievements (one per line)', type: 'textarea', placeholder: 'Describe your responsibilities and achievements...' }
-                                        ]} />
+                                        <DynamicSection name="experience" title="Experience" newItem={{ title: "", organization: "", dates: "", achievements: "" }} />
                                     </Section>
 
                                     <Section title="Awards & Honors" icon={Award}>
-                                        <DynamicSection name="awards" title="Award" newItem={{ name: "", date: "", description: "" }} fieldsConfig={[
-                                            { key: 'name', label: 'Award Name', placeholder: 'e.g., Dean\'s List' },
-                                            { key: 'date', label: 'Date', placeholder: 'e.g., Spring 2023' },
-                                            { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Recognized for academic excellence.' }
-                                        ]} />
+                                        <DynamicSection name="awards" title="Award" newItem={{ name: "", date: "", description: "" }} />
                                     </Section>
                                     
                                     <Section title="Volunteer & Leadership" icon={HeartHandshake}>
-                                        <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: "", description: "" }} fieldsConfig={[
-                                            { key: 'role', label: 'Role', placeholder: 'e.g., Team Lead' },
-                                            { key: 'organization', label: 'Organization', placeholder: 'e.g., Annual Tech Fest' },
-                                            { key: 'dates', label: 'Dates', placeholder: 'e.g., March 2023' },
-                                            { key: 'description', label: 'Description', type: 'textarea', placeholder: 'e.g., Led a team of 5 volunteers...' }
-                                        ]} />
+                                        <DynamicSection name="volunteering" title="Activity" newItem={{ role: "", organization: "", dates: "", description: "" }} />
                                     </Section>
 
                                     <Section title="Certifications" icon={Award}>
-                                         <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: "" }} fieldsConfig={[
-                                            { key: 'name', label: 'Certification Name', placeholder: 'e.g., Certified JavaScript Developer' },
-                                            { key: 'issuer', label: 'Issuing Organization', placeholder: 'e.g., Tech Certification Inc.' },
-                                            { key: 'date', label: 'Date', placeholder: 'e.g., June 2023' }
-                                        ]} />
+                                         <DynamicSection name="certifications" title="Certification" newItem={{ name: "", issuer: "", date: "" }} />
                                     </Section>
 
                                     <Section title="Skills" icon={Briefcase}>
