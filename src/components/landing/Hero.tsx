@@ -50,7 +50,7 @@ export function Hero() {
               <div className="mt-6 flex justify-center items-center gap-12">
                   <div>
                         <Image
-                          src="/images/rtmnu-logo.png?v=2"
+                          src="/images/rtmnu-logo.png"
                           alt="RTMNU Logo"
                           width={70}
                           height={70}
@@ -59,7 +59,7 @@ export function Hero() {
                   </div>
                     <div>
                       <Image
-                          src="/images/lifelonglearning.png?v=2"
+                          src="/images/lifelonglearning.png"
                           alt="Lifelong Learning Logo"
                           width={63}
                           height={63}
@@ -79,15 +79,15 @@ export function Hero() {
                 <div className="flex items-center justify-center gap-4">
                     <div className="flex -space-x-2 overflow-hidden">
                         <Avatar className="inline-block border-2 border-background h-8 w-8">
-                            <AvatarImage src="https://picsum.photos/seed/avatar1/40/40" />
+                            <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=40&w=40" />
                             <AvatarFallback>A</AvatarFallback>
                         </Avatar>
                          <Avatar className="inline-block border-2 border-background h-8 w-8">
-                            <AvatarImage src="https://picsum.photos/seed/avatar2/40/40" />
+                            <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=40&w=40" />
                             <AvatarFallback>B</AvatarFallback>
                         </Avatar>
                          <Avatar className="inline-block border-2 border-background h-8 w-8">
-                            <AvatarImage src="https://picsum.photos/seed/avatar3/40/40" />
+                            <AvatarImage src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=40&w=40" />
                             <AvatarFallback>C</AvatarFallback>
                         </Avatar>
                     </div>
