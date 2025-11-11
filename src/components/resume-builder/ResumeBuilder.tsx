@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const personalInfoSchema = z.object({
   name: z.string().min(1, "Name is required."),
   email: z.string().email("Invalid email address.").optional().or(z.literal('')),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^[0-9-()+ ]*$/, "Invalid phone number format.").optional().or(z.literal('')),
   linkedin: z.string().optional(),
 });
 
@@ -433,7 +433,7 @@ export function ResumeBuilder() {
                                     <Section title="Personal Information" icon={User}>
                                         <FormField control={form.control} name="personal.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Full Name" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="personal.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="Email" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                        <FormField control={form.control} name="personal.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input placeholder="Phone" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                        <FormField control={form.control} name="personal.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input type="tel" placeholder="Phone" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                         <FormField control={form.control} name="personal.linkedin" render={({ field }) => (<FormItem><FormLabel>LinkedIn Profile URL</FormLabel><FormControl><Input placeholder="LinkedIn Profile URL" {...field} /></FormControl><FormMessage /></FormItem>)} />
                                     </Section>
                                     
@@ -484,5 +484,7 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
+    
 
     
