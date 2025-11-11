@@ -215,9 +215,11 @@ export function ResumeBuilder() {
     setResumeData(prev => ({ ...prev, skills: e.target.value.split(',').map(s => s.trim()) }));
   };
   
-  const hasContent = (arr: any[] | undefined, key: string) => {
-    return arr && arr.length > 0 && arr.some(item => item[key]);
-  }
+  const hasContent = (arr: any[] | undefined, key?: string) => {
+    if (!arr || arr.length === 0) return false;
+    if (!key) return arr.some(item => item); // For simple arrays like skills
+    return arr.some(item => item && item[key]);
+  };
   
   const ResumePreview = (
     <div id="resume-preview" className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
@@ -226,36 +228,38 @@ export function ResumeBuilder() {
                 {/* --- Classic Template (Single Column) --- */}
                 <div className="text-center mb-6 border-b pb-4">
                   <h1 className="text-3xl font-bold tracking-tight">{resumeData.personal.name || 'Your Name'}</h1>
-                  <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
-                    {resumeData.personal.email && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
-                    {resumeData.personal.phone && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{resumeData.personal.phone}</div>}
-                    {resumeData.personal.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="h-3 w-3" />{resumeData.personal.linkedin}</div>}
-                  </div>
+                   { (resumeData.personal.email || resumeData.personal.phone || resumeData.personal.linkedin) && (
+                        <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
+                            {resumeData.personal.email && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
+                            {resumeData.personal.phone && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{resumeData.personal.phone}</div>}
+                            {resumeData.personal.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="h-3 w-3" />{resumeData.personal.linkedin}</div>}
+                        </div>
+                   )}
                 </div>
 
-                {resumeData.summary && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
+                {resumeData.summary && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
                 
-                {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Education</h2>{resumeData.education.filter(e => e.school).map((edu, index) => (
+                {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Education</h2>{resumeData.education.filter(e => e.school).map((edu, index) => (
                     <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
                 ))}</div>}
 
-                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Experience / Projects</h2>{resumeData.experience.filter(e=>e.title).map((exp, index) => (
-                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{exp.achievements && exp.achievements.length > 0 && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience.filter(e=>e.title).map((exp, index) => (
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(exp.achievements) && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                 ))}</div>}
                 
-                {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Awards & Honors</h2>{resumeData.awards.filter(a=>a.name).map((award, index) => (
+                {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Awards & Honors</h2>{resumeData.awards.filter(a=>a.name).map((award, index) => (
                     <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
                 ))}</div>}
 
-                {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering.filter(v=>v.role).map((item, index) => (
-                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p><p className="text-xs leading-relaxed">{item.description}</p></div>
+                {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering.filter(v=>v.role).map((item, index) => (
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
                 ))}</div>}
 
-                {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Certifications</h2>{resumeData.certifications.filter(c=>c.name).map((cert, index) => (
+                {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Certifications</h2>{resumeData.certifications.filter(c=>c.name).map((cert, index) => (
                     <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
                 ))}</div>}
 
-                {resumeData.skills && resumeData.skills.length > 0 && resumeData.skills[0] !== '' && <div><h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b-2 border-primary pb-1 mb-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{resumeData.skills.map((skill, index) => skill && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill}</span>))}</div></div>}
+                {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{resumeData.skills.map((skill, index) => skill && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill}</span>))}</div></div>}
             </>
         )}
         
@@ -265,11 +269,11 @@ export function ResumeBuilder() {
                 <div className="flex gap-8 h-full">
                     {/* Left Column (Main Content) */}
                     <div className="w-2/3">
-                        <h1 className="text-4xl font-bold tracking-tight mb-2 text-primary">{resumeData.personal.name}</h1>
+                        <h1 className="text-4xl font-bold tracking-tight mb-2 text-gray-800">{resumeData.personal.name}</h1>
                         {resumeData.summary && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
                         
                         {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience / Projects</h2>{resumeData.experience.filter(e => e.title).map((exp, index) => (
-                            <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{exp.achievements && exp.achievements.length > 0 && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+                            <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(exp.achievements) && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                         ))}</div>}
 
                          {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education.filter(e=>e.school).map((edu, index) => (
@@ -284,7 +288,7 @@ export function ResumeBuilder() {
                                 {resumeData.personal.linkedin && <div className="flex items-center gap-2"><Linkedin className="h-3 w-3 shrink-0" /><span>{resumeData.personal.linkedin}</span></div>}
                         </div></div>}
 
-                        {resumeData.skills && resumeData.skills.length > 0 && resumeData.skills[0] !== '' && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{resumeData.skills.map((skill, index) => skill && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill}</span>))}</div></div>}
+                        {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{resumeData.skills.map((skill, index) => skill && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill}</span>))}</div></div>}
                         
                         {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Awards</h2><div className="space-y-3 mt-2">{resumeData.awards.filter(a=>a.name).map((award, index) => (
                             <div key={index}><h3 className="text-xs font-semibold">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>
