@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable}`}>
       <head>
-        <link rel="icon" href="/images/sprucelogo.webp" type="image/webp" />
+        <link rel="icon" href="/images/sprucelogo.webp?v=2" type="image/webp" />
       </head>
       <body className="antialiased pb-24 md:pb-0">
         {children}

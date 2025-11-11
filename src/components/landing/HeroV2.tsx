@@ -44,7 +44,7 @@ export function HeroV2() {
               <div className="mt-6 flex justify-center items-center gap-12">
                   <div>
                         <Image
-                          src="/images/rtmnu-logo.png"
+                          src="/images/rtmnu-logo.png?v=2"
                           alt="RTMNU Logo"
                           width={70}
                           height={70}
@@ -53,7 +53,7 @@ export function HeroV2() {
                   </div>
                     <div>
                       <Image
-                          src="/images/lifelonglearning.png"
+                          src="/images/lifelonglearning.png?v=2"
                           alt="Lifelong Learning Logo"
                           width={63}
                           height={63}

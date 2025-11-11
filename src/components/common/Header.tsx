@@ -22,7 +22,7 @@ export function Header() {
       <div className="container flex h-20 items-center">
         <div className="flex items-center md:flex-1">
           <Link href="/" className="flex items-center gap-2">
-             <Image src="/images/sprucelogo.webp" alt="Spruce Lifeskills" width={76} height={76} />
+             <Image src="/images/sprucelogo.webp?v=2" alt="Spruce Lifeskills" width={76} height={76} />
           </Link>
         </div>
         
@@ -57,7 +57,7 @@ export function Header() {
                     <SheetHeader className="p-6 border-b">
                         <SheetTitle asChild>
                         <Link href="/" className="flex items-center gap-3">
-                            <Image src="/images/sprucelogo.webp" alt="Spruce Lifeskills" width={76} height={76} />
+                            <Image src="/images/sprucelogo.webp?v=2" alt="Spruce Lifeskills" width={76} height={76} />
                         </Link>
                         </SheetTitle>
                     </SheetHeader>

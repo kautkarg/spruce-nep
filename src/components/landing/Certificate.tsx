@@ -16,7 +16,7 @@ export function Certificate() {
                     </div>
                     <div className="max-w-3xl mx-auto relative">
                        <Image 
-                         src="/images/rtmnu-certificate.png"
+                         src="/images/rtmnu-certificate.png?v=2"
                          alt="RTMNU Official Certificate Sample"
                          width={1200}
                          height={800}

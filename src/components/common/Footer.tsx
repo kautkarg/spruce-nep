@@ -60,7 +60,7 @@ export function AppFooter() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div>
               <Link href="/" className="flex items-center gap-2">
-                  <Image src="/images/sprucelogo.webp" alt="Spruce Lifeskills" width={76} height={76} />
+                  <Image src="/images/sprucelogo.webp?v=2" alt="Spruce Lifeskills" width={76} height={76} />
               </Link>
               <p className="text-meta text-muted-foreground mt-1">
                   University-Approved Skill Courses for Career Success.

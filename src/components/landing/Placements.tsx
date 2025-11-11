@@ -3,22 +3,22 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const companies = [
-    { name: 'Access', logo: '/images/recruiters/access.png' },
-    { name: 'TCS', logo: '/images/recruiters/tcs.png' },
-    { name: 'Gebbs', logo: '/images/recruiters/gebbs.png' },
-    { name: 'Advantmed', logo: '/images/recruiters/advantmed.png' },
-    { name: 'GMC', logo: '/images/recruiters/gmc.jpg' },
-    { name: 'Alkspzant', logo: '/images/recruiters/alkapzant.jpg' },
-    { name: 'Cognizant', logo: '/images/recruiters/cognizant.png' },
-    { name: 'Iqvia', logo: '/images/recruiters/iqvia.png' },
-    { name: 'Ascent', logo: '/images/recruiters/ascent.png' },
-    { name: 'Corro', logo: '/images/recruiters/corro.png' },
-    { name: 'Meditrina', logo: '/images/recruiters/meditrina.png' },
-    { name: 'EPI', logo: '/images/recruiters/epi.jpg' },
-    { name: 'NG', logo: '/images/recruiters/ng.png' },
-    { name: 'Augustus', logo: '/images/recruiters/augustus.jpg' },
-    { name: 'Avontix', logo: '/images/recruiters/avontix.png' },
-    { name: 'KIMS', logo: '/images/recruiters/kims.jpg' },
+    { name: 'Access', logo: '/images/recruiters/access.png?v=2' },
+    { name: 'TCS', logo: '/images/recruiters/tcs.png?v=2' },
+    { name: 'Gebbs', logo: '/images/recruiters/gebbs.png?v=2' },
+    { name: 'Advantmed', logo: '/images/recruiters/advantmed.png?v=2' },
+    { name: 'GMC', logo: '/images/recruiters/gmc.jpg?v=2' },
+    { name: 'Alkspzant', logo: '/images/recruiters/alkapzant.jpg?v=2' },
+    { name: 'Cognizant', logo: '/images/recruiters/cognizant.png?v=2' },
+    { name: 'Iqvia', logo: '/images/recruiters/iqvia.png?v=2' },
+    { name: 'Ascent', logo: '/images/recruiters/ascent.png?v=2' },
+    { name: 'Corro', logo: '/images/recruiters/corro.png?v=2' },
+    { name: 'Meditrina', logo: '/images/recruiters/meditrina.png?v=2' },
+    { name: 'EPI', logo: '/images/recruiters/epi.jpg?v=2' },
+    { name: 'NG', logo: '/images/recruiters/ng.png?v=2' },
+    { name: 'Augustus', logo: '/images/recruiters/augustus.jpg?v=2' },
+    { name: 'Avontix', logo: '/images/recruiters/avontix.png?v=2' },
+    { name: 'KIMS', logo: '/images/recruiters/kims.jpg?v=2' },
 ];
 
 export function Placements() {
