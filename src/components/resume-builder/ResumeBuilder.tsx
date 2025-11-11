@@ -1,7 +1,8 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import html2pdf from 'html2pdf.js';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -183,6 +184,7 @@ export function ResumeBuilder() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
   const [template, setTemplate] = useState<'classic' | 'modern'>('classic');
   const [isClient, setIsClient] = useState(false);
+  const resumePreviewRef = useRef<HTMLDivElement>(null);
 
   // --- Data Persistence with localStorage ---
   useEffect(() => {
@@ -220,6 +222,22 @@ export function ResumeBuilder() {
     if (!key) return arr.some(item => item); // For simple arrays like skills
     return arr.some(item => item && item[key]);
   };
+
+  const handleDownload = () => {
+    const element = resumePreviewRef.current;
+    if (!element) return;
+    
+    const options = {
+      margin:       [0.5, 0.5, 0.5, 0.5],
+      filename:     `Resume-${resumeData.personal.name.replace(/\s+/g, '-') || 'Student'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().from(element).set(options).save();
+  };
+  
   
   const ResumeContent = (
       <>
@@ -227,7 +245,7 @@ export function ResumeBuilder() {
             <>
                 {/* --- Classic Template (Single Column) --- */}
                 <div className="text-center mb-6 border-b border-gray-800 pb-4">
-                  <h1 className="text-3xl font-bold tracking-tight">{resumeData.personal.name || 'Your Name'}</h1>
+                  <h1 className="text-3xl font-bold tracking-tight text-gray-800">{resumeData.personal.name || 'Your Name'}</h1>
                    { (resumeData.personal.email || resumeData.personal.phone || resumeData.personal.linkedin) && (
                         <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
                             {resumeData.personal.email && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
@@ -240,23 +258,23 @@ export function ResumeBuilder() {
                 {resumeData.summary && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
                 
                 {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Education</h2>{resumeData.education.filter(e => e.school).map((edu, index) => (
-                    <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
+                    <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
                 ))}</div>}
 
                 {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience / Projects</h2>{resumeData.experience.filter(e=>e.title).map((exp, index) => (
-                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(exp.achievements) && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(exp.achievements) && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                 ))}</div>}
                 
                 {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Awards & Honors</h2>{resumeData.awards.filter(a=>a.name).map((award, index) => (
-                    <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
+                    <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
                 ))}</div>}
 
                 {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Volunteer & Leadership</h2>{resumeData.volunteering.filter(v=>v.role).map((item, index) => (
-                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
                 ))}</div>}
 
                 {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Certifications</h2>{resumeData.certifications.filter(c=>c.name).map((cert, index) => (
-                    <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
+                    <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
                 ))}</div>}
 
                 {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{resumeData.skills.map((skill, index) => skill && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill}</span>))}</div></div>}
@@ -273,11 +291,11 @@ export function ResumeBuilder() {
                         {resumeData.summary && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
                         
                         {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience / Projects</h2>{resumeData.experience.filter(e => e.title).map((exp, index) => (
-                            <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(exp.achievements) && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+                            <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(exp.achievements) && <ul className="list-disc list-outside pl-5 space-y-1">{exp.achievements.map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                         ))}</div>}
 
                          {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education.filter(e=>e.school).map((edu, index) => (
-                            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
+                            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.gpa && <p className="text-xs text-gray-500">GPA: {edu.gpa}</p>}</div></div>
                           ))}</div>}
                     </div>
                     {/* Right Column (Sidebar) */}
@@ -291,15 +309,15 @@ export function ResumeBuilder() {
                         {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{resumeData.skills.map((skill, index) => skill && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill}</span>))}</div></div>}
                         
                         {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Awards</h2><div className="space-y-3 mt-2">{resumeData.awards.filter(a=>a.name).map((award, index) => (
-                            <div key={index}><h3 className="text-xs font-semibold">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>
+                            <div key={index}><h3 className="text-xs font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>
                         ))}</div></div>}
 
                         {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Certifications</h2><div className="space-y-3 mt-2">{resumeData.certifications.filter(c=>c.name).map((cert, index) => (
-                            <div key={index}><h3 className="text-xs font-semibold">{cert.name}</h3><p className="text-xs text-gray-500">{cert.issuer}</p></div>
+                            <div key={index}><h3 className="text-xs font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.issuer}</p></div>
                         ))}</div></div>}
                         
                         {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Leadership</h2><div className="space-y-3 mt-2">{resumeData.volunteering.filter(v=>v.role).map((item, index) => (
-                            <div key={index}><h3 className="text-xs font-semibold">{item.role}</h3><p className="text-xs text-gray-500">{item.organization}</p></div>
+                            <div key={index}><h3 className="text-xs font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.organization}</p></div>
                         ))}</div></div>}
                     </div>
                 </div>
@@ -311,20 +329,20 @@ export function ResumeBuilder() {
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
-      <div className="print-hide max-w-screen-2xl mx-auto p-4 md:p-8">
+      <div className="max-w-screen-2xl mx-auto p-4 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Panel: Input Form */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-6">
             <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-800">Resume Details</h2>
-                 <Button onClick={() => window.print()} className="w-full gap-2 bg-primary hover:bg-primary/90">
+                 <Button onClick={handleDownload} className="w-full gap-2 bg-primary hover:bg-primary/90">
                     <Printer className="h-4 w-4" />
-                    Print / Download PDF
+                    Download as PDF
                 </Button>
             </div>
             
-            <Section title="Template" icon={FileText} data-html2canvas-ignore="true">
+            <Section title="Template" icon={FileText}>
                 <div className="flex gap-2">
                     <Button variant={template === 'classic' ? 'default' : 'outline'} onClick={() => setTemplate('classic')} className="flex-1">
                         Classic (ATS-Friendly)
@@ -413,51 +431,13 @@ export function ResumeBuilder() {
           {/* Right Panel: Resume Preview */}
           <div className="lg:col-span-7 xl:col-span-8">
             <div className="sticky top-8">
-              <div className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
+              <div id="resume-preview" ref={resumePreviewRef} className="w-full bg-white shadow-lg rounded-lg p-8 aspect-[8.5/11] overflow-y-auto text-gray-800 border">
                 {ResumeContent}
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* This is the dedicated print-only version of the resume */}
-      <div className="print-show">
-        {ResumeContent}
-      </div>
-      
-      {/* Print-specific styles */}
-      <style jsx global>{`
-        @media print {
-          .print-hide {
-            display: none;
-          }
-          .print-show {
-            display: block;
-          }
-          body {
-            background-color: #fff;
-          }
-          /* You can add more fine-grained print styles here */
-          .print-show h1 { font-size: 24px; }
-          .print-show h2 { font-size: 12px; }
-          .print-show h3 { font-size: 11px; }
-          .print-show p, .print-show li, .print-show span, .print-show div { font-size: 10px; }
-          .print-show .text-xs { font-size: 9px; }
-          .print-show .text-sm { font-size: 10px; }
-        }
-
-        @page {
-          size: A4;
-          margin: 0.5in;
-        }
-
-        .print-show {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }
-
-    
