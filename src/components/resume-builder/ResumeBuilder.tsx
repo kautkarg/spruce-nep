@@ -41,7 +41,7 @@ const educationSchema = z.object({
     }
     return true;
 }, {
-    message: "Invalid score value. CGPA must be <= 10, Percentage must be <= 100.",
+    message: "Invalid score. CGPA <= 10, Percentage <= 100.",
     path: ["scoreValue"],
 });
 
@@ -163,7 +163,7 @@ const EducationSection: React.FC = () => {
                     <FormField control={control} name={`education.${index}.date`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">End Date</FormLabel><FormControl><MonthYearPicker field={field} /></FormControl><FormMessage /></FormItem>)} />
                     <div className="grid grid-cols-2 gap-2">
                         <FormField control={control} name={`education.${index}.scoreType`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger></FormControl><SelectContent><SelectItem value="CGPA">CGPA</SelectItem><SelectItem value="Percentage">Percentage</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                        <FormField control={control} name={`education.${index}.scoreValue`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score</FormLabel><FormControl><Input type="number" placeholder="e.g., 8.5 or 85" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={control} name={`education.${index}.scoreValue`} render={({ field }) => (<FormItem><FormLabel className="text-sm font-medium text-gray-600">Score</FormLabel><FormControl><Input type="number" step="0.1" placeholder="e.g., 8.5 or 85" {...field} className="mt-1" /></FormControl><FormMessage /></FormItem>)} />
                     </div>
                     <Button
                         type="button"
@@ -426,7 +426,6 @@ export function ResumeBuilder() {
             <div className="max-w-screen-2xl mx-auto p-4 md:p-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Resume Details</h2>
                         
                         <Section title="Template" icon={FileText}>
                             <div className="flex gap-2">
@@ -485,6 +484,7 @@ export function ResumeBuilder() {
                         </FormProvider>
 
                         <div className="space-y-4">
+                             <h2 className="text-2xl font-bold text-gray-800 sr-only">Actions</h2>
                             <Button onClick={handleDownload} className="w-full gap-2 bg-primary hover:bg-primary/90">
                                 <Printer className="h-4 w-4" />
                                 Download as PDF
@@ -503,5 +503,7 @@ export function ResumeBuilder() {
         </div>
     );
 }
+
+    
 
     
