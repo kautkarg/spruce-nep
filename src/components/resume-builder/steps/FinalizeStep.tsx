@@ -3,7 +3,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormField, FormItem, FormLabel, FormMessage, FormControl } from '@/components/ui/form';
 import { ResumeFormValues } from '../ResumeBuilder';
 import { Section } from './Section';
 import { Award, FileText, PlusCircle, Trash2, User } from 'lucide-react';
