@@ -76,67 +76,14 @@ export type GoogleReview = {
     review: string;
 };
 
-// This function provides manually curated review data.
-// It's used as a fallback when the Google API credentials are not configured,
-// or if you prefer to manage reviews manually.
-async function fetchManualReviews(): Promise<GoogleReview[]> {
-    console.log("Fetching manually curated reviews from src/lib/reviews.ts.");
-    return manualReviews;
-}
-
 /**
- * Fetches reviews from the Google Places API or falls back to manual reviews.
+ * Fetches manually curated reviews from `src/lib/reviews.ts`.
  * 
- * HOW TO ENABLE GOOGLE REVIEWS:
- * 1. Follow the instructions in the `.env` file to get your GOOGLE_API_KEY and GOOGLE_PLACE_ID.
- * 2. Paste your credentials into the `.env` file.
- * 3. Restart your development server.
- * 
- * If credentials are not provided, it will use the reviews from `src/lib/reviews.ts`.
- * You can edit that file to manage the testimonials displayed on your site.
+ * This function provides a reliable, local source of testimonials for the website,
+ * removing the need for external API calls to Google Places and ensuring stable performance.
+ * You can edit the `src/lib/reviews.ts` file to manage the testimonials displayed on your site.
  */
 export async function getGoogleReviews(): Promise<GoogleReview[]> {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  const placeId = process.env.GOOGLE_PLACE_ID;
-
-  // Check if the API key and Place ID are configured. If not, use manual data.
-  if (!apiKey || apiKey === "YOUR_GOOGLE_API_KEY" || !placeId || placeId === "YOUR_GOOGLE_PLACE_ID") {
-    console.warn("Google API credentials are not configured. Falling back to manual reviews.");
-    return fetchManualReviews();
-  }
-
-  const url = `https://places.googleapis.com/v1/places/${placeId}`;
-
-  try {
-    const response = await fetch(url, {
-        headers: {
-            'X-Goog-Api-Key': apiKey,
-            'X-Goog-Field-Mask': 'reviews.authorAttribution,reviews.text',
-        }
-    });
-
-    if (!response.ok) {
-      console.error("Failed to fetch Google reviews:", response.statusText, await response.text());
-      return fetchManualReviews(); // Fallback to manual data on API error
-    }
-
-    const data = await response.json();
-    
-    if (!data.reviews) {
-        console.error("Google Places API returned no reviews or an error:", data);
-        return fetchManualReviews(); // Fallback to manual data if API returns no reviews
-    }
-
-    // Format the response to match our GoogleReview type
-    const formattedReviews: GoogleReview[] = data.reviews.map((review: any) => ({
-      name: review.authorAttribution.displayName,
-      avatarUrl: review.authorAttribution.photoUri,
-      review: review.text.text,
-    }));
-
-    return formattedReviews;
-  } catch (error) {
-    console.error("An error occurred while fetching Google reviews:", error);
-    return fetchManualReviews(); // Fallback to manual data on any other error
-  }
+    console.log("Fetching manually curated reviews from src/lib/reviews.ts.");
+    return manualReviews;
 }
