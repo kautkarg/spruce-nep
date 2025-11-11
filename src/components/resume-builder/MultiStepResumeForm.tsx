@@ -14,9 +14,10 @@ export interface Step {
 interface StepperProps {
   steps: Step[];
   currentStep: number;
+  setCurrentStep: (index: number) => void;
 }
 
-export function Stepper({ steps, currentStep }: StepperProps) {
+export function Stepper({ steps, currentStep, setCurrentStep }: StepperProps) {
   const { formState } = useFormContext<ResumeFormValues>();
 
   return (
@@ -34,14 +35,14 @@ export function Stepper({ steps, currentStep }: StepperProps) {
           return (
             <li key={step.name} className="md:flex-1">
               <div
-                className="group flex flex-col border-l-4 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
-                aria-current={isCurrent ? 'step' : undefined}
+                onClick={() => setCurrentStep(index)}
                 className={cn(
-                    'group flex flex-col border-l-4 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4',
+                    'group flex flex-col border-l-4 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4 cursor-pointer',
                     stepStatus === 'current' && 'border-primary',
                     stepStatus === 'complete' && 'border-primary hover:border-primary',
                     stepStatus === 'upcoming' && 'border-gray-200 hover:border-gray-300'
                 )}
+                aria-current={isCurrent ? 'step' : undefined}
               >
                 <span className={cn(
                     'text-sm font-medium transition-colors',

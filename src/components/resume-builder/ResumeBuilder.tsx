@@ -273,7 +273,7 @@ export function ResumeBuilder() {
                             <p className="text-sm font-semibold text-gray-700 mb-2">Resume Progress</p>
                             <Progress value={progress} />
                         </div>
-                        <Stepper steps={steps} currentStep={currentStep} />
+                        <Stepper steps={steps} currentStep={currentStep} setCurrentStep={setCurrentStep} />
                     </div>
                     
                     <div className="bg-card p-6 rounded-lg shadow-sm">
