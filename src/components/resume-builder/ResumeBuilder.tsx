@@ -503,5 +503,3 @@ export function ResumeBuilder() {
         </div>
     );
 }
-
-    
