@@ -347,36 +347,36 @@ export function ResumeBuilder() {
                         <h1 className="text-3xl font-bold tracking-tight text-gray-800">{resumeData.personal?.name}</h1>
                         {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && (
                             <div className="flex justify-center items-center gap-x-4 gap-y-1 text-xs text-gray-600 mt-2 flex-wrap">
-                                {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" />{resumeData.personal.email}</div>}
-                                {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" />{resumeData.personal.phone}</div>}
-                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-1.5"><Linkedin className="h-3 w-3" />{resumeData.personal.linkedin}</div>}
+                                {hasContent(resumeData.personal.email) && <div className="flex items-center">{resumeData.personal.email}</div>}
+                                {hasContent(resumeData.personal.phone) && <div className="flex items-center">{resumeData.personal.phone}</div>}
+                                {hasContent(resumeData.personal.linkedin) && <div className="flex items-center">{resumeData.personal.linkedin}</div>}
                             </div>
                         )}
                     </div>
 
-                    {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4" />Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
+                    {hasContent(resumeData.summary) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Summary</h2><p className="text-xs leading-relaxed">{resumeData.summary}</p></div>}
                     
-                    {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><GraduationCap className="h-4 w-4" />Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+                    {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.school}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.degree}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
                     ))}</div>}
 
-                    {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><Briefcase className="h-4 w-4" />Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+                    {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Experience / Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
                         <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                     ))}</div>}
                     
-                    {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><Award className="h-4 w-4" />Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
+                    {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Awards & Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-xs text-gray-500">{award.date}</p>}</div>{award.description && <p className="text-xs leading-relaxed">{award.description}</p>}</div>
                     ))}</div>}
 
-                    {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><HeartHandshake className="h-4 w-4" />Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
+                    {hasContent(resumeData.volunteering, 'role') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Volunteer & Leadership</h2>{resumeData.volunteering?.map((item, index) => item.role && (
                         <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{item.role}</h3><p className="text-xs text-gray-500">{item.dates}</p></div><p className="text-sm italic mb-1">{item.organization}</p>{item.description && <p className="text-xs leading-relaxed">{item.description}</p>}</div>
                     ))}</div>}
 
-                    {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><Award className="h-4 w-4" />Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
+                    {hasContent(resumeData.certifications, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
                         <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{cert.name}</h3><p className="text-xs text-gray-500">{cert.date}</p></div><p className="text-sm italic">{cert.issuer}</p></div>
                     ))}</div>}
 
-                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center gap-2"><Briefcase className="h-4 w-4" />Skills</h2><div className="flex flex-wrap gap-2 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
+                    {hasContent(resumeData.skills) && <div><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2 flex items-center">Skills</h2><div className="flex flex-wrap gap-2 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
                 </>
             )}
             
@@ -397,9 +397,9 @@ export function ResumeBuilder() {
                         </div>
                         <div className="w-1/3 bg-gray-100 p-6 rounded-md -my-8 -mr-8">
                             {(hasContent(resumeData.personal?.email) || hasContent(resumeData.personal?.phone) || hasContent(resumeData.personal?.linkedin)) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Contact</h2><div className="space-y-2 text-xs text-gray-700">
-                                    {hasContent(resumeData.personal.email) && <div className="flex items-center gap-2"><Mail className="h-3 w-3 shrink-0" /><span>{resumeData.personal.email}</span></div>}
-                                    {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-2"><Phone className="h-3 w-3 shrink-0" /><span>{resumeData.personal.phone}</span></div>}
-                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center gap-2"><Linkedin className="h-3 w-3 shrink-0" /><span>{resumeData.personal.linkedin}</span></div>}
+                                    {hasContent(resumeData.personal.email) && <div className="flex items-center"><span>{resumeData.personal.email}</span></div>}
+                                    {hasContent(resumeData.personal.phone) && <div className="flex items-center"><span>{resumeData.personal.phone}</span></div>}
+                                    {hasContent(resumeData.personal.linkedin) && <div className="flex items-center"><span>{resumeData.personal.linkedin}</span></div>}
                             </div></div>}
 
                             {hasContent(resumeData.skills) && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-600 border-b border-gray-300 pb-1 mb-3">Skills</h2><div className="flex flex-wrap gap-1.5 mt-2">{typeof resumeData.skills === 'string' && resumeData.skills.split(',').map((skill, index) => skill.trim() && (<span key={index} className="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">{skill.trim()}</span>))}</div></div>}
