@@ -116,11 +116,11 @@ export const AtsCompactTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
         ))}</div>}
 
         {hasContent(resumeData.certifications, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
-            <div key={index} className="mb-1"><h3 className="font-semibold text-gray-800 inline">{cert.name}</h3><span className="italic">, {cert.issuer}</span><span className="float-right">{cert.date}</span></div>
+            <div key={index} className="mb-1"><h3 className="font-semibold text-gray-800 text-[11px] inline">{cert.name}</h3><span className="italic">, {cert.issuer}</span><span className="float-right">{cert.date}</span></div>
         ))}</div>}
 
         {hasContent(resumeData.awards, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Awards &amp; Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
-            <div key={index} className="mb-1"><div className="flex justify-between items-baseline"><h3 className="font-semibold text-gray-800">{award.name}</h3>{award.date && <p className="text-gray-500">{award.date}</p>}</div>{award.description && <p>{award.description}</p>}</div>
+            <div key={index} className="mb-1"><div className="flex justify-between items-baseline"><h3 className="font-semibold text-gray-800 text-[11px]">{award.name}</h3>{award.date && <p className="text-gray-500">{award.date}</p>}</div>{award.description && <p>{award.description}</p>}</div>
         ))}</div>}
     </div>
 );
@@ -133,11 +133,11 @@ export const ModernStylishTemplate: React.FC<TemplateProps> = ({ resumeData }) =
                 {hasContent(resumeData.summary) && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
                 
                 {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">EXPERIENCE &amp; PROJECTS</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-                    <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+                    <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                 ))}</div>}
 
                  {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
                   ))}</div>}
             </div>
             <div className="col-span-1 bg-gray-100 p-6 -my-8 -mr-8">
@@ -187,13 +187,13 @@ export const ModernCreativeTemplate: React.FC<TemplateProps> = ({ resumeData }) 
                 </div>
                 <div className="col-span-1">
                     {hasContent(resumeData.education, 'school') && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                        <div key={index} className="mb-3"><h3 className="text-base font-bold">{edu.school}</h3><p className="text-sm italic">{edu.degree}</p><p className="text-xs text-gray-500">{edu.date}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div>
+                        <div key={index} className="mb-3"><h3 className="text-sm font-bold">{edu.school}</h3><p className="text-sm italic">{edu.degree}</p><p className="text-xs text-gray-500">{edu.date}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div>
                     ))}</section>}
                     
                     {hasContent(resumeData.skills) && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Skills</h2><p className="text-sm">{resumeData.skills}</p></section>}
                     
                     {hasContent(resumeData.awards, 'name') && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Awards</h2>{resumeData.awards?.map((award, index) => award.name && (
-                        <div key={index} className="mb-2"><h3 className="text-base font-bold">{award.name} <span className="text-xs text-gray-500">({award.date})</span></h3></div>
+                        <div key={index} className="mb-2"><h3 className="text-sm font-bold">{award.name} <span className="text-xs text-gray-500">({award.date})</span></h3></div>
                     ))}</section>}
                 </div>
             </div>
