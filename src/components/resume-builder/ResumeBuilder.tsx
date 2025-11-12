@@ -15,7 +15,8 @@ import SummaryStep from './steps/SummaryStep';
 import EducationStep from './steps/EducationStep';
 import ExperienceStep from './steps/ExperienceStep';
 import SkillsStep from './steps/SkillsStep';
-import FinalizeStep from './steps/FinalizeStep';
+import ExtrasStep from './steps/ExtrasStep';
+import TemplateStep from './steps/TemplateStep';
 import { AtsClassicTemplate, AtsCompactTemplate, AtsTraditionalTemplate, ModernCreativeTemplate, ModernMinimalistTemplate, ModernStylishTemplate } from './templates';
 import { Progress } from '../ui/progress';
 
@@ -242,7 +243,8 @@ export function ResumeBuilder() {
       { name: 'Education', fields: ['education'] },
       { name: 'Experience', fields: ['experience'] },
       { name: 'Skills', fields: ['skills'] },
-      { name: 'Finalize' },
+      { name: 'Template' },
+      { name: 'Extras' },
     ];
 
     const next = async () => {
@@ -262,7 +264,8 @@ export function ResumeBuilder() {
       }
     };
     
-    const showPreview = !isMobile || (isMobile && currentStep === steps.length - 1);
+    const showPreview = !isMobile || (isMobile && (currentStep === steps.findIndex(s => s.name === 'Template') || currentStep === steps.length - 1));
+
 
     return (
         <FormProvider {...form}>
@@ -282,7 +285,8 @@ export function ResumeBuilder() {
                         {currentStep === 2 && <EducationStep />}
                         {currentStep === 3 && <ExperienceStep />}
                         {currentStep === 4 && <SkillsStep />}
-                        {currentStep === 5 && <FinalizeStep />}
+                        {currentStep === 5 && <TemplateStep />}
+                        {currentStep === 6 && <ExtrasStep />}
                     </div>
 
                     <div className="flex justify-between">
@@ -315,5 +319,3 @@ export function ResumeBuilder() {
         </FormProvider>
     );
 }
-
-    
