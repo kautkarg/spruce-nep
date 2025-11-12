@@ -21,11 +21,16 @@ import { AtsClassicTemplate, AtsCompactTemplate, AtsTraditionalTemplate, ModernC
 import { Progress } from '../ui/progress';
 
 // --- Zod Schema for Validation ---
+const profileSchema = z.object({
+  network: z.string().optional(),
+  url: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
+});
+
 const personalInfoSchema = z.object({
   name: z.string().min(1, "Name is required."),
   email: z.string().email("Invalid email address.").optional().or(z.literal('')),
   phone: z.string().regex(/^[0-9-()+ ]*$/, "Invalid phone number format.").optional().or(z.literal('')),
-  linkedin: z.string().optional(),
+  profiles: z.array(profileSchema).optional(),
 });
 
 const educationSchema = z.object({
@@ -97,7 +102,10 @@ export const defaultValues: ResumeFormValues = {
     name: 'Your Name',
     email: 'your.email@example.com',
     phone: '123-456-7890',
-    linkedin: 'linkedin.com/in/yourprofile',
+    profiles: [
+        { network: 'LinkedIn', url: 'https://linkedin.com/in/yourprofile' },
+        { network: 'GitHub', url: 'https://github.com/yourusername' },
+    ]
   },
   summary: 'A brief 3-4 sentence professional summary or objective statement. For entry-level candidates, focus on your career goals and key skills.',
   education: [
@@ -188,6 +196,11 @@ export function ResumeBuilder() {
                 const validatedData = {
                     ...defaultValues,
                     ...parsedData,
+                    personal: {
+                        ...defaultValues.personal,
+                        ...parsedData.personal,
+                        profiles: parsedData.personal?.profiles || [],
+                    },
                     education: parsedData.education || [],
                     experience: parsedData.experience || [],
                     awards: parsedData.awards || [],
@@ -319,3 +332,5 @@ export function ResumeBuilder() {
         </FormProvider>
     );
 }
+
+    
