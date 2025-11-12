@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { getAchievements, hasContent, ResumeFormValues } from "./ResumeBuilder";
@@ -26,8 +27,8 @@ export const AtsClassicTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
         ))}</div>}
 
-        {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+        {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">EXPERIENCE &amp; PROJECTS</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
         ))}</div>}
         
         {hasContent(resumeData.awards, 'name') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-800 border-b-2 border-gray-800 pb-1 mb-2">Awards &amp; Honors</h2>{resumeData.awards?.map((award, index) => award.name && (
@@ -67,8 +68,8 @@ export const AtsTraditionalTemplate: React.FC<TemplateProps> = ({ resumeData }) 
             <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
         ))}</div>}
 
-        {hasContent(resumeData.experience, 'title') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
+        {hasContent(resumeData.experience, 'title') && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">EXPERIENCE &amp; PROJECTS</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
         ))}</div>}
         
         {hasContent(resumeData.skills) && <div className="mb-5"><h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-gray-300 pb-1 mb-2">Skills</h2><p className="text-xs leading-relaxed">{resumeData.skills}</p></div>}
@@ -106,12 +107,12 @@ export const AtsCompactTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
         
         {hasContent(resumeData.skills) && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Skills</h2><p>{resumeData.skills}</p></div>}
         
-        {hasContent(resumeData.experience, 'title') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-800 text-[12px]">{exp.title}</h3><p className="text-gray-500">{exp.dates}</p></div><p className="italic mb-0.5">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-4 space-y-0.5">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
+        {hasContent(resumeData.experience, 'title') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">EXPERIENCE &amp; PROJECTS</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+            <div key={index} className="mb-2"><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-800 text-[11px]">{exp.title}</h3><p className="text-gray-500">{exp.dates}</p></div><p className="italic mb-0.5">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-4 space-y-0.5">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
         ))}</div>}
         
         {hasContent(resumeData.education, 'school') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-            <div key={index} className="mb-1.5"><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-800">{edu.degree}</h3><p className="text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+            <div key={index} className="mb-1.5"><div className="flex justify-between items-baseline"><h3 className="font-bold text-gray-800 text-[11px]">{edu.degree}</h3><p className="text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
         ))}</div>}
 
         {hasContent(resumeData.certifications, 'name') && <div className="mb-3"><h2 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 border-b border-gray-300 pb-0.5 mb-1.5">Certifications</h2>{resumeData.certifications?.map((cert, index) => cert.name && (
@@ -131,12 +132,12 @@ export const ModernStylishTemplate: React.FC<TemplateProps> = ({ resumeData }) =
                 <h1 className="text-4xl font-bold tracking-tight mb-2 text-gray-800">{resumeData.personal?.name}</h1>
                 {hasContent(resumeData.summary) && <p className="text-xs leading-relaxed mb-6">{resumeData.summary}</p>}
                 
-                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Experience &amp; Projects</h2>{resumeData.experience?.map((exp, index) => exp.title && (
+                {hasContent(resumeData.experience, 'title') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">EXPERIENCE &amp; PROJECTS</h2>{resumeData.experience?.map((exp, index) => exp.title && (
                     <div key={index} className="mb-4"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{exp.title}</h3><p className="text-xs text-gray-500">{exp.dates}</p></div><p className="text-sm italic mb-1">{exp.organization}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i} className="text-xs leading-relaxed">{ach}</li>)}</ul>}</div>
                 ))}</div>}
 
-                 {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-base font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
-                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-sm font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
+                 {hasContent(resumeData.education, 'school') && <div className="mb-6"><h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 border-b-2 border-gray-300 pb-1 mb-3">Education</h2>{resumeData.education?.map((edu, index) => edu.school && (
+                    <div key={index} className="mb-3"><div className="flex justify-between items-baseline"><h3 className="text-base font-semibold text-gray-800">{edu.degree}</h3><p className="text-xs text-gray-500">{edu.date}</p></div><div className="flex justify-between items-baseline"><p className="text-sm italic">{edu.school}</p>{edu.scoreValue && edu.scoreType && <p className="text-xs text-gray-500">{edu.scoreType}: {edu.scoreValue}{edu.scoreType === 'Percentage' ? '%' : ''}</p>}</div></div>
                   ))}</div>}
             </div>
             <div className="col-span-1 bg-gray-100 p-6 -my-8 -mr-8">
@@ -181,7 +182,7 @@ export const ModernCreativeTemplate: React.FC<TemplateProps> = ({ resumeData }) 
             <div className="grid grid-cols-3 gap-6">
                 <div className="col-span-2">
                     {hasContent(resumeData.experience, 'title') && <section className="mb-6"><h2 className="text-lg font-bold text-teal-800 tracking-wider uppercase mb-2">Experience</h2>{resumeData.experience?.map((exp, index) => exp.title && (
-                        <div key={index} className="mb-4"><h3 className="text-xl font-bold">{exp.title} | <span className="font-normal italic text-base">{exp.organization}</span></h3><p className="text-xs text-gray-500 mb-1">{exp.dates}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1 text-sm">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
+                        <div key={index} className="mb-4"><h3 className="text-base font-bold">{exp.title} | <span className="font-normal italic text-sm">{exp.organization}</span></h3><p className="text-xs text-gray-500 mb-1">{exp.dates}</p>{hasContent(getAchievements(exp.achievements)) && <ul className="list-disc list-outside pl-5 space-y-1 text-sm">{getAchievements(exp.achievements).map((ach, i) => ach && <li key={i}>{ach}</li>)}</ul>}</div>
                     ))}</section>}
                 </div>
                 <div className="col-span-1">
