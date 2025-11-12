@@ -1,6 +1,7 @@
 
 "use client";
 
+import React from "react";
 import { getAchievements, hasContent, ResumeFormValues } from "./ResumeBuilder";
 
 type TemplateProps = {
@@ -15,7 +16,7 @@ export const AtsClassicTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
                 {hasContent(resumeData.personal.email) && <div className="flex items-center gap-1.5">{resumeData.personal.email}</div>}
                 {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
                 {resumeData.personal.profiles?.map((profile, index) => (
-                    hasContent(profile.url) && <div key={index} className="flex items-center gap-1.5">{profile.url}</div>
+                    hasContent(profile.url) && <a key={index} href={profile.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-primary hover:underline">{profile.network}</a>
                 ))}
             </div>
         </div>
@@ -55,7 +56,7 @@ export const AtsTraditionalTemplate: React.FC<TemplateProps> = ({ resumeData }) 
                 {hasContent(resumeData.personal.phone) && <span>|</span>}
                 {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
                 {resumeData.personal.profiles?.map((profile, index) => (
-                    hasContent(profile.url) && <React.Fragment key={index}><span>|</span><div className="flex items-center gap-1.5">{profile.network}: {profile.url}</div></React.Fragment>
+                    hasContent(profile.url) && <React.Fragment key={index}><span>|</span><a href={profile.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-primary hover:underline">{profile.network}</a></React.Fragment>
                 ))}
             </div>
         </div>
@@ -95,7 +96,7 @@ export const AtsCompactTemplate: React.FC<TemplateProps> = ({ resumeData }) => (
                 {hasContent(resumeData.personal.phone) && <span>•</span>}
                 {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-1.5">{resumeData.personal.phone}</div>}
                 {resumeData.personal.profiles?.map((profile, index) => (
-                    hasContent(profile.url) && <React.Fragment key={index}><span>•</span><div className="flex items-center gap-1.5">{profile.url}</div></React.Fragment>
+                    hasContent(profile.url) && <React.Fragment key={index}><span>•</span><a href={profile.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-primary hover:underline">{profile.network}</a></React.Fragment>
                 ))}
             </div>
         </div>
@@ -142,7 +143,7 @@ export const ModernStylishTemplate: React.FC<TemplateProps> = ({ resumeData }) =
                         {hasContent(resumeData.personal.email) && <div className="flex items-center gap-2"><span>{resumeData.personal.email}</span></div>}
                         {hasContent(resumeData.personal.phone) && <div className="flex items-center gap-2"><span>{resumeData.personal.phone}</span></div>}
                         {resumeData.personal.profiles?.map((profile, index) => (
-                           hasContent(profile.url) && <div key={index} className="flex items-center gap-2"><span>{profile.network}: {profile.url}</span></div>
+                           hasContent(profile.url) && <a key={index} href={profile.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary hover:underline">{profile.network}</a>
                         ))}
                 </div></div>}
 
@@ -172,7 +173,7 @@ export const ModernCreativeTemplate: React.FC<TemplateProps> = ({ resumeData }) 
                 {hasContent(resumeData.personal.email) && <div>{resumeData.personal.email}</div>}
                 {hasContent(resumeData.personal.phone) && <div>{resumeData.personal.phone}</div>}
                 {resumeData.personal.profiles?.map((profile, index) => (
-                    hasContent(profile.url) && <div key={index}>{profile.network}: {profile.url}</div>
+                    hasContent(profile.url) && <a key={index} href={profile.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{profile.network}</a>
                 ))}
             </div>
         </header>
@@ -211,7 +212,7 @@ export const ModernMinimalistTemplate: React.FC<TemplateProps> = ({ resumeData }
                 {hasContent(resumeData.personal.phone) && <div className='font-bold'>·</div>}
                 {hasContent(resumeData.personal.phone) && <div>{resumeData.personal.phone}</div>}
                  {resumeData.personal.profiles?.map((profile, index) => (
-                    hasContent(profile.url) && <React.Fragment key={index}><div className='font-bold'>·</div><div>{profile.network}: {profile.url}</div></React.Fragment>
+                    hasContent(profile.url) && <React.Fragment key={index}><div className='font-bold'>·</div><a href={profile.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.network}</a></React.Fragment>
                 ))}
             </div>
         </header>
