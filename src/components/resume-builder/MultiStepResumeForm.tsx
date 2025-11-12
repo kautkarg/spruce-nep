@@ -22,7 +22,7 @@ export function Stepper({ steps, currentStep, setCurrentStep }: StepperProps) {
 
   return (
     <nav aria-label="Progress">
-      <ol role="list" className="md:flex md:space-x-8 md:space-y-0 space-y-4">
+      <ol role="list" className="flex items-start overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {steps.map((step, index) => {
           const isCompleted = currentStep > index;
           const isCurrent = currentStep === index;
@@ -33,14 +33,14 @@ export function Stepper({ steps, currentStep, setCurrentStep }: StepperProps) {
           const stepStatus = isCompleted ? 'complete' : isCurrent ? 'current' : 'upcoming';
 
           return (
-            <li key={step.name} className="md:flex-1">
+            <li key={step.name} className="flex-1 min-w-[8rem]">
               <div
                 onClick={() => setCurrentStep(index)}
                 className={cn(
-                    'group flex flex-col border-l-4 md:border-l-0 md:border-t-4 py-2 pl-4 md:pt-4 md:pl-0 md:pb-0 border-gray-200 cursor-pointer transition-colors',
+                    'group flex flex-col border-t-4 py-2 pl-2 pr-4 cursor-pointer transition-colors',
                     stepStatus === 'current' && 'border-primary',
                     stepStatus === 'complete' && 'border-primary hover:border-primary',
-                    stepStatus === 'upcoming' && 'hover:border-gray-300'
+                    stepStatus === 'upcoming' && 'border-gray-200 hover:border-gray-300'
                 )}
                 aria-current={isCurrent ? 'step' : undefined}
               >
